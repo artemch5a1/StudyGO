@@ -9,7 +9,7 @@ StudyGO — это информационная система, которая �
 ## 🧩 Стек технологий
 
 ### 🔧 Backend
-- ASP.NET Core 8 Web API
+- ASP.NET Core 9 Web API
 - Entity Framework Core (Code First)
 - JWT авторизация
 - PostgreSQL
