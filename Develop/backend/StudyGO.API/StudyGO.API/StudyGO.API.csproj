@@ -13,4 +13,9 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="9.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\StudyGO.Application\StudyGO.Application.csproj" />
+    <ProjectReference Include="..\StudyGO.infrastructure\StudyGO.infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

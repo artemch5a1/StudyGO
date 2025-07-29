@@ -5,6 +5,12 @@ VisualStudioVersion = 17.14.36221.1 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyGO.API", "StudyGO.API\StudyGO.API.csproj", "{C9522BED-615C-42DD-8192-9B01AA59B815}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyGO.Core", "StudyGO.Core\StudyGO.Core.csproj", "{4BF673B7-7230-4B01-8E77-5958FCD291D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyGO.Application", "StudyGO.Application\StudyGO.Application.csproj", "{54B60E30-EF7E-4E7E-8D23-F3CB96049D1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyGO.infrastructure", "StudyGO.infrastructure\StudyGO.infrastructure.csproj", "{A5E5167C-A41B-4A1F-AA54-6928C73F1764}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,18 @@ Global
 		{C9522BED-615C-42DD-8192-9B01AA59B815}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9522BED-615C-42DD-8192-9B01AA59B815}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9522BED-615C-42DD-8192-9B01AA59B815}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BF673B7-7230-4B01-8E77-5958FCD291D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BF673B7-7230-4B01-8E77-5958FCD291D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BF673B7-7230-4B01-8E77-5958FCD291D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BF673B7-7230-4B01-8E77-5958FCD291D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54B60E30-EF7E-4E7E-8D23-F3CB96049D1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54B60E30-EF7E-4E7E-8D23-F3CB96049D1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54B60E30-EF7E-4E7E-8D23-F3CB96049D1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54B60E30-EF7E-4E7E-8D23-F3CB96049D1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5E5167C-A41B-4A1F-AA54-6928C73F1764}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5E5167C-A41B-4A1F-AA54-6928C73F1764}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5E5167C-A41B-4A1F-AA54-6928C73F1764}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5E5167C-A41B-4A1F-AA54-6928C73F1764}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
