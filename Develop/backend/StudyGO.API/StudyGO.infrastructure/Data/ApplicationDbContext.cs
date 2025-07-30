@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StudyGO.Core.Models;
 using StudyGO.infrastructure.Entites;
 
 namespace StudyGO.infrastructure.Data
@@ -14,6 +13,8 @@ namespace StudyGO.infrastructure.Data
         public DbSet<FormatEntity> FormatsEntity { get; set; }
 
         public DbSet<TutorProfileEntity> TutorProfilesEntity { get; set; }
+
+        public DbSet<SubjectEntity> SubjectsEntity { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,7 +37,34 @@ namespace StudyGO.infrastructure.Data
             modelBuilder.Entity<TutorProfileEntity>(entity =>
             {
                 entity.HasKey(e => e.UserID);
-                entity.HasOne(e => e.User).WithOne(f => f.TutorProfile);
+                entity
+                    .HasOne(e => e.User)
+                    .WithOne(f => f.TutorProfile)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasOne(e => e.Format)
+                    .WithMany(f => f.TutorProfiles).HasForeignKey(x => x.FormatID)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<SubjectEntity>(entity =>
+            {
+                entity.HasKey(e => e.SubjectID);
+                entity.Property(e => e.SubjectID).HasDefaultValueSql("gen_random_uuid()");
+                entity.Property(e => e.Title).HasMaxLength(100);
+            });
+
+            modelBuilder.Entity<UserProfileEntity>(entity =>
+            {
+                entity.HasKey(e => e.UserID);
+                entity
+                    .HasOne(e => e.User)
+                    .WithOne(f => f.UserProfile)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasOne(e => e.FavoriteSubject)
+                    .WithMany(f => f.UserProfiles).HasForeignKey(e => e.SubjectID)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
         }
     }

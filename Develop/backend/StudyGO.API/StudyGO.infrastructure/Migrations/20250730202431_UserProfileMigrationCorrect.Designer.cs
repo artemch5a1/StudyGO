@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StudyGO.infrastructure.Data;
@@ -11,9 +12,11 @@ using StudyGO.infrastructure.Data;
 namespace StudyGO.infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250730202431_UserProfileMigrationCorrect")]
+    partial class UserProfileMigrationCorrect
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,12 +145,12 @@ namespace StudyGO.infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("SubjectID")
+                    b.Property<Guid?>("FavoriteSubjectSubjectID")
                         .HasColumnType("uuid");
 
                     b.HasKey("UserID");
 
-                    b.HasIndex("SubjectID");
+                    b.HasIndex("FavoriteSubjectSubjectID");
 
                     b.ToTable("UserProfileEntity");
                 });
@@ -175,9 +178,8 @@ namespace StudyGO.infrastructure.Migrations
                 {
                     b.HasOne("StudyGO.infrastructure.Entites.SubjectEntity", "FavoriteSubject")
                         .WithMany("UserProfiles")
-                        .HasForeignKey("SubjectID")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
+                        .HasForeignKey("FavoriteSubjectSubjectID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("StudyGO.infrastructure.Entites.UserEntity", "User")
                         .WithOne("UserProfile")

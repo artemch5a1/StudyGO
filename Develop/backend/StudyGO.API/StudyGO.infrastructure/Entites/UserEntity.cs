@@ -21,6 +21,8 @@ namespace StudyGO.infrastructure.Entites
 
         public string? Number { get; set; }
 
-        public virtual TutorProfileEntity? TutorProfile { get; set; } 
+        public virtual TutorProfileEntity? TutorProfile { get; set; }
+        
+        public UserProfileEntity? UserProfile { get; set; }
     }
 }
