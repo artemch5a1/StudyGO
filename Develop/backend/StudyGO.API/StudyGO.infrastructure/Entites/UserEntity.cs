@@ -20,5 +20,7 @@ namespace StudyGO.infrastructure.Entites
         public string Patronymic { get; set; } = null!;
 
         public string? Number { get; set; }
+
+        public virtual TutorProfileEntity? TutorProfile { get; set; } 
     }
 }
