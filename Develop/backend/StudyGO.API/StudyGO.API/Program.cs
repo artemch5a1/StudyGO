@@ -1,8 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using StudyGO.infrastructure.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(ApplicationDbContext)))
+);
 
 builder.Services.AddSwaggerGen();
 
