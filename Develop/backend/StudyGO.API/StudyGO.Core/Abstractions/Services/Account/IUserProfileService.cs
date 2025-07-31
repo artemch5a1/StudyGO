@@ -6,7 +6,7 @@ namespace StudyGO.Core.Abstractions.Services.Account
     {
         public Task<Guid> TryRegistr(UserProfileRegistrDto profile);
 
-        public Task<bool> TryUpdateUserProfile();
+        public Task<bool> TryUpdateUserProfile(UserProfileUpdateDto newProfile);
 
         public Task<UserProfileDto> TryGetUserProfileById(Guid userId);
 
