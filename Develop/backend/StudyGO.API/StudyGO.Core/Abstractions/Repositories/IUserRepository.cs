@@ -1,4 +1,5 @@
-﻿using StudyGO.Core.Models;
+﻿using StudyGO.Contracts.Contracts;
+using StudyGO.Core.Models;
 
 namespace StudyGO.Core.Abstractions.Repositories
 {
@@ -11,5 +12,7 @@ namespace StudyGO.Core.Abstractions.Repositories
         public bool Update(User user);
 
         public bool Delete(int id);
+
+        public bool LoginAction(UserLoginRequest login);
     }
 }

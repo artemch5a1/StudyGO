@@ -1,6 +1,6 @@
 ﻿namespace StudyGO.Contracts.Contracts
 {
-    public record UserLogin
+    public record UserLoginRequest
     {
         public string Email { get; set; } = null!;
 
