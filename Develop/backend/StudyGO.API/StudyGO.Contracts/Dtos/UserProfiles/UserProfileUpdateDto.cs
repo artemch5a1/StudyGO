@@ -4,6 +4,8 @@ namespace StudyGO.Contracts.Dtos.UserProfiles
 {
     public class UserProfileUpdateDto
     {
+        public Guid UserID { get; set; }
+
         public DateTime DateBirth { get; set; }
 
         public SubjectDto? FavoriteSubject { get; set; } = null;
