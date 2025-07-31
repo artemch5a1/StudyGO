@@ -1,8 +1,6 @@
-﻿using StudyGO.Core.Models;
-
-namespace StudyGO.infrastructure.Entites
+﻿namespace StudyGO.infrastructure.Entites
 {
-    public class UserProfileEntity 
+    public class UserProfileEntity
     {
         public Guid UserID { get; set; }
 

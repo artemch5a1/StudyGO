@@ -11,7 +11,9 @@ namespace StudyGO.infrastructure.Entites
 
         public string Description { get; set; } = string.Empty;
 
-        public virtual ICollection<UserProfileEntity> UserProfiles { get; set; } =
-            new List<UserProfileEntity>();
+        /// <summary>
+        /// Пользователи, которые посчитали этот предмет любимым
+        /// </summary>
+        public virtual ICollection<UserProfileEntity> UserProfiles { get; set; } = [];
     }
 }

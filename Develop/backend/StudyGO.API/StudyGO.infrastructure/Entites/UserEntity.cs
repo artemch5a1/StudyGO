@@ -2,7 +2,7 @@
 
 namespace StudyGO.infrastructure.Entites
 {
-    public class UserEntity 
+    public class UserEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid UserID { get; set; }
@@ -22,7 +22,7 @@ namespace StudyGO.infrastructure.Entites
         public string? Number { get; set; }
 
         public virtual TutorProfileEntity? TutorProfile { get; set; }
-        
-        public UserProfileEntity? UserProfile { get; set; }
+
+        public virtual UserProfileEntity? UserProfile { get; set; }
     }
 }
