@@ -4,6 +4,6 @@
     {
         public Task<List<TModel>> GetAll();
 
-        public Task<TModel> GetById(TId id);
+        public Task<TModel?> GetById(TId id);
     }
 }

@@ -40,6 +40,6 @@ namespace StudyGO.Core.Models
 
         public string Patronymic { get; set; } = null!;
 
-        public string Number { get; set; } = string.Empty;
+        public string? Number { get; set; }
     }
 }
