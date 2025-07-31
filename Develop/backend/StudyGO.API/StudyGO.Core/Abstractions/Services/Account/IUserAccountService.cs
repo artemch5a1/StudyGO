@@ -1,6 +1,5 @@
 ﻿using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
-using StudyGO.Core.Models;
 
 namespace StudyGO.Core.Abstractions.Services.Account
 {
