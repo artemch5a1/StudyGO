@@ -23,4 +23,8 @@
     <ProjectReference Include="..\StudyGO.Core\StudyGO.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
 </Project>

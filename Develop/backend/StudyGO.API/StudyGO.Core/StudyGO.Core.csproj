@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\StudyGO.Contracts\StudyGO.Contracts.csproj" />
+  </ItemGroup>
+
 </Project>
