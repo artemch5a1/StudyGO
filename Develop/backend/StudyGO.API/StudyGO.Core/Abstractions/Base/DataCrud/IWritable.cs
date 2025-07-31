@@ -1,9 +1,9 @@
 ﻿namespace StudyGO.Core.Abstractions.Base.DataCrud
 {
-    public interface IWritable<TModel>
+    public interface IWritable<TModel, TId>
     {
-        bool Create(TModel model);
-        bool Update(TModel model);
-        bool Delete(int id);
+        Task<bool> Create(TModel model);
+        Task<bool> Update(TModel model);
+        Task<bool> Delete(TId id);
     }
 }

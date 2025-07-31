@@ -4,12 +4,12 @@ using StudyGO.Core.Models;
 
 namespace StudyGO.Core.Abstractions.Repositories
 {
-    public interface IUserRepository : IReadable<User>
+    public interface IUserRepository : IReadable<User, Guid>
     {
-        public bool Update(User user);
+        public Task<bool> Update(User user);
 
-        public bool Delete(int id);
+        public Task<bool> Delete(int id);
 
-        public UserLoginResponse LoginAction(UserLoginRequest login);
+        public Task<UserLoginResponse> LoginAction(UserLoginRequest login);
     }
 }

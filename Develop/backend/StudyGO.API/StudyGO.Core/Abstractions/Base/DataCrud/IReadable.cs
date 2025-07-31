@@ -1,9 +1,9 @@
 ﻿namespace StudyGO.Core.Abstractions.Base.DataCrud
 {
-    public interface IReadable<TModel>
+    public interface IReadable<TModel, TId>
     {
-        public List<TModel> GetAll();
+        public Task<List<TModel>> GetAll();
 
-        public TModel GetById(int id);
+        public Task<TModel> GetById(TId id);
     }
 }

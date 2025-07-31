@@ -3,9 +3,9 @@ using StudyGO.Core.Models;
 
 namespace StudyGO.Core.Abstractions.Repositories
 {
-    public interface ITutorProfileRepository : IReadable<TutorProfile>
+    public interface ITutorProfileRepository : IReadable<TutorProfile, Guid>
     {
-        bool Create(TutorProfile model);
-        bool Update(TutorProfile model);
+        Task<bool> Create(TutorProfile model);
+        Task<bool> Update(TutorProfile model);
     }
 }

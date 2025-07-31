@@ -3,5 +3,5 @@ using StudyGO.Core.Models;
 
 namespace StudyGO.Core.Abstractions.Repositories
 {
-    public interface IFormatRepository : IReadable<Format> { }
+    public interface IFormatRepository : IReadable<Format, int> { }
 }
