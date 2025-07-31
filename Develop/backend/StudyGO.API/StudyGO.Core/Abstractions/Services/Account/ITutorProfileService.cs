@@ -1,5 +1,4 @@
 ﻿using StudyGO.Contracts.Dtos.TutorProfiles;
-using StudyGO.Contracts.Dtos.UserProfiles;
 
 namespace StudyGO.Core.Abstractions.Services.Account
 {
