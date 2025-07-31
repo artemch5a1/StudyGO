@@ -1,18 +1,15 @@
 ﻿using StudyGO.Contracts.Contracts;
+using StudyGO.Core.Abstractions.Base.DataCrud;
 using StudyGO.Core.Models;
 
 namespace StudyGO.Core.Abstractions.Repositories
 {
-    internal interface IUserRepository
+    public interface IUserRepository : IReadable<User>
     {
-        public List<User> GetAll();
-
-        public User GetById(int id);
-
         public bool Update(User user);
 
         public bool Delete(int id);
 
-        public bool LoginAction(UserLoginRequest login);
+        public UserLoginResponse LoginAction(UserLoginRequest login);
     }
 }
