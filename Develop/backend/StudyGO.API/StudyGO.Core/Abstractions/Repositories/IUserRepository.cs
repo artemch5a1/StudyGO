@@ -8,7 +8,7 @@ namespace StudyGO.Core.Abstractions.Repositories
     {
         public Task<bool> Update(User user);
 
-        public Task<bool> Delete(int id);
+        public Task<bool> Delete(Guid id);
 
         public Task<UserLoginResponse> LoginAction(UserLoginRequest login);
     }
