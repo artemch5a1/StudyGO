@@ -1,7 +1,15 @@
-﻿namespace StudyGO.Core.Abstractions.Services.Account
+﻿using StudyGO.Contracts.Dtos.UserProfiles;
+
+namespace StudyGO.Core.Abstractions.Services.Account
 {
     public interface IUserProfileService
     {
-        public Task<Guid> Registr();
+        public Task<Guid> TryRegistr(UserProfileRegistrDto profile);
+
+        public Task<bool> TryUpdateUserProfile();
+
+        public Task<UserProfileDto> TryGetUserProfileById(Guid userId);
+
+        public Task<List<UserProfileDto>> GetAllUserProfiles(Guid userId);
     }
 }

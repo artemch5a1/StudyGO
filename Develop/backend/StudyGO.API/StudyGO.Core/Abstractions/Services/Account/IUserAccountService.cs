@@ -12,5 +12,9 @@ namespace StudyGO.Core.Abstractions.Services.Account
         public Task<bool> TryUpdateAccount(UserUpdateDto user);
 
         public Task<bool> TryUpdateAccount(UserUpdateСredentialsDto user);
+
+        public Task<List<UserDto>> TryGetAllAccount();
+
+        public Task<UserDto> TryGetAccountById(Guid id);
     }
 }
