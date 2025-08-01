@@ -10,7 +10,4 @@
   <ItemGroup>
     <ProjectReference Include="..\StudyGO.Core\StudyGO.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Abstractions\" />
-  </ItemGroup>
 </Project>
