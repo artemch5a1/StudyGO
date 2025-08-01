@@ -10,11 +10,11 @@ namespace StudyGO.infrastructure.Repositories
 {
     public class SubjectRepository : ISubjectRepository
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
-        private ILogger<SubjectRepository> _logger;
+        private readonly ILogger<SubjectRepository> _logger;
 
         public SubjectRepository(
             ApplicationDbContext context,

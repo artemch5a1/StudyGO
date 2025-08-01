@@ -13,11 +13,11 @@ namespace StudyGO.infrastructure.Repositories
 {
     public class UserProfileRepository : IUserProfileRepository
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
-        private ILogger<UserProfileRepository> _logger;
+        private readonly ILogger<UserProfileRepository> _logger;
 
         public UserProfileRepository(
             ApplicationDbContext context,
