@@ -11,13 +11,13 @@ namespace StudyGO.Application.Services.Account
 {
     public class UserProfileService : IUserProfileService
     {
-        private IUserProfileRepository _userRepository;
+        private readonly IUserProfileRepository _userRepository;
 
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
-        private IPasswordHasher _passwordHasher;
+        private readonly IPasswordHasher _passwordHasher;
 
         public UserProfileService(
             IUserProfileRepository userRepository,
