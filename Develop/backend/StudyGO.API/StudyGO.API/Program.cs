@@ -13,7 +13,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 // configure users services
-ServiceBuilder.BuildAllService(builder.Services);
+ServiceBuilder serviceBuilder = new ServiceBuilder(builder.Configuration, builder.Services);
+
+serviceBuilder.BuildAllService();
 
 builder.Services.AddSwaggerGen();
 

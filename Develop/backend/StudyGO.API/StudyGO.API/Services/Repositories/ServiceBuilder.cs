@@ -5,7 +5,7 @@ namespace StudyGO.API.Services
 {
     public partial class ServiceBuilder
     {
-        private static void ConfigureRepositories(IServiceCollection services)
+        private void ConfigureRepositories()
         {
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserProfileRepository, UserProfileRepository>();

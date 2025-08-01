@@ -2,7 +2,7 @@
 
 public partial class ServiceBuilder
 {
-    private static void ConfigureLogger(IServiceCollection services)
+    private void ConfigureLogger()
     {
         services.AddLogging(config =>
         {
