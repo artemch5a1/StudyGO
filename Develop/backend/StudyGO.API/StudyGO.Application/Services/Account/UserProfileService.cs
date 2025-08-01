@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using StudyGO.Application.Abstractions;
+using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -42,7 +43,7 @@ namespace StudyGO.Application.Services.Account
 
         public Task<Guid> TryRegistr(UserProfileRegistrDto profile)
         {
-            throw new NotImplementedException();
+            profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
         }
 
         public Task<bool> TryUpdateUserProfile(UserProfileUpdateDto newProfile)
