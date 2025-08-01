@@ -78,29 +78,34 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<UserLoginResponse> LoginAction(UserLoginRequest login)
+        public async Task<UserLoginRequest> GetCredentialByEmail(string email)
         {
+            //return await _context
+            //        .UsersEntity.Where(u => u.Email == email)
+            //        .Select(u => new UserLoginRequest
+            //        {
+            //            Email = u.Email,
+            //            PasswordHash = u.PasswordHash,
+            //        })
+            //        .FirstOrDefaultAsync() ?? new UserLoginRequest();
+
             try
             {
-                _logger.LogInformation($"Login action: {login}");
-                UserEntity? userEntity = await _context.UsersEntity.SingleOrDefaultAsync(x =>
-                    x.Email == login.Email
-                );
-
-                return new UserLoginResponse
-                {
-                    IsLoggedIn = userEntity?.PasswordHash == login.PasswordHash,
-                    Role = userEntity?.Role ?? string.Empty,
-                };
+                return await _context
+                        .Database.SqlQueryRaw<UserLoginRequest>(
+                            @"SELECT ue.""Email"" as Email, ue.""PasswordHash"" as PasswordHash
+              FROM ""UsersEntity"" ue
+              WHERE ue.""Email"" = {0}",
+                            email
+                        )
+                        .FirstOrDefaultAsync() ?? new UserLoginRequest();
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Login action error: {ex.Message}");
-                return new UserLoginResponse
-                {
-                    IsLoggedIn = false,
-                    Role = string.Empty,
-                };
+                _logger.LogError(
+                    $"Произошла ошибка при получении учетных данных из БД: {ex.Message}"
+                );
+                return new UserLoginRequest();
             }
         }
 
