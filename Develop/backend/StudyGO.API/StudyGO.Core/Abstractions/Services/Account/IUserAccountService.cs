@@ -5,7 +5,7 @@ namespace StudyGO.Core.Abstractions.Services.Account
 {
     public interface IUserAccountService
     {
-        public Task<UserLoginResponse> TryLogIn(UserLoginRequest userLogin);
+        public Task<(string token, string? error)> TryLogIn(UserLoginRequest userLogin);
 
         public Task<bool> TryDeleteAccount(Guid id);
 
