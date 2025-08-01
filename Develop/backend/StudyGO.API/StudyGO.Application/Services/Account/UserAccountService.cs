@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
-using StudyGO.Core.Abstractions.Utils;
+using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
+using StudyGO.Core.Abstractions.Auth;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
+using StudyGO.Core.Abstractions.Utils;
 using StudyGO.Core.Models;
 
 namespace StudyGO.Application.Services.Account
@@ -19,17 +21,21 @@ namespace StudyGO.Application.Services.Account
 
         private readonly IPasswordHasher _passwordHasher;
 
+        private readonly IJwtTokenProvider _jwtTokenProvider;
+
         public UserAccountService(
             IUserRepository userRepository,
             IMapper mapper,
             ILogger logger,
-            IPasswordHasher passwordHasher
+            IPasswordHasher passwordHasher,
+            IJwtTokenProvider jwtTokenProvider
         )
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
             _passwordHasher = passwordHasher;
+            _jwtTokenProvider = jwtTokenProvider;
         }
 
         public async Task<bool> TryDeleteAccount(Guid id)
@@ -57,7 +63,11 @@ namespace StudyGO.Application.Services.Account
                 userLogin.Email
             );
 
-            throw new NotImplementedException();
+            bool IsAccess = IsSuccessUserLogin(userLogin, dbSearchCred);
+
+            return IsAccess
+                ? (_jwtTokenProvider.GenerateToken(dbSearchCred), null)
+                : (string.Empty, "Invalid credentials");
         }
 
         public async Task<bool> TryUpdateAccount(UserUpdateDto user)
@@ -74,6 +84,14 @@ namespace StudyGO.Application.Services.Account
         {
             User userModel = _mapper.Map<User>(user);
             return await _userRepository.Update(userModel);
+        }
+
+        private bool IsSuccessUserLogin(UserLoginRequest expected, UserLoginResponse actual)
+        {
+            string passwordHash = actual.PasswordHash;
+
+            return expected.Email == actual.Email
+                && expected.Password.VerifyPassword(passwordHash, _passwordHasher);
         }
     }
 }

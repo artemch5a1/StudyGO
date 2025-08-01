@@ -96,7 +96,7 @@ namespace StudyGO.infrastructure.Repositories
                         .Select(u => new UserLoginResponse
                         {
                             Email = u.Email,
-                            Password = u.PasswordHash,
+                            PasswordHash = u.PasswordHash,
                             Role = u.Role,
                             id = u.UserID,
                         })
