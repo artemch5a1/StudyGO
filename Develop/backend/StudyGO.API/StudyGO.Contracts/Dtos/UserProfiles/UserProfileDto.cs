@@ -3,9 +3,9 @@ using StudyGO.Contracts.Dtos.Users;
 
 namespace StudyGO.Contracts.Dtos.UserProfiles
 {
-    public class UserProfileDto 
+    public class UserProfileDto
     {
-        public UserDto UserDto { get; set; } = null!;
+        public UserDto User { get; set; } = null!;
 
         public DateTime DateBirth { get; set; }
 
