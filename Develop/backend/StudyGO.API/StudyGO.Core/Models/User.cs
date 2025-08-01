@@ -13,7 +13,7 @@ namespace StudyGO.Core.Models
             string surname,
             string name,
             string patronymic,
-            string number
+            string? number
         )
         {
             UserID = userID;
