@@ -8,7 +8,7 @@ namespace StudyGO.Core.Abstractions.Services.Account
 
         public Task<bool> TryUpdateUserProfile(UserProfileUpdateDto newProfile);
 
-        public Task<UserProfileDto> TryGetUserProfileById(Guid userId);
+        public Task<UserProfileDto?> TryGetUserProfileById(Guid userId);
 
         public Task<List<UserProfileDto>> GetAllUserProfiles(Guid userId);
     }

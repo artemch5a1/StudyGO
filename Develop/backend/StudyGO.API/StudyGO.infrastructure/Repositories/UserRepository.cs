@@ -93,9 +93,9 @@ namespace StudyGO.infrastructure.Repositories
             {
                 return await _context
                         .Database.SqlQueryRaw<UserLoginRequest>(
-                            @"SELECT ue.""Email"" as Email, ue.""PasswordHash"" as PasswordHash
-              FROM ""UsersEntity"" ue
-              WHERE ue.""Email"" = {0}",
+                            @"SELECT ue.""Email"" as Email, ue.""PasswordHash"" as PasswordHash, ue.""Role"" as Role
+                            FROM ""UsersEntity"" ue
+                            WHERE ue.""Email"" = {0}",
                             email
                         )
                         .FirstOrDefaultAsync() ?? new UserLoginRequest();
