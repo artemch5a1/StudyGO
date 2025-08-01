@@ -51,20 +51,13 @@ namespace StudyGO.Application.Services.Account
             return _mapper.Map<List<UserDto>>(users);
         }
 
-        public async Task<UserLoginResponse> TryLogIn(UserLoginRequest userLogin)
+        public async Task<(string token, string? error)> TryLogIn(UserLoginRequest userLogin)
         {
-            UserLoginRequest dbSearchCred = await _userRepository.GetCredentialByEmail(
+            UserLoginResponse dbSearchCred = await _userRepository.GetCredentialByEmail(
                 userLogin.Email
             );
 
-            return new UserLoginResponse()
-            {
-                IsLoggedIn = _passwordHasher.VerifiyPassword(
-                    userLogin.Password,
-                    dbSearchCred.Password
-                ),
-                Role = dbSearchCred.Role ?? string.Empty,
-            };
+            throw new NotImplementedException();
         }
 
         public async Task<bool> TryUpdateAccount(UserUpdateDto user)
