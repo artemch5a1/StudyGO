@@ -7,7 +7,7 @@ using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Models;
 
-namespace StudyGO.Application.Services
+namespace StudyGO.Application.Services.Account
 {
     public class UserAccountService : IUserAccountService
     {
