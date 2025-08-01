@@ -14,6 +14,8 @@ namespace StudyGO.infrastructure.Data
 
         public DbSet<TutorProfileEntity> TutorProfilesEntity { get; set; }
 
+        public DbSet<UserProfileEntity> UserProfilesEntity { get; set; }
+
         public DbSet<SubjectEntity> SubjectsEntity { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -26,6 +28,7 @@ namespace StudyGO.infrastructure.Data
                 entity.Property(e => e.Surname).HasMaxLength(256);
                 entity.Property(e => e.Patronymic).HasMaxLength(256);
                 entity.Property(e => e.Email).HasMaxLength(256);
+                entity.HasIndex(e => e.Email).IsUnique();
                 entity.Property(e => e.Number).HasMaxLength(11);
             });
 
@@ -43,7 +46,8 @@ namespace StudyGO.infrastructure.Data
                     .OnDelete(DeleteBehavior.Cascade);
                 entity
                     .HasOne(e => e.Format)
-                    .WithMany(f => f.TutorProfiles).HasForeignKey(x => x.FormatID)
+                    .WithMany(f => f.TutorProfiles)
+                    .HasForeignKey(x => x.FormatID)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
@@ -63,7 +67,8 @@ namespace StudyGO.infrastructure.Data
                     .OnDelete(DeleteBehavior.Cascade);
                 entity
                     .HasOne(e => e.FavoriteSubject)
-                    .WithMany(f => f.UserProfiles).HasForeignKey(e => e.SubjectID)
+                    .WithMany(f => f.UserProfiles)
+                    .HasForeignKey(e => e.SubjectID)
                     .OnDelete(DeleteBehavior.SetNull);
             });
         }
