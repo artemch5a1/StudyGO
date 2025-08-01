@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
-using StudyGO.Application.Abstractions;
+using StudyGO.Core.Abstractions.Utils;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Core.Abstractions.Repositories;
