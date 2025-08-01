@@ -76,7 +76,10 @@ namespace StudyGO.infrastructure.Repositories
         {
             try
             {
-                List<TutorProfileEntity> user = await _context.TutorProfilesEntity.ToListAsync();
+                List<TutorProfileEntity> user = await _context
+                    .TutorProfilesEntity.Include(x => x.User)
+                    .Include(x => x.Format)
+                    .ToListAsync();
                 return _mapper.Map<List<TutorProfile>>(user);
             }
             catch (Exception ex)
@@ -90,9 +93,10 @@ namespace StudyGO.infrastructure.Repositories
         {
             try
             {
-                TutorProfileEntity? user = await _context.TutorProfilesEntity.FirstOrDefaultAsync(
-                    x => x.UserID == id
-                );
+                TutorProfileEntity? user = await _context
+                    .TutorProfilesEntity.Include(x => x.User)
+                    .Include(x => x.Format)
+                    .FirstOrDefaultAsync(x => x.UserID == id);
                 return _mapper.Map<TutorProfile?>(user);
             }
             catch (Exception ex)

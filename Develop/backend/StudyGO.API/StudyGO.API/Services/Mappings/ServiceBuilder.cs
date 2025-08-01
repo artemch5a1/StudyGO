@@ -1,4 +1,5 @@
-﻿using StudyGO.infrastructure.Mappings;
+﻿using StudyGO.Application.Mappings;
+using StudyGO.infrastructure.Mappings;
 
 namespace StudyGO.API.Services;
 
@@ -9,6 +10,7 @@ public partial class ServiceBuilder
         services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<EntityProfile>();
+            cfg.AddProfile<DtosProfile>();
         });
     }
 }

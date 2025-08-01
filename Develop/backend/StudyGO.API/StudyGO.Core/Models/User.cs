@@ -26,6 +26,17 @@ namespace StudyGO.Core.Models
             Number = number;
         }
 
+        public User(Guid userID)
+        {
+            UserID = userID;
+            Email = string.Empty;
+            PasswordHash = string.Empty;
+            Role = string.Empty;
+            Surname = string.Empty;
+            Name = string.Empty;
+            Patronymic = string.Empty;
+        }
+
         public Guid UserID { get; set; }
 
         public string Email { get; set; } = null!;

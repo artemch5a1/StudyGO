@@ -81,23 +81,25 @@ namespace StudyGO.infrastructure.Repositories
         public async Task<UserLoginRequest> GetCredentialByEmail(string email)
         {
             //return await _context
-            //        .UsersEntity.Where(u => u.Email == email)
-            //        .Select(u => new UserLoginRequest
-            //        {
-            //            Email = u.Email,
-            //            PasswordHash = u.PasswordHash,
-            //        })
+            //        .Database.SqlQueryRaw<UserLoginRequest>(
+            //            @"SELECT ue.""Email"" as Email, ue.""PasswordHash"" as PasswordHash, ue.""Role"" as Role
+            //            FROM ""UsersEntity"" ue
+            //            WHERE ue.""Email"" = {0}",
+            //            email
+            //        )
             //        .FirstOrDefaultAsync() ?? new UserLoginRequest();
 
             try
             {
                 return await _context
-                        .Database.SqlQueryRaw<UserLoginRequest>(
-                            @"SELECT ue.""Email"" as Email, ue.""PasswordHash"" as PasswordHash
-              FROM ""UsersEntity"" ue
-              WHERE ue.""Email"" = {0}",
-                            email
-                        )
+                        .UsersEntity.Where(u => u.Email == email)
+                        .Select(u => new UserLoginRequest
+                        {
+                            Email = u.Email,
+                            Password = u.PasswordHash,
+                            Role = u.Role,
+                            id = u.UserID,
+                        })
                         .FirstOrDefaultAsync() ?? new UserLoginRequest();
             }
             catch (Exception ex)

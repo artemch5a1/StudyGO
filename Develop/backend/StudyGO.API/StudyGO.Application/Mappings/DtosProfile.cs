@@ -1,0 +1,59 @@
+﻿using AutoMapper;
+using StudyGO.Contracts.Dtos.Formats;
+using StudyGO.Contracts.Dtos.Subjects;
+using StudyGO.Contracts.Dtos.TutorProfiles;
+using StudyGO.Contracts.Dtos.UserProfiles;
+using StudyGO.Contracts.Dtos.Users;
+using StudyGO.Core.Models;
+
+namespace StudyGO.Application.Mappings
+{
+    public class DtosProfile : Profile
+    {
+        public DtosProfile()
+        {
+            ConfigureUsersDto();
+        }
+
+        public void ConfigureUsersDto()
+        {
+            CreateMap<User, UserDto>();
+
+            CreateMap<UserCreateDto, User>()
+                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password));
+
+            CreateMap<UserUpdateDto, User>();
+
+            CreateMap<UserUpdateСredentialsDto, User>()
+                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password));
+        }
+
+        public void ConfigureSubjectsDto()
+        {
+            CreateMap<Subject, SubjectDto>();
+            CreateMap<SubjectCreateDto, Subject>();
+        }
+
+        public void ConfigureUserProfilesDto()
+        {
+            CreateMap<UserProfile, UserProfileDto>();
+            CreateMap<UserProfileRegistrDto, UserProfile>();
+            CreateMap<UserUpdateDto, UserProfile>()
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => new User(src.UserID)));
+        }
+
+        public void ConfigureFormatDto()
+        {
+            CreateMap<Format, FormatDto>();
+            CreateMap<CreateFormatDto, Format>();
+        }
+
+        public void ConfigureTutorProfilesDto()
+        {
+            CreateMap<TutorProfile, TutorProfileDto>();
+            CreateMap<TutorProfileRegistrDto, TutorProfile>();
+            CreateMap<TutorProfileUpdateDto, TutorProfile>()
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => new User(src.UserID)));
+        }
+    }
+}
