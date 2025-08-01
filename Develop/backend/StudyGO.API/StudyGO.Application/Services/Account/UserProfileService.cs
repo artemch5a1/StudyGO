@@ -5,6 +5,7 @@ using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
+using StudyGO.Core.Models;
 
 namespace StudyGO.Application.Services.Account
 {
@@ -31,24 +32,34 @@ namespace StudyGO.Application.Services.Account
             _passwordHasher = passwordHasher;
         }
 
-        public Task<List<UserProfileDto>> GetAllUserProfiles(Guid userId)
+        public async Task<List<UserProfileDto>> GetAllUserProfiles()
         {
-            throw new NotImplementedException();
+            List<UserProfile> users = await _userRepository.GetAll();
+
+            return _mapper.Map<List<UserProfileDto>>(users);
         }
 
-        public Task<UserProfileDto?> TryGetUserProfileById(Guid userId)
+        public async Task<UserProfileDto?> TryGetUserProfileById(Guid userId)
         {
-            throw new NotImplementedException();
+            UserProfile? users = await _userRepository.GetById(userId);
+
+            return _mapper.Map<UserProfileDto?>(users);
         }
 
-        public Task<Guid> TryRegistr(UserProfileRegistrDto profile)
+        public async Task<Guid> TryRegistr(UserProfileRegistrDto profile)
         {
             profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
+
+            UserProfile user = _mapper.Map<UserProfile>(profile);
+
+            return await _userRepository.Create(user);
         }
 
-        public Task<bool> TryUpdateUserProfile(UserProfileUpdateDto newProfile)
+        public async Task<bool> TryUpdateUserProfile(UserProfileUpdateDto newProfile)
         {
-            throw new NotImplementedException();
+            UserProfile user = _mapper.Map<UserProfile>(newProfile);
+
+            return await _userRepository.Update(user);
         }
     }
 }

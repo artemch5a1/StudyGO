@@ -10,6 +10,6 @@ namespace StudyGO.Core.Abstractions.Services.Account
 
         public Task<TutorProfileDto?> TryGetUserProfileById(Guid userId);
 
-        public Task<List<TutorProfileDto>> GetAllUserProfiles(Guid userId);
+        public Task<List<TutorProfileDto>> GetAllUserProfiles();
     }
 }
