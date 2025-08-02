@@ -72,6 +72,14 @@ namespace StudyGO.infrastructure.Repositories
 
                 return Result<Guid>.Success(profile.UserID);
             }
+            catch (DbUpdateException ex)
+            {
+                await transaction.RollbackAsync();
+
+                _logger.LogError($"Произошла ошибка при создании аккаунта учителя: {ex.Message}");
+
+                return Result<Guid>.Failure(ex.Message);
+            }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
@@ -140,6 +148,12 @@ namespace StudyGO.infrastructure.Repositories
                 return affectedRows > 0
                     ? Result<Guid>.Success(model.UserID)
                     : Result<Guid>.Failure("Не удалось обновить данные");
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+
+                return Result<Guid>.Failure(ex.Message);
             }
             catch (Exception ex)
             {

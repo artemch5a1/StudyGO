@@ -117,11 +117,15 @@ namespace StudyGO.infrastructure.Repositories
                     .Include(x => x.FavoriteSubject)
                     .FirstOrDefaultAsync(x => x.UserID == id);
 
+                if (user == null)
+                    return Result<UserProfile?>.Failure("Пользователь не найден");
+
                 return Result<UserProfile?>.Success(_mapper.Map<UserProfile?>(user));
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
+
                 return Result<UserProfile?>.Failure(ex.Message);
             }
         }
@@ -145,6 +149,12 @@ namespace StudyGO.infrastructure.Repositories
                 return affectedRows > 0
                     ? Result<Guid>.Success(model.UserID)
                     : Result<Guid>.Failure("Строка не была обновлена");
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+
+                return Result<Guid>.Failure(ex.Message);
             }
             catch (Exception ex)
             {

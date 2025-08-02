@@ -46,6 +46,12 @@ namespace StudyGO.infrastructure.Repositories
 
                 return Result<Guid>.Failure("Ошибка удаления");
             }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError($"Произошла ошибка при удалении записи из БД: {ex.Message}");
+
+                return Result<Guid>.Failure(ex.Message);
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"Произошла ошибка при удалении записи из БД: {ex.Message}");
@@ -146,6 +152,11 @@ namespace StudyGO.infrastructure.Repositories
                     return Result<Guid>.Success(user.UserID);
 
                 return Result<Guid>.Failure("Запись не была обновлена");
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+                return Result<Guid>.Failure(ex.Message);
             }
             catch (Exception ex)
             {
