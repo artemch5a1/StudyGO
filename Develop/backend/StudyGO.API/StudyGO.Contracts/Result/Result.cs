@@ -1,0 +1,35 @@
+﻿namespace StudyGO.Contracts.Result
+{
+    public class Result<T>
+    {
+        public T? Value { get; }
+
+        public bool IsSuccess { get; }
+
+        public string? ErrorMessage { get; }
+
+        private Result(T? value, bool isSuccess, string? errorMessage)
+        {
+            Value = value;
+            IsSuccess = isSuccess;
+            ErrorMessage = errorMessage;
+        }
+
+        public delegate AnotherT MapAction<AnotherT>(T? value);
+
+        public static Result<T> Failure(string error) => new Result<T>(default, false, error);
+
+        public static Result<T> Success(T value) => new Result<T>(value, true, null);
+
+        public Result<AnotherT> MapTo<AnotherT>(MapAction<AnotherT> mapAction)
+        {
+            if (!IsSuccess)
+                return Result<AnotherT>.Failure(ErrorMessage!);
+
+            if (Value == null)
+                return Result<AnotherT>.Success(default);
+
+            return new Result<AnotherT>(mapAction.Invoke(this.Value), this.IsSuccess, this.ErrorMessage);
+        }
+    }
+}

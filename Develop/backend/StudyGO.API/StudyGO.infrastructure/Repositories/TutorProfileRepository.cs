@@ -2,6 +2,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
@@ -30,7 +31,7 @@ namespace StudyGO.infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Guid> Create(TutorProfile model)
+        public async Task<Result<Guid>> Create(TutorProfile model)
         {
             _logger.LogInformation("Попытка создания профиля");
 
@@ -39,7 +40,8 @@ namespace StudyGO.infrastructure.Repositories
             if (user.Role != RolesEnum.user.GetString())
             {
                 _logger.LogError("Неверная роль, откат операции");
-                return Guid.Empty;
+
+                return Result<Guid>.Failure("Неверная роль");
             }
 
             await using var transaction = await _context.Database.BeginTransactionAsync(
@@ -65,18 +67,22 @@ namespace StudyGO.infrastructure.Repositories
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
+
                 _logger.LogInformation("Профиль успешно создан");
-                return profile.UserID;
+
+                return Result<Guid>.Success(profile.UserID);
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
+
                 _logger.LogError($"Произошла ошибка при создании аккаунта учителя: {ex.Message}");
-                return Guid.Empty;
+
+                return Result<Guid>.Failure(ex.Message);
             }
         }
 
-        public async Task<List<TutorProfile>> GetAll()
+        public async Task<Result<List<TutorProfile>>> GetAll()
         {
             try
             {
@@ -84,16 +90,18 @@ namespace StudyGO.infrastructure.Repositories
                     .TutorProfilesEntity.Include(x => x.User)
                     .Include(x => x.Format)
                     .ToListAsync();
-                return _mapper.Map<List<TutorProfile>>(user);
+
+                return Result<List<TutorProfile>>.Success(_mapper.Map<List<TutorProfile>>(user));
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
-                return new();
+
+                return Result<List<TutorProfile>>.Failure(ex.Message);
             }
         }
 
-        public async Task<TutorProfile?> GetById(Guid id)
+        public async Task<Result<TutorProfile?>> GetById(Guid id)
         {
             try
             {
@@ -101,29 +109,43 @@ namespace StudyGO.infrastructure.Repositories
                     .TutorProfilesEntity.Include(x => x.User)
                     .Include(x => x.Format)
                     .FirstOrDefaultAsync(x => x.UserID == id);
-                return _mapper.Map<TutorProfile?>(user);
+
+                return Result<TutorProfile?>.Success(_mapper.Map<TutorProfile?>(user));
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
-                return null;
+
+                return Result<TutorProfile?>.Failure(ex.Message);
             }
         }
 
-        public async Task<bool> Update(TutorProfile model)
+        public async Task<Result<Guid>> Update(TutorProfile model)
         {
             try
             {
                 TutorProfileEntity entity = _mapper.Map<TutorProfileEntity>(model);
-                _context.TutorProfilesEntity.Update(entity);
+
+                await _context
+                    .TutorProfilesEntity.Where(e => e.UserID == model.UserID)
+                    .ExecuteUpdateAsync(u =>
+                        u.SetProperty(i => i.PricePerHour, i => model.PricePerHour)
+                            .SetProperty(i => i.City, i => model.City)
+                            .SetProperty(i => i.FormatID, i => model.FormatID)
+                            .SetProperty(i => i.Bio, i => model.Bio)
+                    );
+
                 int affectedRows = await _context.SaveChangesAsync();
 
-                return affectedRows > 0;
+                return affectedRows > 0
+                    ? Result<Guid>.Success(model.UserID)
+                    : Result<Guid>.Failure("Не удалось обновить данные");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
-                return false;
+
+                return Result<Guid>.Failure(ex.Message);
             }
         }
     }

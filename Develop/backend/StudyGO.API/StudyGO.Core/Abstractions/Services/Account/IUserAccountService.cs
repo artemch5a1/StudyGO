@@ -1,20 +1,21 @@
 ﻿using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
+using StudyGO.Contracts.Result;
 
 namespace StudyGO.Core.Abstractions.Services.Account
 {
     public interface IUserAccountService
     {
-        public Task<UserLoginResponseDto> TryLogIn(UserLoginRequest userLogin);
+        public Task<Result<UserLoginResponseDto>> TryLogIn(UserLoginRequest userLogin);
 
-        public Task<bool> TryDeleteAccount(Guid id);
+        public Task<Result<Guid>> TryDeleteAccount(Guid id);
 
-        public Task<bool> TryUpdateAccount(UserUpdateDto user);
+        public Task<Result<Guid>> TryUpdateAccount(UserUpdateDto user);
 
-        public Task<bool> TryUpdateAccount(UserUpdateСredentialsDto user);
+        public Task<Result<Guid>> TryUpdateAccount(UserUpdateСredentialsDto user);
 
-        public Task<List<UserDto>> TryGetAllAccount();
+        public Task<Result<List<UserDto>>> TryGetAllAccount();
 
-        public Task<UserDto?> TryGetAccountById(Guid id);
+        public Task<Result<UserDto?>> TryGetAccountById(Guid id);
     }
 }

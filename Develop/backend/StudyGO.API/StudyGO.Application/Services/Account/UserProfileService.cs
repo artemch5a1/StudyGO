@@ -1,13 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
-using StudyGO.Core.Abstractions.Utils;
 using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Dtos.UserProfiles;
+using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
-using StudyGO.Core.Models;
+using StudyGO.Core.Abstractions.Utils;
 using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
+using StudyGO.Core.Models;
+using System.Collections.Generic;
 
 namespace StudyGO.Application.Services.Account
 {
@@ -34,21 +36,21 @@ namespace StudyGO.Application.Services.Account
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<List<UserProfileDto>> GetAllUserProfiles()
+        public async Task<Result<List<UserProfileDto>>> GetAllUserProfiles()
         {
-            List<UserProfile> users = await _userRepository.GetAll();
+            var result = await _userRepository.GetAll();
 
-            return _mapper.Map<List<UserProfileDto>>(users);
+            return result.MapTo(_mapper.Map<List<UserProfileDto>>);
         }
 
-        public async Task<UserProfileDto?> TryGetUserProfileById(Guid userId)
+        public async Task<Result<UserProfileDto?>> TryGetUserProfileById(Guid userId)
         {
-            UserProfile? users = await _userRepository.GetById(userId);
+            var result = await _userRepository.GetById(userId);
 
-            return _mapper.Map<UserProfileDto?>(users);
+            return result.MapTo(_mapper.Map<UserProfileDto?>);
         }
 
-        public async Task<Guid> TryRegistr(UserProfileRegistrDto profile)
+        public async Task<Result<Guid>> TryRegistr(UserProfileRegistrDto profile)
         {
             profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
 
@@ -59,7 +61,7 @@ namespace StudyGO.Application.Services.Account
             return await _userRepository.Create(user);
         }
 
-        public async Task<bool> TryUpdateUserProfile(UserProfileUpdateDto newProfile)
+        public async Task<Result<Guid>> TryUpdateUserProfile(UserProfileUpdateDto newProfile)
         {
             UserProfile user = _mapper.Map<UserProfile>(newProfile);
 

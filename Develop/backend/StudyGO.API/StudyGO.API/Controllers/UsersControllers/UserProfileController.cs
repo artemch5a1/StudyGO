@@ -26,14 +26,9 @@ namespace StudyGO.API.Controllers.UsersControllers
             [FromBody] UserProfileRegistrDto registrRequest
         )
         {
-            Guid guid = await _userAccountService.TryRegistr(registrRequest);
+            var result = await _userAccountService.TryRegistr(registrRequest);
 
-            if (guid == Guid.Empty)
-            {
-                return BadRequest();
-            }
-
-            return Ok(guid);
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
     }
 }

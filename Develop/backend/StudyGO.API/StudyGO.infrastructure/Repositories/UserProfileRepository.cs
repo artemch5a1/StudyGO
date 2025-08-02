@@ -2,6 +2,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
@@ -30,7 +31,7 @@ namespace StudyGO.infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Guid> Create(UserProfile model)
+        public async Task<Result<Guid>> Create(UserProfile model)
         {
             _logger.LogInformation("Попытка создания профиля");
 
@@ -39,7 +40,7 @@ namespace StudyGO.infrastructure.Repositories
             if (user.Role != RolesEnum.user.GetString())
             {
                 _logger.LogError("Неверная роль, откат операции");
-                return Guid.Empty;
+                return Result<Guid>.Failure("Неверная роль");
             }
 
             await using var transaction = await _context.Database.BeginTransactionAsync(
@@ -65,18 +66,30 @@ namespace StudyGO.infrastructure.Repositories
                 await _context.SaveChangesAsync();
 
                 await transaction.CommitAsync();
+
                 _logger.LogInformation("Профиль успешно создан");
-                return profile.UserID;
+
+                return Result<Guid>.Success(userEntry.Entity.UserID);
+            }
+            catch(DbUpdateException ex)
+            {
+                await transaction.RollbackAsync();
+
+                _logger.LogError($"Произошла ошибка при создании аккаунта учителя: {ex.InnerException?.Message}");
+
+                return Result<Guid>.Failure(ex.InnerException?.Message ?? "");
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
+
                 _logger.LogError($"Произошла ошибка при создании аккаунта учителя: {ex.Message}");
-                return Guid.Empty;
+
+                return Result<Guid>.Failure(ex.Message);
             }
         }
 
-        public async Task<List<UserProfile>> GetAll()
+        public async Task<Result<List<UserProfile>>> GetAll()
         {
             try
             {
@@ -84,16 +97,18 @@ namespace StudyGO.infrastructure.Repositories
                     .UserProfilesEntity.Include(x => x.User)
                     .Include(x => x.FavoriteSubject)
                     .ToListAsync();
-                return _mapper.Map<List<UserProfile>>(user);
+
+                return Result<List<UserProfile>>.Success(_mapper.Map<List<UserProfile>>(user));
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
-                return new();
+
+                return Result<List<UserProfile>>.Failure(ex.Message);
             }
         }
 
-        public async Task<UserProfile?> GetById(Guid id)
+        public async Task<Result<UserProfile?>> GetById(Guid id)
         {
             try
             {
@@ -101,29 +116,41 @@ namespace StudyGO.infrastructure.Repositories
                     .UserProfilesEntity.Include(x => x.User)
                     .Include(x => x.FavoriteSubject)
                     .FirstOrDefaultAsync(x => x.UserID == id);
-                return _mapper.Map<UserProfile?>(user);
+
+                return Result<UserProfile?>.Success(_mapper.Map<UserProfile?>(user));
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
-                return null;
+                return Result<UserProfile?>.Failure(ex.Message);
             }
         }
 
-        public async Task<bool> Update(UserProfile model)
+        public async Task<Result<Guid>> Update(UserProfile model)
         {
             try
             {
                 UserProfileEntity entity = _mapper.Map<UserProfileEntity>(model);
-                _context.UserProfilesEntity.Update(entity);
+
+                await _context
+                    .UserProfilesEntity.Where(e => e.UserID == model.UserID)
+                    .ExecuteUpdateAsync(u =>
+                        u.SetProperty(i => i.SubjectID, i => model.SubjectID)
+                            .SetProperty(i => i.DateBirth, i => model.DateBirth)
+                            .SetProperty(i => i.Description, i => model.Description)
+                    );
+
                 int affectedRows = await _context.SaveChangesAsync();
 
-                return affectedRows > 0;
+                return affectedRows > 0
+                    ? Result<Guid>.Success(model.UserID)
+                    : Result<Guid>.Failure("Строка не была обновлена");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
-                return false;
+
+                return Result<Guid>.Failure(ex.Message);
             }
         }
     }
