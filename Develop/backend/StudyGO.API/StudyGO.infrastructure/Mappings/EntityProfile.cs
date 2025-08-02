@@ -40,15 +40,7 @@ namespace StudyGO.infrastructure.Mappings
 
         public void ConfigureUserProfileMappings()
         {
-            CreateMap<UserProfile, UserProfileEntity>()
-                .ForMember(dest => dest.UserID, opt => opt.MapFrom(src => src.User.UserID))
-                .ForMember(
-                    dest => dest.SubjectID,
-                    opt =>
-                        opt.MapFrom(src =>
-                            src.FavoriteSubject != null ? src.FavoriteSubject.SubjectID : new Guid()
-                        )
-                );
+            CreateMap<UserProfile, UserProfileEntity>();
 
             CreateMap<UserProfileEntity, UserProfile>();
         }

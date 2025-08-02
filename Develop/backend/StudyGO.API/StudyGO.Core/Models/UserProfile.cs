@@ -2,9 +2,13 @@
 {
     public class UserProfile
     {
-        public User User { get; set; } = null!;
+        public Guid UserID { get; set; }
+
+        public User? User { get; set; }
 
         public DateTime DateBirth { get; set; }
+
+        public Guid? SubjectID { get; set; }
 
         public Subject? FavoriteSubject { get; set; } = null;
 

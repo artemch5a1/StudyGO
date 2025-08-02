@@ -17,7 +17,7 @@ namespace StudyGO.Application.Services.Account
 
         private readonly IMapper _mapper;
 
-        private readonly ILogger _logger;
+        private readonly ILogger<UserAccountService> _logger;
 
         private readonly IPasswordHasher _passwordHasher;
 
@@ -26,7 +26,7 @@ namespace StudyGO.Application.Services.Account
         public UserAccountService(
             IUserRepository userRepository,
             IMapper mapper,
-            ILogger logger,
+            ILogger<UserAccountService> logger,
             IPasswordHasher passwordHasher,
             IJwtTokenProvider jwtTokenProvider
         )

@@ -19,6 +19,7 @@
             ConfigureLogger();
             ConfigureJwtProvider();
             ConfigurePasswordHasher();
+            ConfigureServicesApp();
         }
     }
 }

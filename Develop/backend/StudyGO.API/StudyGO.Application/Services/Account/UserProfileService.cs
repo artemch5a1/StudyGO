@@ -6,6 +6,8 @@ using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Models;
+using StudyGO.Core.Enums;
+using StudyGO.Core.Extensions;
 
 namespace StudyGO.Application.Services.Account
 {
@@ -15,14 +17,14 @@ namespace StudyGO.Application.Services.Account
 
         private readonly IMapper _mapper;
 
-        private readonly ILogger _logger;
+        private readonly ILogger<UserProfileService> _logger;
 
         private readonly IPasswordHasher _passwordHasher;
 
         public UserProfileService(
             IUserProfileRepository userRepository,
             IMapper mapper,
-            ILogger logger,
+            ILogger<UserProfileService> logger,
             IPasswordHasher passwordHasher
         )
         {
@@ -51,6 +53,8 @@ namespace StudyGO.Application.Services.Account
             profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
 
             UserProfile user = _mapper.Map<UserProfile>(profile);
+
+            user.User!.Role = RolesEnum.user.GetString();
 
             return await _userRepository.Create(user);
         }
