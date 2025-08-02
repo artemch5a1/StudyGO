@@ -13,6 +13,10 @@ namespace StudyGO.Application.Mappings
         public DtosProfile()
         {
             ConfigureUsersDto();
+            ConfigureSubjectsDto();
+            ConfigureFormatDto();
+            ConfigureUserProfilesDto();
+            ConfigureTutorProfilesDto();
         }
 
         public void ConfigureUsersDto()
@@ -37,9 +41,10 @@ namespace StudyGO.Application.Mappings
         public void ConfigureUserProfilesDto()
         {
             CreateMap<UserProfile, UserProfileDto>();
+
             CreateMap<UserProfileRegistrDto, UserProfile>();
-            CreateMap<UserUpdateDto, UserProfile>()
-                .ForMember(dest => dest.User, opt => opt.MapFrom(src => new User(src.UserID)));
+
+            CreateMap<UserUpdateDto, UserProfile>();
         }
 
         public void ConfigureFormatDto()
@@ -52,8 +57,7 @@ namespace StudyGO.Application.Mappings
         {
             CreateMap<TutorProfile, TutorProfileDto>();
             CreateMap<TutorProfileRegistrDto, TutorProfile>();
-            CreateMap<TutorProfileUpdateDto, TutorProfile>()
-                .ForMember(dest => dest.User, opt => opt.MapFrom(src => new User(src.UserID)));
+            CreateMap<TutorProfileUpdateDto, TutorProfile>();
         }
     }
 }

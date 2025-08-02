@@ -78,7 +78,7 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<UserLoginRequest> GetCredentialByEmail(string email)
+        public async Task<UserLoginResponse> GetCredentialByEmail(string email)
         {
             //return await _context
             //        .Database.SqlQueryRaw<UserLoginRequest>(
@@ -93,21 +93,21 @@ namespace StudyGO.infrastructure.Repositories
             {
                 return await _context
                         .UsersEntity.Where(u => u.Email == email)
-                        .Select(u => new UserLoginRequest
+                        .Select(u => new UserLoginResponse
                         {
                             Email = u.Email,
-                            Password = u.PasswordHash,
+                            PasswordHash = u.PasswordHash,
                             Role = u.Role,
                             id = u.UserID,
                         })
-                        .FirstOrDefaultAsync() ?? new UserLoginRequest();
+                        .FirstOrDefaultAsync() ?? new UserLoginResponse();
             }
             catch (Exception ex)
             {
                 _logger.LogError(
                     $"Произошла ошибка при получении учетных данных из БД: {ex.Message}"
                 );
-                return new UserLoginRequest();
+                return new UserLoginResponse();
             }
         }
 

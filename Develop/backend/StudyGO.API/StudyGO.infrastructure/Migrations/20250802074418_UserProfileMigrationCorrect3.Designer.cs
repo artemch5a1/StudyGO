@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using StudyGO.infrastructure.Data;
@@ -11,9 +12,11 @@ using StudyGO.infrastructure.Data;
 namespace StudyGO.infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250802074418_UserProfileMigrationCorrect3")]
+    partial class UserProfileMigrationCorrect3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -145,7 +148,7 @@ namespace StudyGO.infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("SubjectID")
+                    b.Property<Guid>("SubjectID")
                         .HasColumnType("uuid");
 
                     b.HasKey("UserID");
@@ -179,7 +182,8 @@ namespace StudyGO.infrastructure.Migrations
                     b.HasOne("StudyGO.infrastructure.Entites.SubjectEntity", "FavoriteSubject")
                         .WithMany("UserProfiles")
                         .HasForeignKey("SubjectID")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
 
                     b.HasOne("StudyGO.infrastructure.Entites.UserEntity", "User")
                         .WithOne("UserProfile")

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StudyGO.Application\StudyGO.Application.csproj" />
+    <ProjectReference Include="..\StudyGO.Core\StudyGO.Core.csproj" />
     <ProjectReference Include="..\StudyGO.infrastructure\StudyGO.infrastructure.csproj" />
   </ItemGroup>
 

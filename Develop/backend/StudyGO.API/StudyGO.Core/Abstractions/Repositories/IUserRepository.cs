@@ -10,6 +10,6 @@ namespace StudyGO.Core.Abstractions.Repositories
 
         public Task<bool> Delete(Guid id);
 
-        public Task<UserLoginRequest> GetCredentialByEmail(string email);
+        public Task<UserLoginResponse> GetCredentialByEmail(string email);
     }
 }

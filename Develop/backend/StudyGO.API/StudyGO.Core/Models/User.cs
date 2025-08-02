@@ -37,6 +37,8 @@ namespace StudyGO.Core.Models
             Patronymic = string.Empty;
         }
 
+        public User() { }
+
         public Guid UserID { get; set; }
 
         public string Email { get; set; } = null!;

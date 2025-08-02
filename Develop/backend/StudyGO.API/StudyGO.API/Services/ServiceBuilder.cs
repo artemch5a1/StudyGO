@@ -1,12 +1,25 @@
 ﻿namespace StudyGO.API.Services
 {
-    public static partial class ServiceBuilder
+    public partial class ServiceBuilder
     {
-        public static void BuildAllService(IServiceCollection services)
+        private readonly IConfiguration _configuration;
+
+        private readonly IServiceCollection services;
+
+        public ServiceBuilder(IConfiguration configuration, IServiceCollection services )
         {
-            ConfigureRepositories(services);
-            ConfigureAutoMapper(services);
-            ConfigureLogger(services);
+            _configuration = configuration;
+            this.services = services;
+        }
+
+        public void BuildAllService()
+        {
+            ConfigureRepositories();
+            ConfigureAutoMapper();
+            ConfigureLogger();
+            ConfigureJwtProvider();
+            ConfigurePasswordHasher();
+            ConfigureServicesApp();
         }
     }
 }

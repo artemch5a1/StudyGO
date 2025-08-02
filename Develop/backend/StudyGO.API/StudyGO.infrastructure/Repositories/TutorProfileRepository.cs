@@ -56,6 +56,10 @@ namespace StudyGO.infrastructure.Repositories
 
                 profile.UserID = userEntry.Entity.UserID;
 
+                profile.User = null;
+
+                profile.Format = null;
+
                 await _context.TutorProfilesEntity.AddAsync(profile);
 
                 await _context.SaveChangesAsync();

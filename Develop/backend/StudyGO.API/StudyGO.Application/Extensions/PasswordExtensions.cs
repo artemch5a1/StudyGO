@@ -8,5 +8,14 @@ namespace StudyGO.Application.Extensions
         {
             return passwordHasher.GeneratePasswordHash(password);
         }
+
+        public static bool VerifyPassword(
+            this string password,
+            string passwordHash,
+            IPasswordHasher passwordHasher
+        )
+        {
+            return passwordHasher.VerifiyPassword(password, passwordHash);
+        }
     }
 }

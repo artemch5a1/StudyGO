@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
-using StudyGO.Core.Abstractions.Utils;
+using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
+using StudyGO.Core.Abstractions.Auth;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
+using StudyGO.Core.Abstractions.Utils;
 using StudyGO.Core.Models;
 
 namespace StudyGO.Application.Services.Account
@@ -15,21 +17,25 @@ namespace StudyGO.Application.Services.Account
 
         private readonly IMapper _mapper;
 
-        private readonly ILogger _logger;
+        private readonly ILogger<UserAccountService> _logger;
 
         private readonly IPasswordHasher _passwordHasher;
+
+        private readonly IJwtTokenProvider _jwtTokenProvider;
 
         public UserAccountService(
             IUserRepository userRepository,
             IMapper mapper,
-            ILogger logger,
-            IPasswordHasher passwordHasher
+            ILogger<UserAccountService> logger,
+            IPasswordHasher passwordHasher,
+            IJwtTokenProvider jwtTokenProvider
         )
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
             _passwordHasher = passwordHasher;
+            _jwtTokenProvider = jwtTokenProvider;
         }
 
         public async Task<bool> TryDeleteAccount(Guid id)
@@ -51,19 +57,28 @@ namespace StudyGO.Application.Services.Account
             return _mapper.Map<List<UserDto>>(users);
         }
 
-        public async Task<UserLoginResponse> TryLogIn(UserLoginRequest userLogin)
+        public async Task<UserLoginResponseDto> TryLogIn(UserLoginRequest userLogin)
         {
-            UserLoginRequest dbSearchCred = await _userRepository.GetCredentialByEmail(
+            UserLoginResponse dbSearchCred = await _userRepository.GetCredentialByEmail(
                 userLogin.Email
             );
 
-            return new UserLoginResponse()
+            bool IsAccess = IsSuccessUserLogin(userLogin, dbSearchCred);
+
+            if (IsAccess)
             {
-                IsLoggedIn = _passwordHasher.VerifiyPassword(
-                    userLogin.Password,
-                    dbSearchCred.Password
-                ),
-                Role = dbSearchCred.Role ?? string.Empty,
+                return new UserLoginResponseDto()
+                {
+                    Token = _jwtTokenProvider.GenerateToken(dbSearchCred),
+                    Id = dbSearchCred.id,
+                    Success = true
+                };
+            }
+            return new UserLoginResponseDto()
+            {
+                Token = string.Empty,
+                error = "Invalid credentials",
+                Success = false
             };
         }
 
@@ -81,6 +96,14 @@ namespace StudyGO.Application.Services.Account
         {
             User userModel = _mapper.Map<User>(user);
             return await _userRepository.Update(userModel);
+        }
+
+        private bool IsSuccessUserLogin(UserLoginRequest expected, UserLoginResponse actual)
+        {
+            string passwordHash = actual.PasswordHash;
+
+            return expected.Email == actual.Email
+                && expected.Password.VerifyPassword(passwordHash, _passwordHasher);
         }
     }
 }
