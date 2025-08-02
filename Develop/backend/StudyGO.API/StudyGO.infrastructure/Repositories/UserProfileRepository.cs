@@ -9,6 +9,7 @@ using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
 using StudyGO.infrastructure.Entites;
+using StudyGO.infrastructure.ExceptionHandlers;
 
 namespace StudyGO.infrastructure.Repositories
 {
@@ -71,21 +72,13 @@ namespace StudyGO.infrastructure.Repositories
 
                 return Result<Guid>.Success(userEntry.Entity.UserID);
             }
-            catch(DbUpdateException ex)
-            {
-                await transaction.RollbackAsync();
-
-                _logger.LogError($"Произошла ошибка при создании аккаунта учителя: {ex.InnerException?.Message}");
-
-                return Result<Guid>.Failure(ex.InnerException?.Message ?? "");
-            }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
 
                 _logger.LogError($"Произошла ошибка при создании аккаунта учителя: {ex.Message}");
 
-                return Result<Guid>.Failure(ex.Message);
+                return DatabaseExceptionHandler.HandleException<Guid>(ex);
             }
         }
 
@@ -104,7 +97,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
 
-                return Result<List<UserProfile>>.Failure(ex.Message);
+                return DatabaseExceptionHandler.HandleException<List<UserProfile>>(ex);
             }
         }
 
@@ -126,7 +119,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
 
-                return Result<UserProfile?>.Failure(ex.Message);
+                return DatabaseExceptionHandler.HandleException<UserProfile?>(ex);
             }
         }
 
@@ -150,17 +143,11 @@ namespace StudyGO.infrastructure.Repositories
                     ? Result<Guid>.Success(model.UserID)
                     : Result<Guid>.Failure("Строка не была обновлена");
             }
-            catch (DbUpdateException ex)
-            {
-                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
-
-                return Result<Guid>.Failure(ex.Message);
-            }
             catch (Exception ex)
             {
                 _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
 
-                return Result<Guid>.Failure(ex.Message);
+                return DatabaseExceptionHandler.HandleException<Guid>(ex);
             }
         }
     }
