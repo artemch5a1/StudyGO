@@ -27,28 +27,9 @@ namespace StudyGO.API.Controllers.AccountControllers
             [FromBody] UserLoginRequest loginRequest
         )
         {
-            (string token, string? error) result = await _userAccountService.TryLogIn(loginRequest);
+            UserLoginResponseDto result = await _userAccountService.TryLogIn(loginRequest);
 
-            if(result.error == null)
-            {
-                UserLoginResponseDto response = new UserLoginResponseDto()
-                {
-                    Token = result.token,
-                    error = null,
-                    Success = true
-                };
-                return Ok(response);
-            }
-            else
-            {
-                UserLoginResponseDto response = new UserLoginResponseDto()
-                {
-                    Token = string.Empty,
-                    error = result.error,
-                    Success = false
-                };
-                return BadRequest(response);
-            }
+            return result.Success == true ? Ok(result) : BadRequest(result);
         }
     }
 }

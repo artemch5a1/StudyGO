@@ -57,7 +57,7 @@ namespace StudyGO.Application.Services.Account
             return _mapper.Map<List<UserDto>>(users);
         }
 
-        public async Task<(string token, string? error)> TryLogIn(UserLoginRequest userLogin)
+        public async Task<UserLoginResponseDto> TryLogIn(UserLoginRequest userLogin)
         {
             UserLoginResponse dbSearchCred = await _userRepository.GetCredentialByEmail(
                 userLogin.Email
@@ -65,9 +65,21 @@ namespace StudyGO.Application.Services.Account
 
             bool IsAccess = IsSuccessUserLogin(userLogin, dbSearchCred);
 
-            return IsAccess
-                ? (_jwtTokenProvider.GenerateToken(dbSearchCred), null)
-                : (string.Empty, "Invalid credentials");
+            if (IsAccess)
+            {
+                return new UserLoginResponseDto()
+                {
+                    Token = _jwtTokenProvider.GenerateToken(dbSearchCred),
+                    Id = dbSearchCred.id,
+                    Success = true
+                };
+            }
+            return new UserLoginResponseDto()
+            {
+                Token = string.Empty,
+                error = "Invalid credentials",
+                Success = false
+            };
         }
 
         public async Task<bool> TryUpdateAccount(UserUpdateDto user)

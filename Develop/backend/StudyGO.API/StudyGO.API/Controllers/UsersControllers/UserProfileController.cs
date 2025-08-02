@@ -22,11 +22,18 @@ namespace StudyGO.API.Controllers.UsersControllers
         }
 
         [HttpPost(Name = "registr")]
-        public async Task<Guid> RegistrUser(
+        public async Task<ActionResult<Guid>> RegistrUser(
             [FromBody] UserProfileRegistrDto registrRequest
         )
         {
-            return await _userAccountService.TryRegistr(registrRequest);
+            Guid guid = await _userAccountService.TryRegistr(registrRequest);
+
+            if (guid == Guid.Empty)
+            {
+                return BadRequest();
+            }
+
+            return Ok(guid);
         }
     }
 }
