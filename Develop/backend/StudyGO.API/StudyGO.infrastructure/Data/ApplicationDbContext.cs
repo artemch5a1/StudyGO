@@ -30,12 +30,7 @@ namespace StudyGO.infrastructure.Data
             {
                 entity.HasKey(e => e.UserID);
                 entity.Property(e => e.UserID).HasDefaultValueSql("gen_random_uuid()");
-                entity.Property(e => e.Name).HasMaxLength(256);
-                entity.Property(e => e.Surname).HasMaxLength(256);
-                entity.Property(e => e.Patronymic).HasMaxLength(256);
-                entity.Property(e => e.Email).HasMaxLength(256);
                 entity.HasIndex(e => e.Email).IsUnique();
-                entity.Property(e => e.Number).HasMaxLength(11);
             });
 
             modelBuilder.Entity<FormatEntity>(entity =>
@@ -61,7 +56,6 @@ namespace StudyGO.infrastructure.Data
             {
                 entity.HasKey(e => e.SubjectID);
                 entity.Property(e => e.SubjectID).HasDefaultValueSql("gen_random_uuid()");
-                entity.Property(e => e.Title).HasMaxLength(100);
             });
 
             modelBuilder.Entity<UserProfileEntity>(entity =>

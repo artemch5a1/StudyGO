@@ -7,13 +7,13 @@ namespace StudyGO.API.Services
     {
         private void ConfigureJwtProvider()
         {
-            services.Configure<JwtOptions>(opt => {
+            _services.Configure<JwtOptions>(opt => {
                 opt.Issuer = _configuration["Jwt:Issuer"]!;
                 opt.Key = _configuration["Jwt:key"]!;
                 opt.ExpiresMinutes = int.TryParse(_configuration["Jwt:Expires"], out int m) ? m : 120;
             });
 
-            services.AddScoped<IJwtTokenProvider, JwtTokenProvider>();
+            _services.AddScoped<IJwtTokenProvider, JwtTokenProvider>();
         }
     }
 }
