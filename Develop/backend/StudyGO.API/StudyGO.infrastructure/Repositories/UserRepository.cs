@@ -7,7 +7,7 @@ using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
 using StudyGO.infrastructure.Entites;
-using StudyGO.infrastructure.ExceptionHandlers;
+using StudyGO.infrastructure.Extensions;
 
 namespace StudyGO.infrastructure.Repositories
 {
@@ -51,7 +51,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 _logger.LogError($"Произошла ошибка при удалении записи из БД: {ex.Message}");
 
-                return DatabaseExceptionHandler.HandleException<Guid>(ex);
+                return ex.HandleException<Guid>();
             }
         }
 
@@ -69,7 +69,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 _logger.LogError($"Произошла ошибка при получении записей из БД: {ex.Message}");
 
-                return DatabaseExceptionHandler.HandleException<List<User>>(ex);
+                return ex.HandleException<List<User>>();
             }
         }
 
@@ -90,7 +90,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 _logger.LogError($"Произошла ошибка при получении записи из БД: {ex.Message}");
 
-                return DatabaseExceptionHandler.HandleException<User?>(ex);
+                return ex.HandleException<User?>();
             }
         }
 
@@ -121,7 +121,7 @@ namespace StudyGO.infrastructure.Repositories
                     $"Произошла ошибка при получении учетных данных из БД: {ex.Message}"
                 );
 
-                return DatabaseExceptionHandler.HandleException<UserLoginResponse>(ex);
+                return ex.HandleException<UserLoginResponse>();
             }
         }
 
@@ -153,7 +153,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
 
-                return DatabaseExceptionHandler.HandleException<Guid>(ex);
+                return ex.HandleException<Guid>();
             }
         }
     }

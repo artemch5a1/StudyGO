@@ -9,7 +9,7 @@ using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
 using StudyGO.infrastructure.Entites;
-using StudyGO.infrastructure.ExceptionHandlers;
+using StudyGO.infrastructure.Extensions;
 
 namespace StudyGO.infrastructure.Repositories
 {
@@ -79,7 +79,7 @@ namespace StudyGO.infrastructure.Repositories
 
                 _logger.LogError($"Произошла ошибка при создании аккаунта учителя: {ex.Message}");
 
-                return DatabaseExceptionHandler.HandleException<Guid>(ex);
+                return ex.HandleException<Guid>();
             }
         }
 
@@ -98,7 +98,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
 
-                return DatabaseExceptionHandler.HandleException<List<TutorProfile>>(ex);
+                return ex.HandleException<List<TutorProfile>>();
             }
         }
 
@@ -117,7 +117,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
 
-                return DatabaseExceptionHandler.HandleException<TutorProfile?>(ex);
+                return ex.HandleException<TutorProfile?>();
             }
         }
 
@@ -146,7 +146,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
 
-                return DatabaseExceptionHandler.HandleException<Guid>(ex);
+                return ex.HandleException<Guid>();
             }
         }
     }

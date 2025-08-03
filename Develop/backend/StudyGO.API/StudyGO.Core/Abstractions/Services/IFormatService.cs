@@ -7,6 +7,6 @@ namespace StudyGO.Core.Abstractions.Services
     {
         public Task<Result<List<FormatDto>>> GetAllFormats();
 
-        public Task<Result<FormatDto?>> GetFormatById();
+        public Task<Result<FormatDto?>> GetFormatById(int id);
     }
 }

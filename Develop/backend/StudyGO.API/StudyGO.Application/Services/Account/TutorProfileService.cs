@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using StudyGO.Application.Extensions;
-using StudyGO.Contracts.Dtos.UserProfiles;
+using StudyGO.Contracts.Dtos.TutorProfiles;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -9,24 +9,23 @@ using StudyGO.Core.Abstractions.Utils;
 using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
-using System.Collections.Generic;
 
 namespace StudyGO.Application.Services.Account
 {
-    public class UserProfileService : IUserProfileService
+    public class TutorProfileService : ITutorProfileService
     {
-        private readonly IUserProfileRepository _userRepository;
+        private readonly ITutorProfileRepository _userRepository;
 
         private readonly IMapper _mapper;
 
-        private readonly ILogger<UserProfileService> _logger;
+        private readonly ILogger<TutorProfileService> _logger;
 
         private readonly IPasswordHasher _passwordHasher;
 
-        public UserProfileService(
-            IUserProfileRepository userRepository,
+        public TutorProfileService(
+            ITutorProfileRepository userRepository,
             IMapper mapper,
-            ILogger<UserProfileService> logger,
+            ILogger<TutorProfileService> logger,
             IPasswordHasher passwordHasher
         )
         {
@@ -36,36 +35,34 @@ namespace StudyGO.Application.Services.Account
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<Result<List<UserProfileDto>>> GetAllUserProfiles()
+        public async Task<Result<List<TutorProfileDto>>> GetAllUserProfiles()
         {
             var result = await _userRepository.GetAll();
 
-            return result.MapTo(_mapper.Map<List<UserProfileDto>>);
+            return result.MapTo(_mapper.Map<List<TutorProfileDto>>);
         }
 
-        public async Task<Result<UserProfileDto?>> TryGetUserProfileById(Guid userId)
+        public async Task<Result<TutorProfileDto?>> TryGetUserProfileById(Guid userId)
         {
             var result = await _userRepository.GetById(userId);
 
-            return result.MapTo(_mapper.Map<UserProfileDto?>);
+            return result.MapTo(_mapper.Map<TutorProfileDto?>);
         }
 
-        public async Task<Result<Guid>> TryRegistr(UserProfileRegistrDto profile)
+        public async Task<Result<Guid>> TryRegistr(TutorProfileRegistrDto profile)
         {
             profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
 
-            UserProfile profileModel = _mapper.Map<UserProfile>(profile);
+            TutorProfile profileModel = _mapper.Map<TutorProfile>(profile);
 
-            profileModel.User!.Role = RolesEnum.user.GetString();
+            profileModel.User!.Role = RolesEnum.tutor.GetString();
 
             return await _userRepository.Create(profileModel);
         }
 
-        public async Task<Result<Guid>> TryUpdateUserProfile(UserProfileUpdateDto newProfile)
+        public async Task<Result<Guid>> TryUpdateUserProfile(TutorProfileUpdateDto newProfile)
         {
-            UserProfile user = _mapper.Map<UserProfile>(newProfile);
-
-            return await _userRepository.Update(user);
+            return await _userRepository.Update(_mapper.Map<TutorProfile>(newProfile));
         }
     }
 }
