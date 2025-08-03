@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using StudyGO.Contracts.Result;
 
-namespace StudyGO.infrastructure.ExceptionHandlers
+namespace StudyGO.infrastructure.Extensions
 {
     public static class DatabaseExceptionHandler
     {
-        public static Result<T> HandleException<T>(Exception ex)
+        public static Result<T> HandleException<T>(this Exception ex)
         {
             if (ex is UniqueConstraintException pgEx1)
             {

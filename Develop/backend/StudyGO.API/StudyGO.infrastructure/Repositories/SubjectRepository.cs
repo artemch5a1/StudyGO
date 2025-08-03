@@ -6,7 +6,7 @@ using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
 using StudyGO.infrastructure.Entites;
-using StudyGO.infrastructure.ExceptionHandlers;
+using StudyGO.infrastructure.Extensions;
 
 namespace StudyGO.infrastructure.Repositories
 {
@@ -41,7 +41,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
 
-                return DatabaseExceptionHandler.HandleException<List<Subject>>(ex);
+                return ex.HandleException<List<Subject>>();
             }
         }
 
@@ -59,7 +59,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
 
-                return DatabaseExceptionHandler.HandleException<Subject?>(ex);
+                return ex.HandleException<Subject?>();
             }
         }
     }
