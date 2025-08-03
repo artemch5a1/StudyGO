@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using StudyGO.API.Enums;
 using StudyGO.Contracts.Dtos.TutorProfiles;
 using StudyGO.Core.Abstractions.Services.Account;
+using System.Security.Claims;
 
 namespace StudyGO.API.Controllers.UsersControllers
 {
@@ -32,6 +35,7 @@ namespace StudyGO.API.Controllers.UsersControllers
         }
 
         [HttpGet("get-all-profiles")]
+        [Authorize]
         public async Task<ActionResult<List<TutorProfileDto>>> GetAllProfiles()
         {
             var result = await _tutorAccountService.GetAllUserProfiles();
@@ -40,6 +44,7 @@ namespace StudyGO.API.Controllers.UsersControllers
         }
 
         [HttpGet("get-profile-by-id/{userID}")]
+        [Authorize(Policy = PolicyNames.UserOrAdmin)]
         public async Task<ActionResult<TutorProfileDto>> GetProfileById(Guid userID)
         {
             var result = await _tutorAccountService.TryGetUserProfileById(userID);
@@ -47,11 +52,41 @@ namespace StudyGO.API.Controllers.UsersControllers
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
 
+        [HttpGet("get-current-profile")]
+        [Authorize]
+        public async Task<ActionResult<TutorProfileDto>> GetCurrentUser()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var userGuid))
+            {
+                return Unauthorized("Invalid user ID in token");
+            }
+
+            var result = await _tutorAccountService.TryGetUserProfileById(userGuid);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+        }
+
+
         [HttpPut("update-profile")]
+        [Authorize(Policy = PolicyNames.TutorOnly)]
         public async Task<ActionResult<Guid>> UpdateProfile(
             [FromBody] TutorProfileUpdateDto userProfile
         )
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if(string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var userGuid))
+            {
+                return Unauthorized("Invalid user ID in token");
+            }
+
+            if(userGuid != userProfile.UserID)
+            {
+                return Unauthorized("Попытка обновить другого пользователя");
+            }
+
             var result = await _tutorAccountService.TryUpdateUserProfile(userProfile);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);

@@ -21,6 +21,7 @@
             ConfigurePasswordHasher();
             ConfigureServicesApp();
             CofigureValidators();
+            ConfigureJwtAuthentication();
         }
     }
 }
