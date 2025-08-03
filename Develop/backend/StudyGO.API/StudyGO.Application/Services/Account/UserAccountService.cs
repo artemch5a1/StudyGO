@@ -55,7 +55,7 @@ namespace StudyGO.Application.Services.Account
         {
             Result<List<User>> result = await _userRepository.GetAll();
 
-            return result.MapTo(x => _mapper.Map<List<UserDto>>(x));
+            return result.MapTo(_mapper.Map<List<UserDto>>);
         }
 
         public async Task<Result<UserLoginResponseDto>> TryLogIn(UserLoginRequest userLogin)
@@ -67,7 +67,7 @@ namespace StudyGO.Application.Services.Account
             if (!result.IsSuccess)
                 return Result<UserLoginResponseDto>.Failure(result.ErrorMessage!);
 
-            var dbSearchCred = result.Value!;
+            var dbSearchCred = result.Value ?? new();
 
             bool IsAccess = IsSuccessUserLogin(userLogin, dbSearchCred);
 
@@ -76,7 +76,7 @@ namespace StudyGO.Application.Services.Account
                 var responseDto = new UserLoginResponseDto()
                 {
                     Token = _jwtTokenProvider.GenerateToken(dbSearchCred),
-                    Id = dbSearchCred.id,
+                    Id = dbSearchCred.Id,
                 };
 
                 return Result<UserLoginResponseDto>.Success(responseDto);

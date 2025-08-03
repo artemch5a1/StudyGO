@@ -106,7 +106,7 @@ namespace StudyGO.infrastructure.Repositories
                             Email = u.Email,
                             PasswordHash = u.PasswordHash,
                             Role = u.Role,
-                            id = u.UserID,
+                            Id = u.UserID,
                         })
                         .FirstOrDefaultAsync() ?? new UserLoginResponse();
 
