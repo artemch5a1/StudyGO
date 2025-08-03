@@ -25,7 +25,7 @@ namespace StudyGO.infrastructure.Auth
 
             List<Claim> claims =
             [
-                new Claim(ClaimTypes.NameIdentifier, user.id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Role, user.Role),
             ];
 

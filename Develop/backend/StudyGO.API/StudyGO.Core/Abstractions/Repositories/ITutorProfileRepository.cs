@@ -1,11 +1,12 @@
-﻿using StudyGO.Core.Abstractions.Base.DataCrud;
+﻿using StudyGO.Contracts.Result;
+using StudyGO.Core.Abstractions.Base.DataCrud;
 using StudyGO.Core.Models;
 
 namespace StudyGO.Core.Abstractions.Repositories
 {
     public interface ITutorProfileRepository : IReadable<TutorProfile, Guid>
     {
-        Task<Guid> Create(TutorProfile model);
-        Task<bool> Update(TutorProfile model);
+        Task<Result<Guid>> Create(TutorProfile model);
+        Task<Result<Guid>> Update(TutorProfile model);
     }
 }

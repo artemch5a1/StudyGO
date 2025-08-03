@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
 using StudyGO.infrastructure.Entites;
+using StudyGO.infrastructure.ExceptionHandlers;
 
 namespace StudyGO.infrastructure.Repositories
 {
@@ -27,33 +29,36 @@ namespace StudyGO.infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<List<Format>> GetAll()
+        public async Task<Result<List<Format>>> GetAll()
         {
             try
             {
                 List<FormatEntity> formatEntity = await _context.FormatsEntity.ToListAsync();
-                return _mapper.Map<List<Format>>(formatEntity);
+
+                return Result<List<Format>>.Success(_mapper.Map<List<Format>>(formatEntity));
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
-                return new();
+
+                return DatabaseExceptionHandler.HandleException<List<Format>>(ex);
             }
         }
 
-        public async Task<Format?> GetById(int id)
+        public async Task<Result<Format?>> GetById(int id)
         {
             try
             {
                 FormatEntity? formatEntity = await _context.FormatsEntity.FirstOrDefaultAsync(x =>
                     x.FormatID == id
                 );
-                return _mapper.Map<Format?>(formatEntity);
+                return Result<Format?>.Success(_mapper.Map<Format?>(formatEntity));
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
-                return null;
+
+                return DatabaseExceptionHandler.HandleException<Format?>(ex);
             }
         }
     }

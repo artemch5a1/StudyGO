@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EntityFramework.Exceptions.PostgreSQL;
+using Microsoft.EntityFrameworkCore;
 using StudyGO.infrastructure.Entites;
 
 namespace StudyGO.infrastructure.Data
@@ -7,6 +8,11 @@ namespace StudyGO.infrastructure.Data
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseExceptionProcessor();
+        }
 
         public DbSet<UserEntity> UsersEntity { get; set; }
 

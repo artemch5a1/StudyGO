@@ -12,7 +12,7 @@
 
         public string City { get; set; } = string.Empty;
 
-        public Guid FormatID { get; set; }
+        public int FormatID { get; set; }
 
         public Format? Format { get; set; }
     }

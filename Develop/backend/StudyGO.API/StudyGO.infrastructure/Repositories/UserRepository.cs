@@ -2,10 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Contracts;
+using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
 using StudyGO.infrastructure.Entites;
+using StudyGO.infrastructure.ExceptionHandlers;
 
 namespace StudyGO.infrastructure.Repositories
 {
@@ -28,7 +30,7 @@ namespace StudyGO.infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<bool> Delete(Guid id)
+        public async Task<Result<Guid>> Delete(Guid id)
         {
             try
             {
@@ -38,92 +40,120 @@ namespace StudyGO.infrastructure.Repositories
                 if (count != 0)
                 {
                     _logger.LogInformation($"Пользователь с айди {id} был удален");
-                    return true;
+
+                    return Result<Guid>.Success(id);
                 }
                 _logger.LogWarning($"Пользователь с айди {id} не был удален");
-                return false;
+
+                return Result<Guid>.Failure("Ошибка удаления");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Произошла ошибка при удалении записи из БД: {ex.Message}");
-                return false;
+
+                return DatabaseExceptionHandler.HandleException<Guid>(ex);
             }
         }
 
-        public async Task<List<User>> GetAll()
+        public async Task<Result<List<User>>> GetAll()
         {
             try
             {
-                return _mapper.Map<List<User>>(await _context.UsersEntity.ToListAsync());
+                List<User> users = _mapper.Map<List<User>>(
+                    await _context.UsersEntity.ToListAsync()
+                );
+
+                return Result<List<User>>.Success(users);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Произошла ошибка при получении записей из БД: {ex.Message}");
-                return new List<User>();
+
+                return DatabaseExceptionHandler.HandleException<List<User>>(ex);
             }
         }
 
-        public async Task<User?> GetById(Guid id)
+        public async Task<Result<User?>> GetById(Guid id)
         {
             try
             {
-                return _mapper.Map<User?>(
+                User? user = _mapper.Map<User?>(
                     await _context.UsersEntity.FirstOrDefaultAsync(x => x.UserID == id)
                 );
+
+                if (user != null)
+                    return Result<User?>.Success(user);
+
+                return Result<User?>.Failure("Пользователь не найден");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Произошла ошибка при получении записи из БД: {ex.Message}");
-                return null;
+
+                return DatabaseExceptionHandler.HandleException<User?>(ex);
             }
         }
 
-        public async Task<UserLoginResponse> GetCredentialByEmail(string email)
+        public async Task<Result<UserLoginResponse>> GetCredentialByEmail(string email)
         {
-            //return await _context
-            //        .Database.SqlQueryRaw<UserLoginRequest>(
-            //            @"SELECT ue.""Email"" as Email, ue.""PasswordHash"" as PasswordHash, ue.""Role"" as Role
-            //            FROM ""UsersEntity"" ue
-            //            WHERE ue.""Email"" = {0}",
-            //            email
-            //        )
-            //        .FirstOrDefaultAsync() ?? new UserLoginRequest();
-
             try
             {
-                return await _context
+                UserLoginResponse response =
+                    await _context
                         .UsersEntity.Where(u => u.Email == email)
                         .Select(u => new UserLoginResponse
                         {
                             Email = u.Email,
                             PasswordHash = u.PasswordHash,
                             Role = u.Role,
-                            id = u.UserID,
+                            Id = u.UserID,
                         })
                         .FirstOrDefaultAsync() ?? new UserLoginResponse();
+
+                if (string.IsNullOrWhiteSpace(response.Email))
+                    return Result<UserLoginResponse>.Failure("Пользователь не найден");
+
+                return Result<UserLoginResponse>.Success(response);
             }
             catch (Exception ex)
             {
                 _logger.LogError(
                     $"Произошла ошибка при получении учетных данных из БД: {ex.Message}"
                 );
-                return new UserLoginResponse();
+
+                return DatabaseExceptionHandler.HandleException<UserLoginResponse>(ex);
             }
         }
 
-        public async Task<bool> Update(User user)
+        public async Task<Result<Guid>> Update(User user)
         {
             try
             {
-                _context.UsersEntity.Update(_mapper.Map<UserEntity>(user));
+                UserEntity entity = _mapper.Map<UserEntity>(user);
+
+                await _context
+                    .UsersEntity.Where(e => e.UserID == entity.UserID)
+                    .ExecuteUpdateAsync(s =>
+                        s.SetProperty(i => i.Surname, i => user.Surname)
+                            .SetProperty(i => i.Number, i => user.Number)
+                            .SetProperty(i => i.Name, i => user.Name)
+                            .SetProperty(i => i.PasswordHash, i => user.PasswordHash)
+                            .SetProperty(i => i.Patronymic, i => user.Patronymic)
+                            .SetProperty(i => i.Email, i => user.Email)
+                    );
+
                 int affectedRows = await _context.SaveChangesAsync();
 
-                return affectedRows > 0;
+                if (affectedRows > 0)
+                    return Result<Guid>.Success(user.UserID);
+
+                return Result<Guid>.Failure("Запись не была обновлена");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
-                return false;
+
+                return DatabaseExceptionHandler.HandleException<Guid>(ex);
             }
         }
     }

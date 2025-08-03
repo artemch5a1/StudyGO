@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
+using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Auth;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -38,63 +39,66 @@ namespace StudyGO.Application.Services.Account
             _jwtTokenProvider = jwtTokenProvider;
         }
 
-        public async Task<bool> TryDeleteAccount(Guid id)
+        public async Task<Result<Guid>> TryDeleteAccount(Guid id)
         {
             return await _userRepository.Delete(id);
         }
 
-        public async Task<UserDto?> TryGetAccountById(Guid id)
+        public async Task<Result<UserDto?>> TryGetAccountById(Guid id)
         {
-            User? user = await _userRepository.GetById(id);
+            Result<User?> result = await _userRepository.GetById(id);
 
-            return _mapper.Map<UserDto?>(user);
+            return result.MapTo(x => _mapper.Map<UserDto?>(x));
         }
 
-        public async Task<List<UserDto>> TryGetAllAccount()
+        public async Task<Result<List<UserDto>>> TryGetAllAccount()
         {
-            List<User> users = await _userRepository.GetAll();
+            Result<List<User>> result = await _userRepository.GetAll();
 
-            return _mapper.Map<List<UserDto>>(users);
+            return result.MapTo(_mapper.Map<List<UserDto>>);
         }
 
-        public async Task<UserLoginResponseDto> TryLogIn(UserLoginRequest userLogin)
+        public async Task<Result<UserLoginResponseDto>> TryLogIn(UserLoginRequest userLogin)
         {
-            UserLoginResponse dbSearchCred = await _userRepository.GetCredentialByEmail(
+            Result<UserLoginResponse> result = await _userRepository.GetCredentialByEmail(
                 userLogin.Email
             );
+
+            if (!result.IsSuccess)
+                return Result<UserLoginResponseDto>.Failure(result.ErrorMessage!);
+
+            var dbSearchCred = result.Value ?? new();
 
             bool IsAccess = IsSuccessUserLogin(userLogin, dbSearchCred);
 
             if (IsAccess)
             {
-                return new UserLoginResponseDto()
+                var responseDto = new UserLoginResponseDto()
                 {
                     Token = _jwtTokenProvider.GenerateToken(dbSearchCred),
-                    Id = dbSearchCred.id,
-                    Success = true
+                    Id = dbSearchCred.Id,
                 };
+
+                return Result<UserLoginResponseDto>.Success(responseDto);
             }
-            return new UserLoginResponseDto()
-            {
-                Token = string.Empty,
-                error = "Invalid credentials",
-                Success = false
-            };
+
+            return Result<UserLoginResponseDto>.Failure("Invalid credentials");
         }
 
-        public async Task<bool> TryUpdateAccount(UserUpdateDto user)
+        public async Task<Result<Guid>> TryUpdateAccount(UserUpdateDto user)
         {
             return await TryUpdate(user);
         }
 
-        public async Task<bool> TryUpdateAccount(UserUpdateСredentialsDto user)
+        public async Task<Result<Guid>> TryUpdateAccount(UserUpdateСredentialsDto user)
         {
             return await TryUpdate(user);
         }
 
-        private async Task<bool> TryUpdate<T>(T user)
+        private async Task<Result<Guid>> TryUpdate<T>(T user)
         {
             User userModel = _mapper.Map<User>(user);
+
             return await _userRepository.Update(userModel);
         }
 
