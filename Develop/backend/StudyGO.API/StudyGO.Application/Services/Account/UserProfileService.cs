@@ -54,11 +54,11 @@ namespace StudyGO.Application.Services.Account
         {
             profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
 
-            UserProfile user = _mapper.Map<UserProfile>(profile);
+            UserProfile profileModel = _mapper.Map<UserProfile>(profile);
 
-            user.User!.Role = RolesEnum.user.GetString();
+            profileModel.User!.Role = RolesEnum.user.GetString();
 
-            return await _userRepository.Create(user);
+            return await _userRepository.Create(profileModel);
         }
 
         public async Task<Result<Guid>> TryUpdateUserProfile(UserProfileUpdateDto newProfile)

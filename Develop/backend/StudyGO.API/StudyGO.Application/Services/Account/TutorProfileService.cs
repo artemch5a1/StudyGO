@@ -60,9 +60,9 @@ namespace StudyGO.Application.Services.Account
             return await _userRepository.Create(profileModel);
         }
 
-        public Task<Result<Guid>> TryUpdateUserProfile(TutorProfileUpdateDto newProfile)
+        public async Task<Result<Guid>> TryUpdateUserProfile(TutorProfileUpdateDto newProfile)
         {
-            throw new NotImplementedException();
+            return await _userRepository.Update(_mapper.Map<TutorProfile>(newProfile));
         }
     }
 }
