@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Contracts;
@@ -125,29 +126,51 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
+        public async Task<Result<Guid>> UpdateСredentials(User user)
+        {
+            try
+            {
+                UserEntity entity = _mapper.Map<UserEntity>(user);
+
+                int result = await _context
+                    .UsersEntity.Where(e => e.UserID == entity.UserID)
+                    .ExecuteUpdateAsync(s =>
+                        s.SetProperty(i => i.PasswordHash, i => user.PasswordHash)
+                            .SetProperty(i => i.Email, i => user.Email)
+                    );
+
+                if (result < 1)
+                    return Result<Guid>.Failure("Данные не были обновлены");
+
+                return Result<Guid>.Success(user.UserID);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+
+                return ex.HandleException<Guid>();
+            }
+        }
+
         public async Task<Result<Guid>> Update(User user)
         {
             try
             {
                 UserEntity entity = _mapper.Map<UserEntity>(user);
 
-                await _context
+                int result =  await _context
                     .UsersEntity.Where(e => e.UserID == entity.UserID)
                     .ExecuteUpdateAsync(s =>
                         s.SetProperty(i => i.Surname, i => user.Surname)
                             .SetProperty(i => i.Number, i => user.Number)
                             .SetProperty(i => i.Name, i => user.Name)
-                            .SetProperty(i => i.PasswordHash, i => user.PasswordHash)
                             .SetProperty(i => i.Patronymic, i => user.Patronymic)
-                            .SetProperty(i => i.Email, i => user.Email)
                     );
 
-                int affectedRows = await _context.SaveChangesAsync();
+                if (result < 1)
+                    return Result<Guid>.Failure("Данные не были обновлены");
 
-                if (affectedRows > 0)
-                    return Result<Guid>.Success(user.UserID);
-
-                return Result<Guid>.Failure("Запись не была обновлена");
+                return Result<Guid>.Success(user.UserID);
             }
             catch (Exception ex)
             {

@@ -103,7 +103,9 @@ namespace StudyGO.Application.Services.Account
                     validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
                 );
 
-            return await TryUpdate(user);
+            User userModel = _mapper.Map<User>(user);
+
+            return await _userRepository.Update(userModel);
         }
 
         public async Task<Result<Guid>> TryUpdateAccount(UserUpdateСredentialsDto user)
@@ -115,14 +117,9 @@ namespace StudyGO.Application.Services.Account
                     validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
                 );
 
-            return await TryUpdate(user);
-        }
-
-        private async Task<Result<Guid>> TryUpdate<T>(T user)
-        {
             User userModel = _mapper.Map<User>(user);
 
-            return await _userRepository.Update(userModel);
+            return await _userRepository.UpdateСredentials(userModel);
         }
 
         private bool IsSuccessUserLogin(UserLoginRequest expected, UserLoginResponse actual)
