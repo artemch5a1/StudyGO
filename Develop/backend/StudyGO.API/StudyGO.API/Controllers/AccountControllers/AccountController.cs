@@ -22,7 +22,7 @@ namespace StudyGO.API.Controllers.AccountControllers
             _userAccountService = userAccountService;
         }
 
-        [HttpPost(Name = "login")]
+        [HttpPost("login")]
         public async Task<ActionResult<UserLoginResponseDto>> LoginUser(
             [FromBody] UserLoginRequest loginRequest
         )
@@ -58,6 +58,16 @@ namespace StudyGO.API.Controllers.AccountControllers
 
         [HttpPut("update-user")]
         public async Task<ActionResult<Guid>> UpdateUser([FromBody] UserUpdateDto updateDto)
+        {
+            var result = await _userAccountService.TryUpdateAccount(updateDto);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+        }
+
+        [HttpPut("update-user-credentials")]
+        public async Task<ActionResult<Guid>> UpdateCredentials(
+            [FromBody] UserUpdate—redentialsDto updateDto
+        )
         {
             var result = await _userAccountService.TryUpdateAccount(updateDto);
 

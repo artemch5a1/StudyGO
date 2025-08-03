@@ -117,6 +117,21 @@ namespace StudyGO.Application.Services.Account
                     validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
                 );
 
+            var result = await _userRepository.GetById(user.UserId);
+
+            if (!result.IsSuccess)
+                return Result<Guid>.Failure("Неверный ID");
+
+            var check = user.OldPassword.VerifyPassword(
+                result.Value!.PasswordHash,
+                _passwordHasher
+            );
+
+            if (!check)
+                return Result<Guid>.Failure("Неверный пароль");
+
+            user.Password = user.Password.HashedPassword(_passwordHasher);
+
             User userModel = _mapper.Map<User>(user);
 
             return await _userRepository.UpdateСredentials(userModel);
