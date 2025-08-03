@@ -22,7 +22,7 @@ namespace StudyGO.API.Controllers.UsersControllers
             _userAccountService = userAccountService;
         }
 
-        [HttpPost(Name = "registr")]
+        [HttpPost("registr")]
         public async Task<ActionResult<Guid>> RegistrUser(
             [FromBody] UserProfileRegistrDto registrRequest
         )

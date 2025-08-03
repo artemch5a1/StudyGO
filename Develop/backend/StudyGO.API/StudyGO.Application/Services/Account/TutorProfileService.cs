@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Dtos.TutorProfiles;
+using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -22,17 +24,25 @@ namespace StudyGO.Application.Services.Account
 
         private readonly IPasswordHasher _passwordHasher;
 
+        private readonly IValidator<TutorProfileRegistrDto> _registrValidator;
+
+        private readonly IValidator<TutorProfileUpdateDto> _updateValidor;
+
         public TutorProfileService(
             ITutorProfileRepository userRepository,
             IMapper mapper,
             ILogger<TutorProfileService> logger,
-            IPasswordHasher passwordHasher
+            IPasswordHasher passwordHasher,
+            IValidator<TutorProfileRegistrDto> registrValidator,
+            IValidator<TutorProfileUpdateDto> updateValidor
         )
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
             _passwordHasher = passwordHasher;
+            _registrValidator = registrValidator;
+            _updateValidor = updateValidor;
         }
 
         public async Task<Result<List<TutorProfileDto>>> GetAllUserProfiles()
@@ -51,6 +61,13 @@ namespace StudyGO.Application.Services.Account
 
         public async Task<Result<Guid>> TryRegistr(TutorProfileRegistrDto profile)
         {
+            var validatorResult = _registrValidator.Validate(profile);
+
+            if (!validatorResult.IsValid)
+                return Result<Guid>.Failure(
+                    validatorResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                );
+
             profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
 
             TutorProfile profileModel = _mapper.Map<TutorProfile>(profile);
@@ -62,6 +79,13 @@ namespace StudyGO.Application.Services.Account
 
         public async Task<Result<Guid>> TryUpdateUserProfile(TutorProfileUpdateDto newProfile)
         {
+            var validatorResult = _updateValidor.Validate(newProfile);
+
+            if (!validatorResult.IsValid)
+                return Result<Guid>.Failure(
+                    validatorResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                );
+
             return await _userRepository.Update(_mapper.Map<TutorProfile>(newProfile));
         }
     }

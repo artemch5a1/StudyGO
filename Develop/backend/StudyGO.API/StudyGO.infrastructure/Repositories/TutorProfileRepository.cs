@@ -38,7 +38,7 @@ namespace StudyGO.infrastructure.Repositories
 
             UserEntity user = _mapper.Map<UserEntity>(model.User);
 
-            if (user.Role != RolesEnum.user.GetString())
+            if (user.Role != RolesEnum.tutor.GetString())
             {
                 _logger.LogError("Неверная роль, откат операции");
 
@@ -127,7 +127,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 TutorProfileEntity entity = _mapper.Map<TutorProfileEntity>(model);
 
-                await _context
+                int affectedRows = await _context
                     .TutorProfilesEntity.Where(e => e.UserID == model.UserID)
                     .ExecuteUpdateAsync(u =>
                         u.SetProperty(i => i.PricePerHour, i => model.PricePerHour)
@@ -135,8 +135,6 @@ namespace StudyGO.infrastructure.Repositories
                             .SetProperty(i => i.FormatID, i => model.FormatID)
                             .SetProperty(i => i.Bio, i => model.Bio)
                     );
-
-                int affectedRows = await _context.SaveChangesAsync();
 
                 return affectedRows > 0
                     ? Result<Guid>.Success(model.UserID)

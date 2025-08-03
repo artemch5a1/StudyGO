@@ -1,8 +1,6 @@
-﻿using StudyGO.Contracts.Dtos.Formats;
-
-namespace StudyGO.Contracts.Dtos.TutorProfiles
+﻿namespace StudyGO.Contracts.Dtos.TutorProfiles
 {
-    public class TutorProfileUpdateDto 
+    public class TutorProfileUpdateDto
     {
         public Guid UserID { get; set; }
 
@@ -12,6 +10,6 @@ namespace StudyGO.Contracts.Dtos.TutorProfiles
 
         public string City { get; set; } = string.Empty;
 
-        public FormatDto Format { get; set; } = null!;
+        public int FormatID { get; set; }
     }
 }

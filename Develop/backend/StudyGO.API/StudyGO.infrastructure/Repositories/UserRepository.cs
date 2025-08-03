@@ -110,9 +110,6 @@ namespace StudyGO.infrastructure.Repositories
                         })
                         .FirstOrDefaultAsync() ?? new UserLoginResponse();
 
-                if (string.IsNullOrWhiteSpace(response.Email))
-                    return Result<UserLoginResponse>.Failure("Пользователь не найден");
-
                 return Result<UserLoginResponse>.Success(response);
             }
             catch (Exception ex)
