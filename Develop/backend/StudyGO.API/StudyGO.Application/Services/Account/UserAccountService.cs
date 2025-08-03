@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Contracts;
@@ -24,12 +25,18 @@ namespace StudyGO.Application.Services.Account
 
         private readonly IJwtTokenProvider _jwtTokenProvider;
 
+        private readonly IValidator<UserUpdateDto> _validatorUpdate;
+
+        private readonly IValidator<UserUpdateСredentialsDto> _validatorUpdateСredentials;
+
         public UserAccountService(
             IUserRepository userRepository,
             IMapper mapper,
             ILogger<UserAccountService> logger,
             IPasswordHasher passwordHasher,
-            IJwtTokenProvider jwtTokenProvider
+            IJwtTokenProvider jwtTokenProvider,
+            IValidator<UserUpdateDto> validator,
+            IValidator<UserUpdateСredentialsDto> validatorUpdateСredentials
         )
         {
             _userRepository = userRepository;
@@ -37,6 +44,8 @@ namespace StudyGO.Application.Services.Account
             _logger = logger;
             _passwordHasher = passwordHasher;
             _jwtTokenProvider = jwtTokenProvider;
+            _validatorUpdate = validator;
+            _validatorUpdateСredentials = validatorUpdateСredentials;
         }
 
         public async Task<Result<Guid>> TryDeleteAccount(Guid id)
@@ -87,11 +96,25 @@ namespace StudyGO.Application.Services.Account
 
         public async Task<Result<Guid>> TryUpdateAccount(UserUpdateDto user)
         {
+            var validationResult = await _validatorUpdate.ValidateAsync(user);
+
+            if (!validationResult.IsValid)
+                return Result<Guid>.Failure(
+                    validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                );
+
             return await TryUpdate(user);
         }
 
         public async Task<Result<Guid>> TryUpdateAccount(UserUpdateСredentialsDto user)
         {
+            var validationResult = await _validatorUpdateСredentials.ValidateAsync(user);
+
+            if (!validationResult.IsValid)
+                return Result<Guid>.Failure(
+                    validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                );
+
             return await TryUpdate(user);
         }
 
