@@ -7,8 +7,8 @@ namespace StudyGO.API.Services
     {
         public void ConfigureServicesApp()
         {
-            services.AddScoped<IUserAccountService, UserAccountService>();
-            services.AddScoped<IUserProfileService, UserProfileService>();
+            _services.AddScoped<IUserAccountService, UserAccountService>();
+            _services.AddScoped<IUserProfileService, UserProfileService>();
         }
     }
 }

@@ -4,7 +4,7 @@ public partial class ServiceBuilder
 {
     private void ConfigureLogger()
     {
-        services.AddLogging(config =>
+        _services.AddLogging(config =>
         {
             config.AddDebug();
             config.SetMinimumLevel(LogLevel.Information);

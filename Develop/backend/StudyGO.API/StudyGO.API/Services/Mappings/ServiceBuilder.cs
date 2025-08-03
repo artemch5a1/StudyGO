@@ -7,7 +7,7 @@ public partial class ServiceBuilder
 {
     public void ConfigureAutoMapper()
     {
-        services.AddAutoMapper(cfg =>
+        _services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<EntityProfile>();
             cfg.AddProfile<DtosProfile>();

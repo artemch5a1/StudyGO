@@ -4,12 +4,12 @@
     {
         private readonly IConfiguration _configuration;
 
-        private readonly IServiceCollection services;
+        private readonly IServiceCollection _services;
 
         public ServiceBuilder(IConfiguration configuration, IServiceCollection services )
         {
             _configuration = configuration;
-            this.services = services;
+            this._services = services;
         }
 
         public void BuildAllService()
@@ -20,6 +20,7 @@
             ConfigureJwtProvider();
             ConfigurePasswordHasher();
             ConfigureServicesApp();
+            CofigureValidators();
         }
     }
 }

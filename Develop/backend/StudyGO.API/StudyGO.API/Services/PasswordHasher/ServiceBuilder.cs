@@ -7,7 +7,7 @@ namespace StudyGO.API.Services
     {
         public void ConfigurePasswordHasher()
         {
-            services.AddScoped<IPasswordHasher, PasswordHasher>();
+            _services.AddScoped<IPasswordHasher, PasswordHasher>();
         }
     }
 }

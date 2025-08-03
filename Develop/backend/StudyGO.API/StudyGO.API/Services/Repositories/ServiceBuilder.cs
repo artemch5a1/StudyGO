@@ -7,11 +7,11 @@ namespace StudyGO.API.Services
     {
         private void ConfigureRepositories()
         {
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IUserProfileRepository, UserProfileRepository>();
-            services.AddScoped<ITutorProfileRepository, TutorProfileRepository>();
-            services.AddScoped<IFormatRepository, FormatRepository>();
-            services.AddScoped<ISubjectRepository, SubjectRepository>();
+            _services.AddScoped<IUserRepository, UserRepository>();
+            _services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+            _services.AddScoped<ITutorProfileRepository, TutorProfileRepository>();
+            _services.AddScoped<IFormatRepository, FormatRepository>();
+            _services.AddScoped<ISubjectRepository, SubjectRepository>();
         }
     }
 }
