@@ -27,7 +27,7 @@ namespace StudyGO.Application.Services.Account
 
         private readonly IValidator<UserUpdateDto> _validatorUpdate;
 
-        private readonly IValidator<UserUpdateСredentialsDto> _validatorUpdateСredentials;
+        private readonly IValidator<UserUpdateСredentialsDto> _validatorUpdateCredentials;
 
         public UserAccountService(
             IUserRepository userRepository,
@@ -36,7 +36,7 @@ namespace StudyGO.Application.Services.Account
             IPasswordHasher passwordHasher,
             IJwtTokenProvider jwtTokenProvider,
             IValidator<UserUpdateDto> validator,
-            IValidator<UserUpdateСredentialsDto> validatorUpdateСredentials
+            IValidator<UserUpdateСredentialsDto> validatorUpdateCredentials
         )
         {
             _userRepository = userRepository;
@@ -45,7 +45,7 @@ namespace StudyGO.Application.Services.Account
             _passwordHasher = passwordHasher;
             _jwtTokenProvider = jwtTokenProvider;
             _validatorUpdate = validator;
-            _validatorUpdateСredentials = validatorUpdateСredentials;
+            _validatorUpdateCredentials = validatorUpdateCredentials;
         }
 
         public async Task<Result<Guid>> TryDeleteAccount(Guid id)
@@ -78,9 +78,9 @@ namespace StudyGO.Application.Services.Account
 
             var dbSearchCred = result.Value ?? new();
 
-            bool IsAccess = IsSuccessUserLogin(userLogin, dbSearchCred);
+            bool isAccess = IsSuccessUserLogin(userLogin, dbSearchCred);
 
-            if (IsAccess)
+            if (isAccess)
             {
                 var responseDto = new UserLoginResponseDto()
                 {
@@ -110,7 +110,7 @@ namespace StudyGO.Application.Services.Account
 
         public async Task<Result<Guid>> TryUpdateAccount(UserUpdateСredentialsDto user)
         {
-            var validationResult = await _validatorUpdateСredentials.ValidateAsync(user);
+            var validationResult = await _validatorUpdateCredentials.ValidateAsync(user);
 
             if (!validationResult.IsValid)
                 return Result<Guid>.Failure(
