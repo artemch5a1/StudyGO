@@ -31,5 +31,37 @@ namespace StudyGO.API.Controllers.AccountControllers
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
+
+        [HttpDelete("delete/{userID}")]
+        public async Task<ActionResult<Guid>> DeleteUser(Guid userID)
+        {
+            var result = await _userAccountService.TryDeleteAccount(userID);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("all-users")]
+        public async Task<ActionResult<List<UserDto>>> GetAllUsers()
+        {
+            var result = await _userAccountService.TryGetAllAccount();
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("user-by-id/{userID}")]
+        public async Task<ActionResult<UserDto?>> GetUserById(Guid userID)
+        {
+            var result = await _userAccountService.TryGetAccountById(userID);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+        }
+
+        [HttpPut("update-user")]
+        public async Task<ActionResult<Guid>> UpdateUser([FromBody] UserUpdateDto updateDto)
+        {
+            var result = await _userAccountService.TryUpdateAccount(updateDto);
+
+            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+        }
     }
 }

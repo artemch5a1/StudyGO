@@ -2,6 +2,7 @@
 {
     public class UserDto 
     {
+        public Guid UserID { get; set; }
         public string Email { get; set; } = null!;
 
         public string Surname { get; set; } = null!;
