@@ -7,6 +7,6 @@ namespace StudyGO.Core.Abstractions.Services
     {
         public Task<Result<List<SubjectDto>>> GetAllSubjects();
 
-        public Task<Result<SubjectDto?>> GetSubjectById();
+        public Task<Result<SubjectDto?>> GetSubjectById(Guid id);
     }
 }

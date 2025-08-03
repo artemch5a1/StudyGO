@@ -28,14 +28,18 @@ namespace StudyGO.Application.Services
             _logger = logger;
         }
 
-        public Task<Result<List<FormatDto>>> GetAllFormats()
+        public async Task<Result<List<FormatDto>>> GetAllFormats()
         {
-            throw new NotImplementedException();
+            var result = await _formatRepository.GetAll();
+
+            return result.MapTo(_mapper.Map<List<FormatDto>>);
         }
 
-        public Task<Result<FormatDto?>> GetFormatById()
+        public async Task<Result<FormatDto?>> GetFormatById(int id)
         {
-            throw new NotImplementedException();
+            var result = await _formatRepository.GetById(id);
+
+            return result.MapTo( _mapper.Map<FormatDto?>);
         }
     }
 }
