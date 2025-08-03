@@ -1,4 +1,6 @@
-﻿using StudyGO.Application.Services.Account;
+﻿using StudyGO.Application.Services;
+using StudyGO.Application.Services.Account;
+using StudyGO.Core.Abstractions.Services;
 using StudyGO.Core.Abstractions.Services.Account;
 
 namespace StudyGO.API.Services
@@ -9,6 +11,8 @@ namespace StudyGO.API.Services
         {
             _services.AddScoped<IUserAccountService, UserAccountService>();
             _services.AddScoped<IUserProfileService, UserProfileService>();
+            _services.AddScoped<ITutorProfileService, TutorProfileService>();
+            _services.AddScoped<IFormatService, FormatService>();
         }
     }
 }
