@@ -8,7 +8,7 @@ namespace StudyGO.Contracts.Dtos.UserProfiles
 
         public DateTime DateBirth { get; set; }
 
-        public SubjectDto? FavoriteSubject { get; set; } = null;
+        public Guid SubjectID { get; set; }
 
         public string Description { get; set; } = null!;
     }

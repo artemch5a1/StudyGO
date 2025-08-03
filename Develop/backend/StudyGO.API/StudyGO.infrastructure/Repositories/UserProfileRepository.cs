@@ -129,15 +129,13 @@ namespace StudyGO.infrastructure.Repositories
             {
                 UserProfileEntity entity = _mapper.Map<UserProfileEntity>(model);
 
-                await _context
+                int affectedRows = await _context
                     .UserProfilesEntity.Where(e => e.UserID == model.UserID)
                     .ExecuteUpdateAsync(u =>
                         u.SetProperty(i => i.SubjectID, i => model.SubjectID)
                             .SetProperty(i => i.DateBirth, i => model.DateBirth)
                             .SetProperty(i => i.Description, i => model.Description)
                     );
-
-                int affectedRows = await _context.SaveChangesAsync();
 
                 return affectedRows > 0
                     ? Result<Guid>.Success(model.UserID)
