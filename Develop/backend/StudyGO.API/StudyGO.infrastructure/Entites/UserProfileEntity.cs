@@ -10,7 +10,7 @@ namespace StudyGO.infrastructure.Entites
         [ForeignKey(nameof(UserID))]
         public virtual UserEntity? User { get; set; } = null!;
 
-        public DateTime DateBirth { get; set; }
+        public DateOnly DateBirth { get; set; }
 
         public Guid? SubjectID { get; set; } = null;
 

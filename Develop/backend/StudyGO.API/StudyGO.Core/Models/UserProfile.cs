@@ -6,7 +6,7 @@
 
         public User? User { get; set; }
 
-        public DateTime DateBirth { get; set; }
+        public DateOnly DateBirth { get; set; }
 
         public Guid? SubjectID { get; set; }
 

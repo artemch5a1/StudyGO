@@ -7,7 +7,7 @@ namespace StudyGO.Contracts.Dtos.UserProfiles
     {
         public UserCreateDto User { get; set; } = null!;
 
-        public DateTime DateBirth { get; set; }
+        public DateOnly DateBirth { get; set; }
 
         public Guid? SubjectID { get; set; } = null;
 

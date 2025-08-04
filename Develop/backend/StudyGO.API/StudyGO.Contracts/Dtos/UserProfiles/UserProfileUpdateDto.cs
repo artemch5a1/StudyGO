@@ -6,7 +6,7 @@ namespace StudyGO.Contracts.Dtos.UserProfiles
     {
         public Guid UserID { get; set; }
 
-        public DateTime DateBirth { get; set; }
+        public DateOnly DateBirth { get; set; }
 
         public Guid SubjectID { get; set; }
 
