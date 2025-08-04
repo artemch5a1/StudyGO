@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StudyGO.API.Enums;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Core.Abstractions.Services.Account;
-using System.Security.Claims;
+using StudyGO.API.Extensions;
 
 namespace StudyGO.API.Controllers.UsersControllers
 {
@@ -56,14 +56,12 @@ namespace StudyGO.API.Controllers.UsersControllers
         [Authorize]
         public async Task<ActionResult<UserProfileDto>> GetCurrentProfile()
         {
-            var userID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value.ToString();
+            var userID = User.ExtractGuid();
 
-            if(string.IsNullOrEmpty(userID) || !Guid.TryParse(userID, out var userGuid))
-            {
-                return Unauthorized("Invalid user ID in token");
-            }
+            if (!userID.IsSuccess)
+                return BadRequest(userID.ErrorMessage);
 
-            var result = await _userAccountService.TryGetUserProfileById(userGuid);
+            var result = await _userAccountService.TryGetUserProfileById(userID.Value);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
@@ -74,17 +72,8 @@ namespace StudyGO.API.Controllers.UsersControllers
             [FromBody] UserProfileUpdateDto userProfile
         )
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var userGuid))
-            {
-                return Unauthorized("Invalid user ID in token");
-            }
-
-            if (userGuid != userProfile.UserID)
-            {
-                return Unauthorized("Попытка обновить другого пользователя");
-            }
+            if (User.VerifyGuid(userProfile.UserID))
+                return Unauthorized("Доступ запрещен");
 
             var result = await _userAccountService.TryUpdateUserProfile(userProfile);
 

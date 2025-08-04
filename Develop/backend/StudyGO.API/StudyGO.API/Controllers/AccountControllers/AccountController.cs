@@ -4,8 +4,7 @@ using StudyGO.API.Enums;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Core.Abstractions.Services.Account;
-using StudyGO.Core.Models;
-using System.Security.Claims;
+using StudyGO.API.Extensions;
 
 namespace StudyGO.API.Controllers.AccountControllers
 {
@@ -49,14 +48,12 @@ namespace StudyGO.API.Controllers.AccountControllers
         [Authorize]
         public async Task<ActionResult<Guid>> DeleteCurrentUser()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.ExtractGuid();
 
-            if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var userGuid))
-            {
-                return Unauthorized("Invalid user ID in token");
-            }
+            if (!userId.IsSuccess)
+                return BadRequest(userId.ErrorMessage);
 
-            var result = await _userAccountService.TryDeleteAccount(userGuid);
+            var result = await _userAccountService.TryDeleteAccount(userId.Value);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
@@ -83,14 +80,12 @@ namespace StudyGO.API.Controllers.AccountControllers
         [Authorize]
         public async Task<ActionResult<UserDto?>> GetCurrentUser()
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.ExtractGuid();
 
-            if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var userGuid))
-            {
-                return Unauthorized("Invalid user ID in token");
-            }
+            if (!userId.IsSuccess)
+                return BadRequest(userId.ErrorMessage);
 
-            var result = await _userAccountService.TryGetAccountById(userGuid);
+            var result = await _userAccountService.TryGetAccountById(userId.Value);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
@@ -99,17 +94,8 @@ namespace StudyGO.API.Controllers.AccountControllers
         [Authorize]
         public async Task<ActionResult<Guid>> UpdateUser([FromBody] UserUpdateDto updateDto)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var userGuid))
-            {
-                return Unauthorized("Invalid user ID in token");
-            }
-
-            if (userGuid != updateDto.UserID)
-            {
-                return Unauthorized("Попытка обновить другого пользователя");
-            }
+            if (!User.VerifyGuid(updateDto.UserID))
+                return Unauthorized("Доступ запрещен");
 
             var result = await _userAccountService.TryUpdateAccount(updateDto);
 
@@ -122,17 +108,8 @@ namespace StudyGO.API.Controllers.AccountControllers
             [FromBody] UserUpdateСredentialsDto updateDto
         )
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var userGuid))
-            {
-                return Unauthorized("Invalid user ID in token");
-            }
-
-            if (userGuid != updateDto.UserId)
-            {
-                return Unauthorized("Попытка обновить другого пользователя");
-            }
+            if (!User.VerifyGuid(updateDto.UserId))
+                return Unauthorized("Доступ запрещен");
 
             var result = await _userAccountService.TryUpdateAccount(updateDto);
 
