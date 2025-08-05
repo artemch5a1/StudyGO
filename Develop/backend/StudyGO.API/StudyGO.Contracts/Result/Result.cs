@@ -27,10 +27,14 @@
         public Result<AnotherT> MapTo<AnotherT>(Func<T, AnotherT> mapAction)
         {
             if (!IsSuccess)
-                return Result<AnotherT>.Failure(ErrorMessage!);
+            {
+                return Value == null
+                    ? Result<AnotherT>.Failure(ErrorMessage!)
+                    : Result<AnotherT>.FailureWithValue(ErrorMessage!, mapAction(Value));
+            }
 
             if (Value == null)
-                return Result<AnotherT>.Success(default);
+                return Result<AnotherT>.SuccessWithoutValue();
 
             return new Result<AnotherT>(
                 mapAction.Invoke(this.Value),
