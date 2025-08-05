@@ -30,14 +30,14 @@ namespace StudyGO.Application.Services
         {
             var result = await _subjectRepository.GetAll();
 
-            return result.MapTo(_mapper.Map<List<SubjectDto>>);
+            return result.MapDataTo(_mapper.Map<List<SubjectDto>>);
         }
 
         public async Task<Result<SubjectDto?>> GetSubjectById(Guid id)
         {
             var result = await _subjectRepository.GetById(id);
 
-            return result.MapTo(_mapper.Map<SubjectDto?>);
+            return result.MapDataTo(_mapper.Map<SubjectDto?>);
         }
     }
 }

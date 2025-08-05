@@ -44,14 +44,14 @@ namespace StudyGO.Application.Services.Account
         {
             var result = await _userRepository.GetAll();
 
-            return result.MapTo(_mapper.Map<List<UserProfileDto>>);
+            return result.MapDataTo(_mapper.Map<List<UserProfileDto>>);
         }
 
         public async Task<Result<UserProfileDto?>> TryGetUserProfileById(Guid userId)
         {
             var result = await _userRepository.GetById(userId);
 
-            return result.MapTo(_mapper.Map<UserProfileDto?>);
+            return result.MapDataTo(_mapper.Map<UserProfileDto?>);
         }
 
         public async Task<Result<Guid>> TryRegistr(UserProfileRegistrDto profile)

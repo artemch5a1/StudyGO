@@ -32,14 +32,14 @@ namespace StudyGO.Application.Services
         {
             var result = await _formatRepository.GetAll();
 
-            return result.MapTo(_mapper.Map<List<FormatDto>>);
+            return result.MapDataTo(_mapper.Map<List<FormatDto>>);
         }
 
         public async Task<Result<FormatDto?>> GetFormatById(int id)
         {
             var result = await _formatRepository.GetById(id);
 
-            return result.MapTo( _mapper.Map<FormatDto?>);
+            return result.MapDataTo(_mapper.Map<FormatDto?>);
         }
     }
 }

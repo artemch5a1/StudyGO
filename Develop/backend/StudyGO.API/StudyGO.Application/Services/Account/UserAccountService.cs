@@ -55,14 +55,14 @@ namespace StudyGO.Application.Services.Account
         {
             Result<User?> result = await _userRepository.GetById(id);
 
-            return result.MapTo(x => _mapper.Map<UserDto?>(x));
+            return result.MapDataTo(x => _mapper.Map<UserDto?>(x));
         }
 
         public async Task<Result<List<UserDto>>> TryGetAllAccount()
         {
             Result<List<User>> result = await _userRepository.GetAll();
 
-            return result.MapTo(_mapper.Map<List<UserDto>>);
+            return result.MapDataTo(_mapper.Map<List<UserDto>>);
         }
 
         public async Task<Result<UserLoginResponseDto>> TryLogIn(UserLoginRequest userLogin)
