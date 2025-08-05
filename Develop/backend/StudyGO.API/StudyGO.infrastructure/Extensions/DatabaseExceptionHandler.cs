@@ -20,9 +20,7 @@ namespace StudyGO.infrastructure.Extensions
                 DbUpdateConcurrencyException => Result<T>.Failure(
                     "Данные были изменены другим пользователем."
                 ),
-                _ => Result<T>.Failure(
-                    "Произошла ошибка при сохранении данных."
-                ),
+                _ => Result<T>.Failure("Произошла ошибка при сохранении данных."),
             };
         }
 
@@ -31,9 +29,7 @@ namespace StudyGO.infrastructure.Extensions
             return pgEx.SqlState switch
             {
                 // Ошибка внешнего ключа (23503)
-                "23503" => Result<T>.Failure(
-                    "Связанные данные не найдены."
-                ),
+                "23503" => Result<T>.Failure("Связанные данные не найдены."),
 
                 // Ошибка проверки ограничения (23514)
                 "23514" => Result<T>.Failure("Недопустимые данные."),
@@ -51,7 +47,7 @@ namespace StudyGO.infrastructure.Extensions
         private static Result<T> HandleUniqueConstraintViolation<T>(UniqueConstraintException pgEx)
         {
             return Result<T>.Failure(
-                $"{pgEx.SchemaQualifiedTableName} с таким {pgEx.ConstraintProperties.FirstOrDefault()} уже существует"
+                $"Такой {pgEx.ConstraintProperties.FirstOrDefault()} уже существует"
             );
         }
     }
