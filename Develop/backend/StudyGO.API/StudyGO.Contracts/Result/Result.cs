@@ -17,7 +17,12 @@
 
         public static Result<T> Failure(string error) => new Result<T>(default, false, error);
 
+        public static Result<T> FailureWithValue(string error, T value) =>
+            new Result<T>(value, false, error);
+
         public static Result<T> Success(T value) => new Result<T>(value, true, null);
+
+        public static Result<T> SuccessWithoutValue() => new Result<T>(default, true, null);
 
         public Result<AnotherT> MapTo<AnotherT>(Func<T, AnotherT> mapAction)
         {
