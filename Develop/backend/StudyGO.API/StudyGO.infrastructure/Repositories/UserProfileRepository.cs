@@ -44,6 +44,11 @@ namespace StudyGO.infrastructure.Repositories
                 return Result<Guid>.Failure("Неверная роль");
             }
 
+            bool isExistEmail = await _context.UsersEntity.AnyAsync(x => x.Email == user.Email);
+
+            if (isExistEmail)
+                return Result<Guid>.Failure($"Пользователь с таким email уже существует");
+
             await using var transaction = await _context.Database.BeginTransactionAsync(
                 isolationLevel: IsolationLevel.ReadUncommitted
             );
