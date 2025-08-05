@@ -9,6 +9,7 @@ using StudyGO.Core.Abstractions.Auth;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Abstractions.Utils;
+using StudyGO.Core.Abstractions.ValidationService;
 using StudyGO.Core.Models;
 
 namespace StudyGO.Application.Services.Account
@@ -25,9 +26,7 @@ namespace StudyGO.Application.Services.Account
 
         private readonly IJwtTokenProvider _jwtTokenProvider;
 
-        private readonly IValidator<UserUpdateDto> _validatorUpdate;
-
-        private readonly IValidator<UserUpdateСredentialsDto> _validatorUpdateCredentials;
+        private readonly IValidationService _validationService;
 
         public UserAccountService(
             IUserRepository userRepository,
@@ -36,7 +35,7 @@ namespace StudyGO.Application.Services.Account
             IPasswordHasher passwordHasher,
             IJwtTokenProvider jwtTokenProvider,
             IValidator<UserUpdateDto> validator,
-            IValidator<UserUpdateСredentialsDto> validatorUpdateCredentials
+            IValidationService validationService
         )
         {
             _userRepository = userRepository;
@@ -44,8 +43,7 @@ namespace StudyGO.Application.Services.Account
             _logger = logger;
             _passwordHasher = passwordHasher;
             _jwtTokenProvider = jwtTokenProvider;
-            _validatorUpdate = validator;
-            _validatorUpdateCredentials = validatorUpdateCredentials;
+            _validationService = validationService;
         }
 
         public async Task<Result<Guid>> TryDeleteAccount(Guid id)
@@ -96,11 +94,11 @@ namespace StudyGO.Application.Services.Account
 
         public async Task<Result<Guid>> TryUpdateAccount(UserUpdateDto user)
         {
-            var validationResult = await _validatorUpdate.ValidateAsync(user);
+            var validationResult = _validationService.Validate(user);
 
-            if (!validationResult.IsValid)
+            if (!validationResult.IsSuccess)
                 return Result<Guid>.Failure(
-                    validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                    validationResult.Value?.FirstOrDefault()?.ErrorMessage ?? string.Empty
                 );
 
             User userModel = _mapper.Map<User>(user);
@@ -110,11 +108,11 @@ namespace StudyGO.Application.Services.Account
 
         public async Task<Result<Guid>> TryUpdateAccount(UserUpdateСredentialsDto user)
         {
-            var validationResult = await _validatorUpdateCredentials.ValidateAsync(user);
+            var validationResult = _validationService.Validate(user);
 
-            if (!validationResult.IsValid)
+            if (!validationResult.IsSuccess)
                 return Result<Guid>.Failure(
-                    validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                    validationResult.Value?.FirstOrDefault()?.ErrorMessage ?? string.Empty
                 );
 
             var result = await _userRepository.GetById(user.UserId);

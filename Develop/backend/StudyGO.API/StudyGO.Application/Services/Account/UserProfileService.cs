@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentValidation;
 using Microsoft.Extensions.Logging;
 using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Dtos.UserProfiles;
@@ -7,6 +6,7 @@ using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Abstractions.Utils;
+using StudyGO.Core.Abstractions.ValidationService;
 using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
@@ -23,25 +23,21 @@ namespace StudyGO.Application.Services.Account
 
         private readonly IPasswordHasher _passwordHasher;
 
-        private readonly IValidator<UserProfileRegistrDto> _registrValidator;
-
-        private readonly IValidator<UserProfileUpdateDto> _updateValidor;
+        private readonly IValidationService _validationService;
 
         public UserProfileService(
             IUserProfileRepository userRepository,
             IMapper mapper,
             ILogger<UserProfileService> logger,
             IPasswordHasher passwordHasher,
-            IValidator<UserProfileRegistrDto> registrValidator,
-            IValidator<UserProfileUpdateDto> updateValidor
+            IValidationService validationService
         )
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
             _passwordHasher = passwordHasher;
-            _registrValidator = registrValidator;
-            _updateValidor = updateValidor;
+            _validationService = validationService;
         }
 
         public async Task<Result<List<UserProfileDto>>> GetAllUserProfiles()
@@ -60,11 +56,11 @@ namespace StudyGO.Application.Services.Account
 
         public async Task<Result<Guid>> TryRegistr(UserProfileRegistrDto profile)
         {
-            var validatorResult = _registrValidator.Validate(profile);
+            var validatorResult = _validationService.Validate(profile);
 
-            if (!validatorResult.IsValid)
+            if (!validatorResult.IsSuccess)
                 return Result<Guid>.Failure(
-                    validatorResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                    validatorResult.Value?.FirstOrDefault()?.ErrorMessage ?? string.Empty
                 );
 
             profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
@@ -78,11 +74,11 @@ namespace StudyGO.Application.Services.Account
 
         public async Task<Result<Guid>> TryUpdateUserProfile(UserProfileUpdateDto newProfile)
         {
-            var validatorResult = _updateValidor.Validate(newProfile);
+            var validatorResult = _validationService.Validate(newProfile);
 
-            if (!validatorResult.IsValid)
+            if (!validatorResult.IsSuccess)
                 return Result<Guid>.Failure(
-                    validatorResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                    validatorResult.Value?.FirstOrDefault()?.ErrorMessage ?? string.Empty
                 );
 
             UserProfile user = _mapper.Map<UserProfile>(newProfile);

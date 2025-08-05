@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudyGO.API.Enums;
+using StudyGO.API.Extensions;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Core.Abstractions.Services.Account;
-using StudyGO.API.Extensions;
 
 namespace StudyGO.API.Controllers.UsersControllers
 {
@@ -72,7 +72,7 @@ namespace StudyGO.API.Controllers.UsersControllers
             [FromBody] UserProfileUpdateDto userProfile
         )
         {
-            if (User.VerifyGuid(userProfile.UserID))
+            if (!User.VerifyGuid(userProfile.UserID))
                 return Unauthorized("Доступ запрещен");
 
             var result = await _userAccountService.TryUpdateUserProfile(userProfile);
