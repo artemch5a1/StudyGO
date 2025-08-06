@@ -38,9 +38,7 @@ namespace StudyGO.infrastructure.Extensions
                 "23502" => Result<T>.Failure("Обязательные поля не заполнены."),
 
                 // Все остальные ошибки PostgreSQL
-                _ => Result<T>.Failure(
-                    "Произошла ошибка базы данных. Пожалуйста, попробуйте позже."
-                ),
+                _ => Result<T>.Failure("Произошла ошибка базы данных."),
             };
         }
 
