@@ -126,6 +126,11 @@ namespace StudyGO.infrastructure.Repositories
         {
             try
             {
+                bool isExistEmail = await _context.UsersEntity.AnyAsync(x => x.Email == user.Email);
+
+                if (isExistEmail)
+                    return Result<Guid>.Failure($"Пользователь с таким email уже существует");
+
                 UserEntity entity = _mapper.Map<UserEntity>(user);
 
                 int result = await _context
@@ -154,7 +159,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 UserEntity entity = _mapper.Map<UserEntity>(user);
 
-                int result =  await _context
+                int result = await _context
                     .UsersEntity.Where(e => e.UserID == entity.UserID)
                     .ExecuteUpdateAsync(s =>
                         s.SetProperty(i => i.Surname, i => user.Surname)
