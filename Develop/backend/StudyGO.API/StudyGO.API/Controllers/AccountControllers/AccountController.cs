@@ -95,7 +95,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         public async Task<ActionResult<Guid>> UpdateUser([FromBody] UserUpdateDto updateDto)
         {
             if (!User.VerifyGuid(updateDto.UserID))
-                return Unauthorized("Доступ запрещен");
+                return Forbid();
 
             var result = await _userAccountService.TryUpdateAccount(updateDto);
 
@@ -109,7 +109,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         )
         {
             if (!User.VerifyGuid(updateDto.UserId))
-                return Unauthorized("Доступ запрещен");
+                return Forbid();
 
             var result = await _userAccountService.TryUpdateAccount(updateDto);
 
