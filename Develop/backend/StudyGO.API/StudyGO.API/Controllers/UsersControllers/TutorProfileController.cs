@@ -74,7 +74,7 @@ namespace StudyGO.API.Controllers.UsersControllers
         )
         {
             if (!User.VerifyGuid(userProfile.UserID))
-                return Unauthorized("Доступ запрещен");
+                return Forbid();
 
             var result = await _tutorAccountService.TryUpdateUserProfile(userProfile);
 
