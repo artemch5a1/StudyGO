@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudyGO.API.Enums;
+using StudyGO.API.Extensions;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Core.Abstractions.Services.Account;
-using StudyGO.API.Extensions;
 
 namespace StudyGO.API.Controllers.AccountControllers
 {
@@ -27,7 +27,8 @@ namespace StudyGO.API.Controllers.AccountControllers
 
         [HttpPost("login")]
         public async Task<ActionResult<UserLoginResponseDto>> LoginUser(
-            [FromBody] UserLoginRequest loginRequest, CancellationToken cancellationToken
+            [FromBody] UserLoginRequest loginRequest,
+            CancellationToken cancellationToken
         )
         {
             var result = await _userAccountService.TryLogIn(loginRequest, cancellationToken);
@@ -37,7 +38,10 @@ namespace StudyGO.API.Controllers.AccountControllers
 
         [HttpDelete("delete/{userID}")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
-        public async Task<ActionResult<Guid>> DeleteUser(Guid userID, CancellationToken cancellationToken)
+        public async Task<ActionResult<Guid>> DeleteUser(
+            Guid userID,
+            CancellationToken cancellationToken
+        )
         {
             var result = await _userAccountService.TryDeleteAccount(userID, cancellationToken);
 
@@ -53,14 +57,19 @@ namespace StudyGO.API.Controllers.AccountControllers
             if (!userId.IsSuccess)
                 return BadRequest(userId.ErrorMessage);
 
-            var result = await _userAccountService.TryDeleteAccount(userId.Value, cancellationToken);
+            var result = await _userAccountService.TryDeleteAccount(
+                userId.Value,
+                cancellationToken
+            );
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
 
         [HttpGet("all-users")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
-        public async Task<ActionResult<List<UserDto>>> GetAllUsers(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<UserDto>>> GetAllUsers(
+            CancellationToken cancellationToken
+        )
         {
             var result = await _userAccountService.TryGetAllAccount(cancellationToken);
 
@@ -69,7 +78,10 @@ namespace StudyGO.API.Controllers.AccountControllers
 
         [HttpGet("user-by-id/{userID}")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
-        public async Task<ActionResult<UserDto?>> GetUserById(Guid userID, CancellationToken cancellationToken)
+        public async Task<ActionResult<UserDto?>> GetUserById(
+            Guid userID,
+            CancellationToken cancellationToken
+        )
         {
             var result = await _userAccountService.TryGetAccountById(userID, cancellationToken);
 
@@ -78,21 +90,29 @@ namespace StudyGO.API.Controllers.AccountControllers
 
         [HttpGet("current-user")]
         [Authorize]
-        public async Task<ActionResult<UserDto?>> GetCurrentUser(CancellationToken cancellationToken)
+        public async Task<ActionResult<UserDto?>> GetCurrentUser(
+            CancellationToken cancellationToken
+        )
         {
             var userId = User.ExtractGuid();
 
             if (!userId.IsSuccess)
                 return BadRequest(userId.ErrorMessage);
 
-            var result = await _userAccountService.TryGetAccountById(userId.Value, cancellationToken);
+            var result = await _userAccountService.TryGetAccountById(
+                userId.Value,
+                cancellationToken
+            );
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
 
         [HttpPut("update-user")]
         [Authorize]
-        public async Task<ActionResult<Guid>> UpdateUser([FromBody] UserUpdateDto updateDto, CancellationToken cancellationToken)
+        public async Task<ActionResult<Guid>> UpdateUser(
+            [FromBody] UserUpdateDto updateDto,
+            CancellationToken cancellationToken
+        )
         {
             if (!User.VerifyGuid(updateDto.UserID))
                 return Forbid();
@@ -105,7 +125,8 @@ namespace StudyGO.API.Controllers.AccountControllers
         [HttpPut("update-user-credentials")]
         [Authorize]
         public async Task<ActionResult<Guid>> UpdateCredentials(
-            [FromBody] UserUpdate—redentialsDto updateDto, CancellationToken cancellationToken
+            [FromBody] UserUpdate—redentialsDto updateDto,
+            CancellationToken cancellationToken
         )
         {
             if (!User.VerifyGuid(updateDto.UserId))

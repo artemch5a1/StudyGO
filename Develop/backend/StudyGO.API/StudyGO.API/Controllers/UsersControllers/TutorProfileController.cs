@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudyGO.API.Enums;
+using StudyGO.API.Extensions;
 using StudyGO.Contracts.Dtos.TutorProfiles;
 using StudyGO.Core.Abstractions.Services.Account;
-using StudyGO.API.Extensions;
 
 namespace StudyGO.API.Controllers.UsersControllers
 {
@@ -26,7 +26,8 @@ namespace StudyGO.API.Controllers.UsersControllers
 
         [HttpPost("registr")]
         public async Task<ActionResult<Guid>> RegistrUser(
-            [FromBody] TutorProfileRegistrDto registrRequest, CancellationToken cancellationToken
+            [FromBody] TutorProfileRegistrDto registrRequest,
+            CancellationToken cancellationToken
         )
         {
             var result = await _tutorAccountService.TryRegistr(registrRequest, cancellationToken);
@@ -36,7 +37,9 @@ namespace StudyGO.API.Controllers.UsersControllers
 
         [HttpGet("get-all-profiles")]
         [Authorize]
-        public async Task<ActionResult<List<TutorProfileDto>>> GetAllProfiles(CancellationToken cancellationToken)
+        public async Task<ActionResult<List<TutorProfileDto>>> GetAllProfiles(
+            CancellationToken cancellationToken
+        )
         {
             var result = await _tutorAccountService.GetAllUserProfiles(cancellationToken);
 
@@ -45,38 +48,52 @@ namespace StudyGO.API.Controllers.UsersControllers
 
         [HttpGet("get-profile-by-id/{userID}")]
         [Authorize(Policy = PolicyNames.UserOrAdmin)]
-        public async Task<ActionResult<TutorProfileDto>> GetProfileById(Guid userID, CancellationToken cancellationToken)
+        public async Task<ActionResult<TutorProfileDto>> GetProfileById(
+            Guid userID,
+            CancellationToken cancellationToken
+        )
         {
-            var result = await _tutorAccountService.TryGetUserProfileById(userID, cancellationToken);
+            var result = await _tutorAccountService.TryGetUserProfileById(
+                userID,
+                cancellationToken
+            );
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
 
         [HttpGet("get-current-profile")]
         [Authorize]
-        public async Task<ActionResult<TutorProfileDto>> GetCurrentUser(CancellationToken cancellationToken)
+        public async Task<ActionResult<TutorProfileDto>> GetCurrentUser(
+            CancellationToken cancellationToken
+        )
         {
             var userId = User.ExtractGuid();
 
             if (!userId.IsSuccess)
                 return BadRequest(userId.ErrorMessage);
 
-            var result = await _tutorAccountService.TryGetUserProfileById(userId.Value, cancellationToken);
+            var result = await _tutorAccountService.TryGetUserProfileById(
+                userId.Value,
+                cancellationToken
+            );
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
 
-
         [HttpPut("update-profile")]
         [Authorize(Policy = PolicyNames.TutorOnly)]
         public async Task<ActionResult<Guid>> UpdateProfile(
-            [FromBody] TutorProfileUpdateDto userProfile, CancellationToken cancellationToken
+            [FromBody] TutorProfileUpdateDto userProfile,
+            CancellationToken cancellationToken
         )
         {
             if (!User.VerifyGuid(userProfile.UserID))
                 return Forbid();
 
-            var result = await _tutorAccountService.TryUpdateUserProfile(userProfile, cancellationToken);
+            var result = await _tutorAccountService.TryUpdateUserProfile(
+                userProfile,
+                cancellationToken
+            );
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
