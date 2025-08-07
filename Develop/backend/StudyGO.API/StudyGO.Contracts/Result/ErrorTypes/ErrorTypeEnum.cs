@@ -27,5 +27,8 @@ namespace StudyGO.Contracts.Result.ErrorTypes
 
         [Description("Неизвестная ошибка")]
         Unknown,
+
+        [Description("Ошибка сервера")]
+        ServerError,
     }
 }

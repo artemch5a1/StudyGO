@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Dtos;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.ValidationService;
 
 namespace StudyGO.Application.Validations.Service
@@ -22,14 +23,16 @@ namespace StudyGO.Application.Validations.Service
             _logger = logger;
         }
 
-        public Result<List<ValidationErrorDto>> Validate<T>(T model)
+        public ResultError<T, List<ValidationErrorDto>> Validate<T>(T model)
         {
             var validator = _serviceProvider.GetService<IValidator<T>>();
 
             if (validator == null)
             {
-                return Result<List<ValidationErrorDto>>.Failure(
-                    $"Validator for type {typeof(T).Name} not found"
+                return ResultError<T, List<ValidationErrorDto>>.Failure(
+                    $"Validator for type {typeof(T).Name} not found",
+                    new(),
+                    ErrorTypeEnum.ServerError
                 );
             }
 
@@ -39,16 +42,17 @@ namespace StudyGO.Application.Validations.Service
             {
                 var firstError = validationResult.Errors.FirstOrDefault();
 
-                return Result<List<ValidationErrorDto>>.FailureWithValue(
+                return ResultError<T, List<ValidationErrorDto>>.Failure(
                     "Validation failed",
-                    MapToErrorDto(validationResult.Errors)
+                    MapToErrorDto(validationResult.Errors),
+                    ErrorTypeEnum.ValidationError
                 );
             }
 
-            return Result<List<ValidationErrorDto>>.SuccessWithoutValue();
+            return ResultError<T, List<ValidationErrorDto>>.SuccessWithoutValue();
         }
 
-        public async Task<Result<List<ValidationErrorDto>>> ValidateAsync<T>(
+        public async Task<ResultError<T, List<ValidationErrorDto>>> ValidateAsync<T>(
             T model,
             CancellationToken cancellationToken = default
         )
@@ -57,8 +61,10 @@ namespace StudyGO.Application.Validations.Service
 
             if (validator == null)
             {
-                return Result<List<ValidationErrorDto>>.Failure(
-                    $"Validator for type {typeof(T).Name} not found"
+                return ResultError<T, List<ValidationErrorDto>>.Failure(
+                    $"Validator for type {typeof(T).Name} not found",
+                    new(),
+                    ErrorTypeEnum.ServerError
                 );
             }
 
@@ -68,13 +74,14 @@ namespace StudyGO.Application.Validations.Service
             {
                 var firstError = validationResult.Errors.FirstOrDefault();
 
-                return Result<List<ValidationErrorDto>>.FailureWithValue(
+                return ResultError<T, List<ValidationErrorDto>>.Failure(
                     "Validation failed",
-                    MapToErrorDto(validationResult.Errors)
+                    MapToErrorDto(validationResult.Errors),
+                    ErrorTypeEnum.ValidationError
                 );
             }
 
-            return Result<List<ValidationErrorDto>>.SuccessWithoutValue();
+            return ResultError<T, List<ValidationErrorDto>>.SuccessWithoutValue();
         }
 
         private List<ValidationErrorDto> MapToErrorDto(List<ValidationFailure> failures)
