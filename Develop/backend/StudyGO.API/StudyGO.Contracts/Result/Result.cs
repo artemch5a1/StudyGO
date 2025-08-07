@@ -15,9 +15,6 @@ namespace StudyGO.Contracts.Result
             ErrorTypeEnum errorType = ErrorTypeEnum.Unknown
         ) => new Result<T>(error, errorType);
 
-        public static Result<T> FailureWithValue(string error, T value) =>
-            new Result<T>(value, false, error);
-
         public static Result<T> Success(T value) => new Result<T>(value, true, null);
 
         public static Result<T> SuccessWithoutValue() => new Result<T>(default, true, null);
@@ -26,9 +23,7 @@ namespace StudyGO.Contracts.Result
         {
             if (!IsSuccess)
             {
-                return Value == null
-                    ? Result<AnotherT>.Failure(ErrorMessage!)
-                    : Result<AnotherT>.FailureWithValue(ErrorMessage!, mapAction(Value));
+                return Result<AnotherT>.Failure(ErrorMessage ?? string.Empty, this.ErrorType);
             }
 
             if (Value == null)

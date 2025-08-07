@@ -144,7 +144,7 @@ namespace StudyGO.Application.Services.Account
             var result = await _userRepository.GetById(user.UserId, cancellationToken);
 
             if (!result.IsSuccess)
-                return Result<Guid>.Failure("Неверный ID");
+                return Result<Guid>.Failure("Неверный ID", ErrorTypeEnum.NotFound);
 
             var check = user.OldPassword.VerifyPassword(
                 result.Value!.PasswordHash,
@@ -152,7 +152,7 @@ namespace StudyGO.Application.Services.Account
             );
 
             if (!check)
-                return Result<Guid>.Failure("Неверный пароль");
+                return Result<Guid>.Failure("Неверный пароль", ErrorTypeEnum.AuthenticationError);
 
             user.Password = user.Password.HashedPassword(_passwordHasher);
 

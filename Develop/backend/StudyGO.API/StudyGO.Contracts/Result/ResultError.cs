@@ -38,21 +38,5 @@ namespace StudyGO.Contracts.Result
 
         public static ResultError<TData, TError> SuccessWithoutValue() =>
             new ResultError<TData, TError>(default, default, true, null);
-
-        public ResultError<AnotherT, TError> MapDataTo<AnotherT>(Func<TData, AnotherT> mapAction)
-        {
-            if (!IsSuccess)
-                return ResultError<AnotherT, TError>.Failure(this.ErrorMessage!, this.ErrorValue!);
-
-            if (Value == null)
-                return ResultError<AnotherT, TError>.SuccessWithoutValue();
-
-            return new ResultError<AnotherT, TError>(
-                mapAction.Invoke(this.Value),
-                this.ErrorValue,
-                this.IsSuccess,
-                this.ErrorMessage
-            );
-        }
     }
 }
