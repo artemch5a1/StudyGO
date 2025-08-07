@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
@@ -60,6 +61,12 @@ namespace StudyGO.infrastructure.Repositories
                     x => x.SubjectID == id,
                     cancellationToken
                 );
+
+                if (formatEntity == null)
+                    return Result<Subject?>.Failure(
+                        "Формата не существует",
+                        ErrorTypeEnum.NotFound
+                    );
 
                 return Result<Subject?>.Success(_mapper.Map<Subject?>(formatEntity));
             }

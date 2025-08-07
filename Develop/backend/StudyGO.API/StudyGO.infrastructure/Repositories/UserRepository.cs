@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
@@ -48,7 +49,7 @@ namespace StudyGO.infrastructure.Repositories
                 }
                 _logger.LogWarning($"Пользователь с айди {id} не был удален");
 
-                return Result<Guid>.Failure("Ошибка удаления");
+                return Result<Guid>.Failure("Ошибка удаления", ErrorTypeEnum.NotFound);
             }
             catch (Exception ex)
             {
@@ -93,7 +94,7 @@ namespace StudyGO.infrastructure.Repositories
                 if (user != null)
                     return Result<User?>.Success(user);
 
-                return Result<User?>.Failure("Пользователь не найден");
+                return Result<User?>.Failure("Пользователь не найден", ErrorTypeEnum.NotFound);
             }
             catch (Exception ex)
             {
@@ -147,7 +148,10 @@ namespace StudyGO.infrastructure.Repositories
                 );
 
                 if (isExistEmail)
-                    return Result<Guid>.Failure($"Пользователь с таким email уже существует");
+                    return Result<Guid>.Failure(
+                        $"Пользователь с таким email уже существует",
+                        ErrorTypeEnum.Duplicate
+                    );
 
                 UserEntity entity = _mapper.Map<UserEntity>(user);
 
@@ -161,7 +165,7 @@ namespace StudyGO.infrastructure.Repositories
                     );
 
                 if (result < 1)
-                    return Result<Guid>.Failure("Данные не были обновлены");
+                    return Result<Guid>.Failure("Данные не были обновлены", ErrorTypeEnum.NotFound);
 
                 return Result<Guid>.Success(user.UserID);
             }
@@ -194,7 +198,7 @@ namespace StudyGO.infrastructure.Repositories
                     );
 
                 if (result < 1)
-                    return Result<Guid>.Failure("Данные не были обновлены");
+                    return Result<Guid>.Failure("Данные не были обновлены", ErrorTypeEnum.NotFound);
 
                 return Result<Guid>.Success(user.UserID);
             }

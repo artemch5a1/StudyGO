@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
@@ -44,7 +45,7 @@ namespace StudyGO.infrastructure.Repositories
             if (user.Role != RolesEnum.user.GetString())
             {
                 _logger.LogError("Неверная роль, откат операции");
-                return Result<Guid>.Failure("Неверная роль");
+                return Result<Guid>.Failure("Неверная роль", ErrorTypeEnum.ServerError);
             }
 
             bool isExistEmail = await _context.UsersEntity.AnyAsync(
@@ -53,7 +54,10 @@ namespace StudyGO.infrastructure.Repositories
             );
 
             if (isExistEmail)
-                return Result<Guid>.Failure($"Пользователь с таким email уже существует");
+                return Result<Guid>.Failure(
+                    $"Пользователь с таким email уже существует",
+                    ErrorTypeEnum.Duplicate
+                );
 
             await using var transaction = await _context.Database.BeginTransactionAsync(
                 isolationLevel: IsolationLevel.ReadUncommitted,
@@ -128,7 +132,10 @@ namespace StudyGO.infrastructure.Repositories
                     .FirstOrDefaultAsync(x => x.UserID == id, cancellationToken);
 
                 if (user == null)
-                    return Result<UserProfile?>.Failure("Пользователь не найден");
+                    return Result<UserProfile?>.Failure(
+                        "Пользователь не найден",
+                        ErrorTypeEnum.NotFound
+                    );
 
                 return Result<UserProfile?>.Success(_mapper.Map<UserProfile?>(user));
             }
@@ -161,7 +168,7 @@ namespace StudyGO.infrastructure.Repositories
 
                 return affectedRows > 0
                     ? Result<Guid>.Success(model.UserID)
-                    : Result<Guid>.Failure("Строка не была обновлена");
+                    : Result<Guid>.Failure("Строка не была обновлена", ErrorTypeEnum.NotFound);
             }
             catch (Exception ex)
             {

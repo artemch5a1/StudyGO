@@ -1,7 +1,10 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
@@ -60,6 +63,10 @@ namespace StudyGO.infrastructure.Repositories
                     x => x.FormatID == id,
                     cancellationToken
                 );
+
+                if (formatEntity == null)
+                    return Result<Format?>.Failure("Формата не существует", ErrorTypeEnum.NotFound);
+
                 return Result<Format?>.Success(_mapper.Map<Format?>(formatEntity));
             }
             catch (Exception ex)
