@@ -33,7 +33,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             var result = await _userAccountService.TryLogIn(loginRequest, cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpDelete("delete/{userID}")]
@@ -45,7 +45,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             var result = await _userAccountService.TryDeleteAccount(userID, cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpDelete("delete-current-user")]
@@ -62,7 +62,7 @@ namespace StudyGO.API.Controllers.AccountControllers
                 cancellationToken
             );
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpGet("all-users")]
@@ -73,7 +73,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             var result = await _userAccountService.TryGetAllAccount(cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpGet("user-by-id/{userID}")]
@@ -85,7 +85,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             var result = await _userAccountService.TryGetAccountById(userID, cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpGet("current-user")]
@@ -104,7 +104,7 @@ namespace StudyGO.API.Controllers.AccountControllers
                 cancellationToken
             );
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpPut("update-user")]
@@ -119,7 +119,7 @@ namespace StudyGO.API.Controllers.AccountControllers
 
             var result = await _userAccountService.TryUpdateAccount(updateDto, cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpPut("update-user-credentials")]
@@ -134,7 +134,7 @@ namespace StudyGO.API.Controllers.AccountControllers
 
             var result = await _userAccountService.TryUpdateAccount(updateDto, cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
     }
 }

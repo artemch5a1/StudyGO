@@ -32,7 +32,7 @@ namespace StudyGO.API.Controllers.UsersControllers
         {
             var result = await _tutorAccountService.TryRegistr(registrRequest, cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpGet("get-all-profiles")]
@@ -43,12 +43,12 @@ namespace StudyGO.API.Controllers.UsersControllers
         {
             var result = await _tutorAccountService.GetAllUserProfiles(cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpGet("get-profile-by-id/{userID}")]
         [Authorize(Policy = PolicyNames.UserOrAdmin)]
-        public async Task<ActionResult<TutorProfileDto>> GetProfileById(
+        public async Task<ActionResult<TutorProfileDto?>> GetProfileById(
             Guid userID,
             CancellationToken cancellationToken
         )
@@ -58,12 +58,12 @@ namespace StudyGO.API.Controllers.UsersControllers
                 cancellationToken
             );
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpGet("get-current-profile")]
         [Authorize]
-        public async Task<ActionResult<TutorProfileDto>> GetCurrentUser(
+        public async Task<ActionResult<TutorProfileDto?>> GetCurrentUser(
             CancellationToken cancellationToken
         )
         {
@@ -77,7 +77,7 @@ namespace StudyGO.API.Controllers.UsersControllers
                 cancellationToken
             );
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpPut("update-profile")]
@@ -95,7 +95,7 @@ namespace StudyGO.API.Controllers.UsersControllers
                 cancellationToken
             );
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
     }
 }

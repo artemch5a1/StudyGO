@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StudyGO.API.Extensions;
 using StudyGO.Contracts.Dtos.Subjects;
 using StudyGO.Core.Abstractions.Services;
 
@@ -25,18 +26,18 @@ namespace StudyGO.API.Controllers.CatalogController
         {
             var result = await _subjectService.GetAllSubjects(cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpGet("get-subject-by-id/{subjectID}")]
-        public async Task<ActionResult<SubjectDto>> GetFormatById(
+        public async Task<ActionResult<SubjectDto?>> GetFormatById(
             Guid subjectID,
             CancellationToken cancellationToken
         )
         {
             var result = await _subjectService.GetSubjectById(subjectID, cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
     }
 }

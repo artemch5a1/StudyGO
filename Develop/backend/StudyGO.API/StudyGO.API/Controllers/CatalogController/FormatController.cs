@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StudyGO.API.Extensions;
 using StudyGO.Contracts.Dtos.Formats;
 using StudyGO.Core.Abstractions.Services;
 
@@ -25,18 +26,18 @@ namespace StudyGO.API.Controllers.CatalogController
         {
             var result = await _formatService.GetAllFormats(cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
 
         [HttpGet("get-format-by-id/{formatID}")]
-        public async Task<ActionResult<FormatDto>> GetFormatById(
+        public async Task<ActionResult<FormatDto?>> GetFormatById(
             int formatID,
             CancellationToken cancellationToken
         )
         {
             var result = await _formatService.GetFormatById(formatID, cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
         }
     }
 }
