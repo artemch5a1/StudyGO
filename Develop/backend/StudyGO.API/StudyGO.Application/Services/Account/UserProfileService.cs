@@ -70,9 +70,12 @@ namespace StudyGO.Application.Services.Account
             );
 
             if (!validatorResult.IsSuccess)
+            {
                 return Result<Guid>.Failure(
-                    validatorResult.Value?.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                    validatorResult.ErrorMessage ?? string.Empty,
+                    validatorResult.ErrorType
                 );
+            }
 
             profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
 
@@ -94,9 +97,12 @@ namespace StudyGO.Application.Services.Account
             );
 
             if (!validatorResult.IsSuccess)
+            {
                 return Result<Guid>.Failure(
-                    validatorResult.Value?.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                    validatorResult.ErrorMessage ?? string.Empty,
+                    validatorResult.ErrorType
                 );
+            }
 
             UserProfile user = _mapper.Map<UserProfile>(newProfile);
 

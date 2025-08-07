@@ -43,7 +43,7 @@ namespace StudyGO.Application.Validations.Service
                 var firstError = validationResult.Errors.FirstOrDefault();
 
                 return ResultError<T, List<ValidationErrorDto>>.Failure(
-                    "Validation failed",
+                    $"Validation failed: {firstError}",
                     MapToErrorDto(validationResult.Errors),
                     ErrorTypeEnum.ValidationError
                 );
@@ -75,7 +75,7 @@ namespace StudyGO.Application.Validations.Service
                 var firstError = validationResult.Errors.FirstOrDefault();
 
                 return ResultError<T, List<ValidationErrorDto>>.Failure(
-                    "Validation failed",
+                    $"Validation failed: {firstError}",
                     MapToErrorDto(validationResult.Errors),
                     ErrorTypeEnum.ValidationError
                 );

@@ -110,9 +110,12 @@ namespace StudyGO.Application.Services.Account
             var validationResult = await _validationService.ValidateAsync(user, cancellationToken);
 
             if (!validationResult.IsSuccess)
+            {
                 return Result<Guid>.Failure(
-                    validationResult.Value?.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                    validationResult.ErrorMessage ?? string.Empty,
+                    validationResult.ErrorType
                 );
+            }
 
             User userModel = _mapper.Map<User>(user);
 
@@ -127,9 +130,12 @@ namespace StudyGO.Application.Services.Account
             var validationResult = await _validationService.ValidateAsync(user, cancellationToken);
 
             if (!validationResult.IsSuccess)
+            {
                 return Result<Guid>.Failure(
-                    validationResult.Value?.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                    validationResult.ErrorMessage ?? string.Empty,
+                    validationResult.ErrorType
                 );
+            }
 
             var result = await _userRepository.GetById(user.UserId, cancellationToken);
 
