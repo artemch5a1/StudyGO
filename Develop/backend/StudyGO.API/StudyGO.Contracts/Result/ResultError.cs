@@ -1,4 +1,6 @@
-﻿namespace StudyGO.Contracts.Result
+﻿using StudyGO.Contracts.Result.ErrorTypes;
+
+namespace StudyGO.Contracts.Result
 {
     public class ResultError<TData, TError> : ResultBase<TData>
     {
@@ -15,8 +17,21 @@
             ErrorValue = errorValue;
         }
 
-        public static ResultError<TData, TError> Failure(string error, TError errorValue) =>
-            new ResultError<TData, TError>(default, errorValue, false, error);
+        protected ResultError(
+            string errorMessage,
+            TError errorValue,
+            ErrorTypeEnum errorType = ErrorTypeEnum.Unknown
+        )
+            : base(errorMessage, errorType)
+        {
+            ErrorValue = errorValue;
+        }
+
+        public static ResultError<TData, TError> Failure(
+            string error,
+            TError errorValue,
+            ErrorTypeEnum errorType = ErrorTypeEnum.Unknown
+        ) => new ResultError<TData, TError>(error, errorValue, errorType);
 
         public static ResultError<TData, TError> Success(TData value) =>
             new ResultError<TData, TError>(value, default, true, null);
