@@ -19,17 +19,17 @@ namespace StudyGO.API.Controllers.CatalogController
         }
 
         [HttpGet("get-all-subjects")]
-        public async Task<ActionResult<List<SubjectDto>>> GetAllFormats()
+        public async Task<ActionResult<List<SubjectDto>>> GetAllFormats(CancellationToken cancellationToken)
         {
-            var result = await _subjectService.GetAllSubjects();
+            var result = await _subjectService.GetAllSubjects(cancellationToken);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
 
         [HttpGet("get-subject-by-id/{subjectID}")]
-        public async Task<ActionResult<SubjectDto>> GetFormatById(Guid subjectID)
+        public async Task<ActionResult<SubjectDto>> GetFormatById(Guid subjectID, CancellationToken cancellationToken)
         {
-            var result = await _subjectService.GetSubjectById(subjectID);
+            var result = await _subjectService.GetSubjectById(subjectID, cancellationToken);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }

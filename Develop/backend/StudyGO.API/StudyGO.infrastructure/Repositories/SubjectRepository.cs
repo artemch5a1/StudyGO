@@ -29,11 +29,11 @@ namespace StudyGO.infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Result<List<Subject>>> GetAll()
+        public async Task<Result<List<Subject>>> GetAll(CancellationToken cancellationToken = default)
         {
             try
             {
-                List<SubjectEntity> formatEntity = await _context.SubjectsEntity.ToListAsync();
+                List<SubjectEntity> formatEntity = await _context.SubjectsEntity.ToListAsync(cancellationToken);
 
                 return Result<List<Subject>>.Success(_mapper.Map<List<Subject>>(formatEntity));
             }
@@ -45,12 +45,12 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<Subject?>> GetById(Guid id)
+        public async Task<Result<Subject?>> GetById(Guid id, CancellationToken cancellationToken = default)
         {
             try
             {
                 SubjectEntity? formatEntity = await _context.SubjectsEntity.FirstOrDefaultAsync(x =>
-                    x.SubjectID == id
+                    x.SubjectID == id, cancellationToken
                 );
 
                 return Result<Subject?>.Success(_mapper.Map<Subject?>(formatEntity));

@@ -32,7 +32,7 @@ namespace StudyGO.infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Result<Guid>> Create(UserProfile model)
+        public async Task<Result<Guid>> Create(UserProfile model, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Попытка создания профиля");
 
@@ -44,20 +44,20 @@ namespace StudyGO.infrastructure.Repositories
                 return Result<Guid>.Failure("Неверная роль");
             }
 
-            bool isExistEmail = await _context.UsersEntity.AnyAsync(x => x.Email == user.Email);
+            bool isExistEmail = await _context.UsersEntity.AnyAsync(x => x.Email == user.Email, cancellationToken);
 
             if (isExistEmail)
                 return Result<Guid>.Failure($"Пользователь с таким email уже существует");
 
             await using var transaction = await _context.Database.BeginTransactionAsync(
-                isolationLevel: IsolationLevel.ReadUncommitted
+                isolationLevel: IsolationLevel.ReadUncommitted, cancellationToken
             );
 
             try
             {
-                var userEntry = await _context.UsersEntity.AddAsync(user);
+                var userEntry = await _context.UsersEntity.AddAsync(user, cancellationToken);
 
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
 
                 var profile = _mapper.Map<UserProfileEntity>(model);
 
@@ -67,11 +67,11 @@ namespace StudyGO.infrastructure.Repositories
 
                 profile.FavoriteSubject = null;
 
-                await _context.UserProfilesEntity.AddAsync(profile);
+                await _context.UserProfilesEntity.AddAsync(profile, cancellationToken);
 
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
 
-                await transaction.CommitAsync();
+                await transaction.CommitAsync(cancellationToken);
 
                 _logger.LogInformation("Профиль успешно создан");
 
@@ -79,7 +79,7 @@ namespace StudyGO.infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
+                await transaction.RollbackAsync(cancellationToken);
 
                 _logger.LogError($"Произошла ошибка при создании аккаунта учителя: {ex.Message}");
 
@@ -87,14 +87,14 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<List<UserProfile>>> GetAll()
+        public async Task<Result<List<UserProfile>>> GetAll(CancellationToken cancellationToken = default)
         {
             try
             {
                 List<UserProfileEntity> user = await _context
                     .UserProfilesEntity.Include(x => x.User)
                     .Include(x => x.FavoriteSubject)
-                    .ToListAsync();
+                    .ToListAsync(cancellationToken);
 
                 return Result<List<UserProfile>>.Success(_mapper.Map<List<UserProfile>>(user));
             }
@@ -106,14 +106,14 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<UserProfile?>> GetById(Guid id)
+        public async Task<Result<UserProfile?>> GetById(Guid id, CancellationToken cancellationToken = default)
         {
             try
             {
                 UserProfileEntity? user = await _context
                     .UserProfilesEntity.Include(x => x.User)
                     .Include(x => x.FavoriteSubject)
-                    .FirstOrDefaultAsync(x => x.UserID == id);
+                    .FirstOrDefaultAsync(x => x.UserID == id, cancellationToken);
 
                 if (user == null)
                     return Result<UserProfile?>.Failure("Пользователь не найден");
@@ -128,7 +128,7 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<Guid>> Update(UserProfile model)
+        public async Task<Result<Guid>> Update(UserProfile model, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -139,7 +139,7 @@ namespace StudyGO.infrastructure.Repositories
                     .ExecuteUpdateAsync(u =>
                         u.SetProperty(i => i.SubjectID, i => model.SubjectID)
                             .SetProperty(i => i.DateBirth, i => model.DateBirth)
-                            .SetProperty(i => i.Description, i => model.Description)
+                            .SetProperty(i => i.Description, i => model.Description), cancellationToken
                     );
 
                 return affectedRows > 0

@@ -40,23 +40,23 @@ namespace StudyGO.Application.Services.Account
             _validationService = validationService;
         }
 
-        public async Task<Result<List<UserProfileDto>>> GetAllUserProfiles()
+        public async Task<Result<List<UserProfileDto>>> GetAllUserProfiles(CancellationToken cancellationToken = default)
         {
-            var result = await _userRepository.GetAll();
+            var result = await _userRepository.GetAll(cancellationToken);
 
             return result.MapDataTo(_mapper.Map<List<UserProfileDto>>);
         }
 
-        public async Task<Result<UserProfileDto?>> TryGetUserProfileById(Guid userId)
+        public async Task<Result<UserProfileDto?>> TryGetUserProfileById(Guid userId, CancellationToken cancellationToken = default)
         {
-            var result = await _userRepository.GetById(userId);
+            var result = await _userRepository.GetById(userId, cancellationToken);
 
             return result.MapDataTo(_mapper.Map<UserProfileDto?>);
         }
 
-        public async Task<Result<Guid>> TryRegistr(UserProfileRegistrDto profile)
+        public async Task<Result<Guid>> TryRegistr(UserProfileRegistrDto profile, CancellationToken cancellationToken = default)
         {
-            var validatorResult = _validationService.Validate(profile);
+            var validatorResult = await _validationService.ValidateAsync(profile, cancellationToken);
 
             if (!validatorResult.IsSuccess)
                 return Result<Guid>.Failure(
@@ -69,12 +69,12 @@ namespace StudyGO.Application.Services.Account
 
             profileModel.User!.Role = RolesEnum.user.GetString();
 
-            return await _userRepository.Create(profileModel);
+            return await _userRepository.Create(profileModel, cancellationToken);
         }
 
-        public async Task<Result<Guid>> TryUpdateUserProfile(UserProfileUpdateDto newProfile)
+        public async Task<Result<Guid>> TryUpdateUserProfile(UserProfileUpdateDto newProfile, CancellationToken cancellationToken = default)
         {
-            var validatorResult = _validationService.Validate(newProfile);
+            var validatorResult = await _validationService.ValidateAsync(newProfile, cancellationToken);
 
             if (!validatorResult.IsSuccess)
                 return Result<Guid>.Failure(
@@ -83,7 +83,7 @@ namespace StudyGO.Application.Services.Account
 
             UserProfile user = _mapper.Map<UserProfile>(newProfile);
 
-            return await _userRepository.Update(user);
+            return await _userRepository.Update(user, cancellationToken);
         }
     }
 }

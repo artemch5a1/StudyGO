@@ -40,23 +40,23 @@ namespace StudyGO.Application.Services.Account
             _validationService = validationService;
         }
 
-        public async Task<Result<List<TutorProfileDto>>> GetAllUserProfiles()
+        public async Task<Result<List<TutorProfileDto>>> GetAllUserProfiles(CancellationToken cancellationToken = default)
         {
-            var result = await _userRepository.GetAll();
+            var result = await _userRepository.GetAll(cancellationToken);
 
             return result.MapDataTo(_mapper.Map<List<TutorProfileDto>>);
         }
 
-        public async Task<Result<TutorProfileDto?>> TryGetUserProfileById(Guid userId)
+        public async Task<Result<TutorProfileDto?>> TryGetUserProfileById(Guid userId, CancellationToken cancellationToken = default)
         {
-            var result = await _userRepository.GetById(userId);
+            var result = await _userRepository.GetById(userId, cancellationToken);
 
             return result.MapDataTo(_mapper.Map<TutorProfileDto?>);
         }
 
-        public async Task<Result<Guid>> TryRegistr(TutorProfileRegistrDto profile)
+        public async Task<Result<Guid>> TryRegistr(TutorProfileRegistrDto profile, CancellationToken cancellationToken = default)
         {
-            var validatorResult = _validationService.Validate(profile);
+            var validatorResult = await _validationService.ValidateAsync(profile, cancellationToken);
 
             if (!validatorResult.IsSuccess)
                 return Result<Guid>.Failure(
@@ -69,19 +69,19 @@ namespace StudyGO.Application.Services.Account
 
             profileModel.User!.Role = RolesEnum.tutor.GetString();
 
-            return await _userRepository.Create(profileModel);
+            return await _userRepository.Create(profileModel, cancellationToken);
         }
 
-        public async Task<Result<Guid>> TryUpdateUserProfile(TutorProfileUpdateDto newProfile)
+        public async Task<Result<Guid>> TryUpdateUserProfile(TutorProfileUpdateDto newProfile, CancellationToken cancellationToken = default)
         {
-            var validatorResult = _validationService.Validate(newProfile);
+            var validatorResult = await _validationService.ValidateAsync(newProfile, cancellationToken);
 
             if (!validatorResult.IsSuccess)
                 return Result<Guid>.Failure(
                     validatorResult.Value?.FirstOrDefault()?.ErrorMessage ?? string.Empty
                 );
 
-            return await _userRepository.Update(_mapper.Map<TutorProfile>(newProfile));
+            return await _userRepository.Update(_mapper.Map<TutorProfile>(newProfile), cancellationToken);
         }
     }
 }

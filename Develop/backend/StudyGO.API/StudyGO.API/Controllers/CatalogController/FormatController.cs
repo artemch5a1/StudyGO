@@ -19,17 +19,17 @@ namespace StudyGO.API.Controllers.CatalogController
         }
 
         [HttpGet("get-all-formats")]
-        public async Task<ActionResult<List<FormatDto>>> GetAllFormats()
+        public async Task<ActionResult<List<FormatDto>>> GetAllFormats(CancellationToken cancellationToken)
         {
-            var result = await _formatService.GetAllFormats();
+            var result = await _formatService.GetAllFormats(cancellationToken);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }
 
         [HttpGet("get-format-by-id/{formatID}")]
-        public async Task<ActionResult<FormatDto>> GetFormatById(int formatID)
+        public async Task<ActionResult<FormatDto>> GetFormatById(int formatID, CancellationToken cancellationToken)
         {
-            var result = await _formatService.GetFormatById(formatID);
+            var result = await _formatService.GetFormatById(formatID, cancellationToken);
 
             return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
         }

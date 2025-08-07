@@ -32,7 +32,7 @@ namespace StudyGO.infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Result<Guid>> Create(TutorProfile model)
+        public async Task<Result<Guid>> Create(TutorProfile model, CancellationToken cancellationToken = default)
         {
             _logger.LogInformation("Попытка создания профиля");
 
@@ -45,20 +45,20 @@ namespace StudyGO.infrastructure.Repositories
                 return Result<Guid>.Failure("Неверная роль");
             }
 
-            bool isExistEmail = await _context.UsersEntity.AnyAsync(x => x.Email == user.Email);
+            bool isExistEmail = await _context.UsersEntity.AnyAsync(x => x.Email == user.Email, cancellationToken);
 
             if (isExistEmail)
                 return Result<Guid>.Failure($"Пользователь с таким email уже существует");
 
             await using var transaction = await _context.Database.BeginTransactionAsync(
-                isolationLevel: IsolationLevel.ReadUncommitted
+                isolationLevel: IsolationLevel.ReadUncommitted, cancellationToken
             );
 
             try
             {
-                var userEntry = await _context.UsersEntity.AddAsync(user);
+                var userEntry = await _context.UsersEntity.AddAsync(user, cancellationToken);
 
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
 
                 var profile = _mapper.Map<TutorProfileEntity>(model);
 
@@ -68,11 +68,11 @@ namespace StudyGO.infrastructure.Repositories
 
                 profile.Format = null;
 
-                await _context.TutorProfilesEntity.AddAsync(profile);
+                await _context.TutorProfilesEntity.AddAsync(profile, cancellationToken);
 
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
 
-                await transaction.CommitAsync();
+                await transaction.CommitAsync(cancellationToken);
 
                 _logger.LogInformation("Профиль успешно создан");
 
@@ -80,7 +80,7 @@ namespace StudyGO.infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
+                await transaction.RollbackAsync(cancellationToken);
 
                 _logger.LogError($"Произошла ошибка при создании аккаунта учителя: {ex.Message}");
 
@@ -88,14 +88,14 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<List<TutorProfile>>> GetAll()
+        public async Task<Result<List<TutorProfile>>> GetAll(CancellationToken cancellationToken = default)
         {
             try
             {
                 List<TutorProfileEntity> user = await _context
                     .TutorProfilesEntity.Include(x => x.User)
                     .Include(x => x.Format)
-                    .ToListAsync();
+                    .ToListAsync(cancellationToken);
 
                 return Result<List<TutorProfile>>.Success(_mapper.Map<List<TutorProfile>>(user));
             }
@@ -107,14 +107,14 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<TutorProfile?>> GetById(Guid id)
+        public async Task<Result<TutorProfile?>> GetById(Guid id, CancellationToken cancellationToken = default)
         {
             try
             {
                 TutorProfileEntity? user = await _context
                     .TutorProfilesEntity.Include(x => x.User)
                     .Include(x => x.Format)
-                    .FirstOrDefaultAsync(x => x.UserID == id);
+                    .FirstOrDefaultAsync(x => x.UserID == id, cancellationToken);
 
                 return Result<TutorProfile?>.Success(_mapper.Map<TutorProfile?>(user));
             }
@@ -126,7 +126,7 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<Guid>> Update(TutorProfile model)
+        public async Task<Result<Guid>> Update(TutorProfile model, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -138,7 +138,7 @@ namespace StudyGO.infrastructure.Repositories
                         u.SetProperty(i => i.PricePerHour, i => model.PricePerHour)
                             .SetProperty(i => i.City, i => model.City)
                             .SetProperty(i => i.FormatID, i => model.FormatID)
-                            .SetProperty(i => i.Bio, i => model.Bio)
+                            .SetProperty(i => i.Bio, i => model.Bio), cancellationToken
                     );
 
                 return affectedRows > 0

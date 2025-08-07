@@ -6,7 +6,7 @@ namespace StudyGO.Core.Abstractions.Repositories
 {
     public interface IUserProfileRepository : IReadable<UserProfile, Guid>
     {
-        Task<Result<Guid>> Create(UserProfile model);
-        Task<Result<Guid>> Update(UserProfile model);
+        Task<Result<Guid>> Create(UserProfile model, CancellationToken cancellationToken = default);
+        Task<Result<Guid>> Update(UserProfile model, CancellationToken cancellationToken = default);
     }
 }

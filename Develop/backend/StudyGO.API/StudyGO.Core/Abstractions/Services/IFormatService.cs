@@ -5,8 +5,8 @@ namespace StudyGO.Core.Abstractions.Services
 {
     public interface IFormatService
     {
-        public Task<Result<List<FormatDto>>> GetAllFormats();
+        public Task<Result<List<FormatDto>>> GetAllFormats(CancellationToken cancellationToken = default);
 
-        public Task<Result<FormatDto?>> GetFormatById(int id);
+        public Task<Result<FormatDto?>> GetFormatById(int id, CancellationToken cancellationToken = default);
     }
 }

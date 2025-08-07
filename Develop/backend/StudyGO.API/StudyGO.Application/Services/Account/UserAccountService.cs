@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using FluentValidation;
 using Microsoft.Extensions.Logging;
 using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Contracts;
@@ -34,7 +33,6 @@ namespace StudyGO.Application.Services.Account
             ILogger<UserAccountService> logger,
             IPasswordHasher passwordHasher,
             IJwtTokenProvider jwtTokenProvider,
-            IValidator<UserUpdateDto> validator,
             IValidationService validationService
         )
         {
@@ -46,29 +44,29 @@ namespace StudyGO.Application.Services.Account
             _validationService = validationService;
         }
 
-        public async Task<Result<Guid>> TryDeleteAccount(Guid id)
+        public async Task<Result<Guid>> TryDeleteAccount(Guid id, CancellationToken cancellationToken = default)
         {
-            return await _userRepository.Delete(id);
+            return await _userRepository.Delete(id, cancellationToken);
         }
 
-        public async Task<Result<UserDto?>> TryGetAccountById(Guid id)
+        public async Task<Result<UserDto?>> TryGetAccountById(Guid id, CancellationToken cancellationToken = default)
         {
-            Result<User?> result = await _userRepository.GetById(id);
+            Result<User?> result = await _userRepository.GetById(id, cancellationToken);
 
             return result.MapDataTo(x => _mapper.Map<UserDto?>(x));
         }
 
-        public async Task<Result<List<UserDto>>> TryGetAllAccount()
+        public async Task<Result<List<UserDto>>> TryGetAllAccount(CancellationToken cancellationToken = default)
         {
-            Result<List<User>> result = await _userRepository.GetAll();
+            Result<List<User>> result = await _userRepository.GetAll(cancellationToken);
 
             return result.MapDataTo(_mapper.Map<List<UserDto>>);
         }
 
-        public async Task<Result<UserLoginResponseDto>> TryLogIn(UserLoginRequest userLogin)
+        public async Task<Result<UserLoginResponseDto>> TryLogIn(UserLoginRequest userLogin, CancellationToken cancellationToken = default)
         {
             Result<UserLoginResponse> result = await _userRepository.GetCredentialByEmail(
-                userLogin.Email
+                userLogin.Email, cancellationToken
             );
 
             if (!result.IsSuccess)
@@ -92,9 +90,9 @@ namespace StudyGO.Application.Services.Account
             return Result<UserLoginResponseDto>.Failure("Invalid credentials");
         }
 
-        public async Task<Result<Guid>> TryUpdateAccount(UserUpdateDto user)
+        public async Task<Result<Guid>> TryUpdateAccount(UserUpdateDto user, CancellationToken cancellationToken = default)
         {
-            var validationResult = _validationService.Validate(user);
+            var validationResult = await _validationService.ValidateAsync(user, cancellationToken);
 
             if (!validationResult.IsSuccess)
                 return Result<Guid>.Failure(
@@ -103,19 +101,19 @@ namespace StudyGO.Application.Services.Account
 
             User userModel = _mapper.Map<User>(user);
 
-            return await _userRepository.Update(userModel);
+            return await _userRepository.Update(userModel, cancellationToken);
         }
 
-        public async Task<Result<Guid>> TryUpdateAccount(UserUpdateСredentialsDto user)
+        public async Task<Result<Guid>> TryUpdateAccount(UserUpdateСredentialsDto user, CancellationToken cancellationToken = default)
         {
-            var validationResult = _validationService.Validate(user);
+            var validationResult = await _validationService.ValidateAsync(user, cancellationToken);
 
             if (!validationResult.IsSuccess)
                 return Result<Guid>.Failure(
                     validationResult.Value?.FirstOrDefault()?.ErrorMessage ?? string.Empty
                 );
 
-            var result = await _userRepository.GetById(user.UserId);
+            var result = await _userRepository.GetById(user.UserId, cancellationToken);
 
             if (!result.IsSuccess)
                 return Result<Guid>.Failure("Неверный ID");
@@ -132,7 +130,7 @@ namespace StudyGO.Application.Services.Account
 
             User userModel = _mapper.Map<User>(user);
 
-            return await _userRepository.UpdateСredentials(userModel);
+            return await _userRepository.UpdateСredentials(userModel, cancellationToken);
         }
 
         private bool IsSuccessUserLogin(UserLoginRequest expected, UserLoginResponse actual)

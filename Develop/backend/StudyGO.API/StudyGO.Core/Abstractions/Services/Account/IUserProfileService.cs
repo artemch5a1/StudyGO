@@ -5,12 +5,12 @@ namespace StudyGO.Core.Abstractions.Services.Account
 {
     public interface IUserProfileService
     {
-        public Task<Result<Guid>> TryRegistr(UserProfileRegistrDto profile);
+        public Task<Result<Guid>> TryRegistr(UserProfileRegistrDto profile, CancellationToken cancellationToken = default);
 
-        public Task<Result<Guid>> TryUpdateUserProfile(UserProfileUpdateDto newProfile);
+        public Task<Result<Guid>> TryUpdateUserProfile(UserProfileUpdateDto newProfile, CancellationToken cancellationToken = default);
 
-        public Task<Result<UserProfileDto?>> TryGetUserProfileById(Guid userId);
+        public Task<Result<UserProfileDto?>> TryGetUserProfileById(Guid userId, CancellationToken cancellationToken = default);
 
-        public Task<Result<List<UserProfileDto>>> GetAllUserProfiles();
+        public Task<Result<List<UserProfileDto>>> GetAllUserProfiles(CancellationToken cancellationToken = default);
     }
 }

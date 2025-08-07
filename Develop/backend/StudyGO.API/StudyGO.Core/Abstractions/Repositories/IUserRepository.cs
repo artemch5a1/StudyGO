@@ -7,12 +7,12 @@ namespace StudyGO.Core.Abstractions.Repositories
 {
     public interface IUserRepository : IReadable<User, Guid>
     {
-        public Task<Result<Guid>> UpdateСredentials(User user);
+        public Task<Result<Guid>> UpdateСredentials(User user, CancellationToken cancellationToken = default);
 
-        public Task<Result<Guid>> Update(User user);
+        public Task<Result<Guid>> Update(User user, CancellationToken cancellationToken = default);
 
-        public Task<Result<Guid>> Delete(Guid id);
+        public Task<Result<Guid>> Delete(Guid id, CancellationToken cancellationToken = default);
 
-        public Task<Result<UserLoginResponse>> GetCredentialByEmail(string email);
+        public Task<Result<UserLoginResponse>> GetCredentialByEmail(string email, CancellationToken cancellationToken = default);
     }
 }
