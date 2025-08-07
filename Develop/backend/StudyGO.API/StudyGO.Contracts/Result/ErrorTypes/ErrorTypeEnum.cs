@@ -24,5 +24,8 @@ namespace StudyGO.Contracts.Result.ErrorTypes
 
         [Description("Одновременный доступ к ресурсу")]
         Concurrency,
+
+        [Description("Неизвестная ошибка")]
+        Unknown,
     }
 }

@@ -1,11 +1,19 @@
-﻿namespace StudyGO.Contracts.Result
+﻿using StudyGO.Contracts.Result.ErrorTypes;
+
+namespace StudyGO.Contracts.Result
 {
     public class Result<T> : ResultBase<T>
     {
         protected Result(T? value, bool isSuccess, string? errorMessage)
             : base(value, isSuccess, errorMessage) { }
 
-        public static Result<T> Failure(string error) => new Result<T>(default, false, error);
+        protected Result(string errorMessage, ErrorTypeEnum errorType)
+            : base(errorMessage, errorType) { }
+
+        public static Result<T> Failure(
+            string error,
+            ErrorTypeEnum errorType = ErrorTypeEnum.Unknown
+        ) => new Result<T>(error, errorType);
 
         public static Result<T> FailureWithValue(string error, T value) =>
             new Result<T>(value, false, error);
