@@ -143,7 +143,7 @@ namespace StudyGO.infrastructure.Repositories
             try
             {
                 bool isExistEmail = await _context.UsersEntity.AnyAsync(
-                    x => x.Email == user.Email,
+                    x => x.Email == user.Email && x.UserID != user.UserID,
                     cancellationToken
                 );
 
