@@ -44,29 +44,41 @@ namespace StudyGO.Application.Services.Account
             _validationService = validationService;
         }
 
-        public async Task<Result<Guid>> TryDeleteAccount(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Result<Guid>> TryDeleteAccount(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
         {
             return await _userRepository.Delete(id, cancellationToken);
         }
 
-        public async Task<Result<UserDto?>> TryGetAccountById(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Result<UserDto?>> TryGetAccountById(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
         {
             Result<User?> result = await _userRepository.GetById(id, cancellationToken);
 
             return result.MapDataTo(x => _mapper.Map<UserDto?>(x));
         }
 
-        public async Task<Result<List<UserDto>>> TryGetAllAccount(CancellationToken cancellationToken = default)
+        public async Task<Result<List<UserDto>>> TryGetAllAccount(
+            CancellationToken cancellationToken = default
+        )
         {
             Result<List<User>> result = await _userRepository.GetAll(cancellationToken);
 
             return result.MapDataTo(_mapper.Map<List<UserDto>>);
         }
 
-        public async Task<Result<UserLoginResponseDto>> TryLogIn(UserLoginRequest userLogin, CancellationToken cancellationToken = default)
+        public async Task<Result<UserLoginResponseDto>> TryLogIn(
+            UserLoginRequest userLogin,
+            CancellationToken cancellationToken = default
+        )
         {
             Result<UserLoginResponse> result = await _userRepository.GetCredentialByEmail(
-                userLogin.Email, cancellationToken
+                userLogin.Email,
+                cancellationToken
             );
 
             if (!result.IsSuccess)
@@ -90,7 +102,10 @@ namespace StudyGO.Application.Services.Account
             return Result<UserLoginResponseDto>.Failure("Invalid credentials");
         }
 
-        public async Task<Result<Guid>> TryUpdateAccount(UserUpdateDto user, CancellationToken cancellationToken = default)
+        public async Task<Result<Guid>> TryUpdateAccount(
+            UserUpdateDto user,
+            CancellationToken cancellationToken = default
+        )
         {
             var validationResult = await _validationService.ValidateAsync(user, cancellationToken);
 
@@ -104,7 +119,10 @@ namespace StudyGO.Application.Services.Account
             return await _userRepository.Update(userModel, cancellationToken);
         }
 
-        public async Task<Result<Guid>> TryUpdateAccount(UserUpdateСredentialsDto user, CancellationToken cancellationToken = default)
+        public async Task<Result<Guid>> TryUpdateAccount(
+            UserUpdateСredentialsDto user,
+            CancellationToken cancellationToken = default
+        )
         {
             var validationResult = await _validationService.ValidateAsync(user, cancellationToken);
 

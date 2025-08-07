@@ -4,6 +4,7 @@ using StudyGO.Contracts.Dtos.Formats;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services;
+
 namespace StudyGO.Application.Services
 {
     public class FormatService : IFormatService
@@ -25,14 +26,19 @@ namespace StudyGO.Application.Services
             _logger = logger;
         }
 
-        public async Task<Result<List<FormatDto>>> GetAllFormats(CancellationToken cancellationToken = default)
+        public async Task<Result<List<FormatDto>>> GetAllFormats(
+            CancellationToken cancellationToken = default
+        )
         {
             var result = await _formatRepository.GetAll(cancellationToken);
 
             return result.MapDataTo(_mapper.Map<List<FormatDto>>);
         }
 
-        public async Task<Result<FormatDto?>> GetFormatById(int id, CancellationToken cancellationToken = default)
+        public async Task<Result<FormatDto?>> GetFormatById(
+            int id,
+            CancellationToken cancellationToken = default
+        )
         {
             var result = await _formatRepository.GetById(id, cancellationToken);
 

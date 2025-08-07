@@ -40,23 +40,34 @@ namespace StudyGO.Application.Services.Account
             _validationService = validationService;
         }
 
-        public async Task<Result<List<UserProfileDto>>> GetAllUserProfiles(CancellationToken cancellationToken = default)
+        public async Task<Result<List<UserProfileDto>>> GetAllUserProfiles(
+            CancellationToken cancellationToken = default
+        )
         {
             var result = await _userRepository.GetAll(cancellationToken);
 
             return result.MapDataTo(_mapper.Map<List<UserProfileDto>>);
         }
 
-        public async Task<Result<UserProfileDto?>> TryGetUserProfileById(Guid userId, CancellationToken cancellationToken = default)
+        public async Task<Result<UserProfileDto?>> TryGetUserProfileById(
+            Guid userId,
+            CancellationToken cancellationToken = default
+        )
         {
             var result = await _userRepository.GetById(userId, cancellationToken);
 
             return result.MapDataTo(_mapper.Map<UserProfileDto?>);
         }
 
-        public async Task<Result<Guid>> TryRegistr(UserProfileRegistrDto profile, CancellationToken cancellationToken = default)
+        public async Task<Result<Guid>> TryRegistr(
+            UserProfileRegistrDto profile,
+            CancellationToken cancellationToken = default
+        )
         {
-            var validatorResult = await _validationService.ValidateAsync(profile, cancellationToken);
+            var validatorResult = await _validationService.ValidateAsync(
+                profile,
+                cancellationToken
+            );
 
             if (!validatorResult.IsSuccess)
                 return Result<Guid>.Failure(
@@ -72,9 +83,15 @@ namespace StudyGO.Application.Services.Account
             return await _userRepository.Create(profileModel, cancellationToken);
         }
 
-        public async Task<Result<Guid>> TryUpdateUserProfile(UserProfileUpdateDto newProfile, CancellationToken cancellationToken = default)
+        public async Task<Result<Guid>> TryUpdateUserProfile(
+            UserProfileUpdateDto newProfile,
+            CancellationToken cancellationToken = default
+        )
         {
-            var validatorResult = await _validationService.ValidateAsync(newProfile, cancellationToken);
+            var validatorResult = await _validationService.ValidateAsync(
+                newProfile,
+                cancellationToken
+            );
 
             if (!validatorResult.IsSuccess)
                 return Result<Guid>.Failure(
