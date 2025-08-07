@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 
 namespace StudyGO.infrastructure.Extensions
 {
@@ -18,9 +19,13 @@ namespace StudyGO.infrastructure.Extensions
             {
                 PostgresException pgEx => HandlePostgresException<T>(pgEx),
                 DbUpdateConcurrencyException => Result<T>.Failure(
-                    "Данные были изменены другим пользователем."
+                    "Данные были изменены другим пользователем.",
+                    ErrorTypeEnum.Concurrency
                 ),
-                _ => Result<T>.Failure("Произошла ошибка при сохранении данных."),
+                _ => Result<T>.Failure(
+                    "Произошла ошибка при сохранении данных.",
+                    ErrorTypeEnum.DbError
+                ),
             };
         }
 
@@ -29,23 +34,30 @@ namespace StudyGO.infrastructure.Extensions
             return pgEx.SqlState switch
             {
                 // Ошибка внешнего ключа (23503)
-                "23503" => Result<T>.Failure("Связанные данные не найдены."),
+                "23503" => Result<T>.Failure(
+                    "Связанные данные не найдены.",
+                    ErrorTypeEnum.RelationError
+                ),
 
                 // Ошибка проверки ограничения (23514)
-                "23514" => Result<T>.Failure("Недопустимые данные."),
+                "23514" => Result<T>.Failure("Недопустимые данные.", ErrorTypeEnum.ValidationError),
 
                 // Ошибка NULL-ограничения (23502)
-                "23502" => Result<T>.Failure("Обязательные поля не заполнены."),
+                "23502" => Result<T>.Failure(
+                    "Обязательные поля не заполнены.",
+                    ErrorTypeEnum.ValidationError
+                ),
 
                 // Все остальные ошибки PostgreSQL
-                _ => Result<T>.Failure("Произошла ошибка базы данных."),
+                _ => Result<T>.Failure("Произошла ошибка базы данных.", ErrorTypeEnum.DbError),
             };
         }
 
         private static Result<T> HandleUniqueConstraintViolation<T>(UniqueConstraintException pgEx)
         {
             return Result<T>.Failure(
-                $"Такой {pgEx.ConstraintProperties.FirstOrDefault()} уже существует"
+                $"Такой {pgEx.ConstraintProperties.FirstOrDefault()} уже существует",
+                ErrorTypeEnum.Duplicate
             );
         }
     }
