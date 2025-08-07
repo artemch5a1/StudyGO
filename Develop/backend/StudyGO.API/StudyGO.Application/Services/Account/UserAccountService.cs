@@ -4,6 +4,7 @@ using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Auth;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -99,7 +100,10 @@ namespace StudyGO.Application.Services.Account
                 return Result<UserLoginResponseDto>.Success(responseDto);
             }
 
-            return Result<UserLoginResponseDto>.Failure("Invalid credentials");
+            return Result<UserLoginResponseDto>.Failure(
+                "Invalid credentials",
+                ErrorTypeEnum.AuthenticationError
+            );
         }
 
         public async Task<Result<Guid>> TryUpdateAccount(

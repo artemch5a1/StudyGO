@@ -15,6 +15,7 @@ namespace StudyGO.API.Data
             [ErrorTypeEnum.Concurrency] = StatusCodes.Status409Conflict,
             [ErrorTypeEnum.ServerError] = StatusCodes.Status500InternalServerError,
             [ErrorTypeEnum.Unknown] = StatusCodes.Status500InternalServerError,
+            [ErrorTypeEnum.AuthenticationError] = StatusCodes.Status401Unauthorized,
         };
     }
 }

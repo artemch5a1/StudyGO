@@ -30,5 +30,8 @@ namespace StudyGO.Contracts.Result.ErrorTypes
 
         [Description("Ошибка сервера")]
         ServerError,
+
+        [Description("Ошибка аутентификации")]
+        AuthenticationError,
     }
 }
