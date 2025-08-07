@@ -32,7 +32,10 @@ namespace StudyGO.infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Result<Guid>> Create(TutorProfile model, CancellationToken cancellationToken = default)
+        public async Task<Result<Guid>> Create(
+            TutorProfile model,
+            CancellationToken cancellationToken = default
+        )
         {
             _logger.LogInformation("Попытка создания профиля");
 
@@ -45,13 +48,17 @@ namespace StudyGO.infrastructure.Repositories
                 return Result<Guid>.Failure("Неверная роль");
             }
 
-            bool isExistEmail = await _context.UsersEntity.AnyAsync(x => x.Email == user.Email, cancellationToken);
+            bool isExistEmail = await _context.UsersEntity.AnyAsync(
+                x => x.Email == user.Email,
+                cancellationToken
+            );
 
             if (isExistEmail)
                 return Result<Guid>.Failure($"Пользователь с таким email уже существует");
 
             await using var transaction = await _context.Database.BeginTransactionAsync(
-                isolationLevel: IsolationLevel.ReadUncommitted, cancellationToken
+                isolationLevel: IsolationLevel.ReadUncommitted,
+                cancellationToken
             );
 
             try
@@ -88,7 +95,9 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<List<TutorProfile>>> GetAll(CancellationToken cancellationToken = default)
+        public async Task<Result<List<TutorProfile>>> GetAll(
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -107,7 +116,10 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<TutorProfile?>> GetById(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Result<TutorProfile?>> GetById(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -126,7 +138,10 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<Guid>> Update(TutorProfile model, CancellationToken cancellationToken = default)
+        public async Task<Result<Guid>> Update(
+            TutorProfile model,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -134,11 +149,13 @@ namespace StudyGO.infrastructure.Repositories
 
                 int affectedRows = await _context
                     .TutorProfilesEntity.Where(e => e.UserID == model.UserID)
-                    .ExecuteUpdateAsync(u =>
-                        u.SetProperty(i => i.PricePerHour, i => model.PricePerHour)
-                            .SetProperty(i => i.City, i => model.City)
-                            .SetProperty(i => i.FormatID, i => model.FormatID)
-                            .SetProperty(i => i.Bio, i => model.Bio), cancellationToken
+                    .ExecuteUpdateAsync(
+                        u =>
+                            u.SetProperty(i => i.PricePerHour, i => model.PricePerHour)
+                                .SetProperty(i => i.City, i => model.City)
+                                .SetProperty(i => i.FormatID, i => model.FormatID)
+                                .SetProperty(i => i.Bio, i => model.Bio),
+                        cancellationToken
                     );
 
                 return affectedRows > 0

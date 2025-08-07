@@ -30,7 +30,10 @@ namespace StudyGO.infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Result<Guid>> Delete(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Result<Guid>> Delete(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -73,12 +76,18 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<User?>> GetById(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Result<User?>> GetById(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 User? user = _mapper.Map<User?>(
-                    await _context.UsersEntity.FirstOrDefaultAsync(x => x.UserID == id, cancellationToken)
+                    await _context.UsersEntity.FirstOrDefaultAsync(
+                        x => x.UserID == id,
+                        cancellationToken
+                    )
                 );
 
                 if (user != null)
@@ -94,7 +103,10 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<UserLoginResponse>> GetCredentialByEmail(string email, CancellationToken cancellationToken = default)
+        public async Task<Result<UserLoginResponse>> GetCredentialByEmail(
+            string email,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -122,11 +134,17 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<Guid>> UpdateСredentials(User user, CancellationToken cancellationToken = default)
+        public async Task<Result<Guid>> UpdateСredentials(
+            User user,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                bool isExistEmail = await _context.UsersEntity.AnyAsync(x => x.Email == user.Email, cancellationToken);
+                bool isExistEmail = await _context.UsersEntity.AnyAsync(
+                    x => x.Email == user.Email,
+                    cancellationToken
+                );
 
                 if (isExistEmail)
                     return Result<Guid>.Failure($"Пользователь с таким email уже существует");
@@ -135,9 +153,11 @@ namespace StudyGO.infrastructure.Repositories
 
                 int result = await _context
                     .UsersEntity.Where(e => e.UserID == entity.UserID)
-                    .ExecuteUpdateAsync(s =>
-                        s.SetProperty(i => i.PasswordHash, i => user.PasswordHash)
-                            .SetProperty(i => i.Email, i => user.Email), cancellationToken
+                    .ExecuteUpdateAsync(
+                        s =>
+                            s.SetProperty(i => i.PasswordHash, i => user.PasswordHash)
+                                .SetProperty(i => i.Email, i => user.Email),
+                        cancellationToken
                     );
 
                 if (result < 1)
@@ -153,7 +173,10 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<Guid>> Update(User user, CancellationToken cancellationToken = default)
+        public async Task<Result<Guid>> Update(
+            User user,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -161,11 +184,13 @@ namespace StudyGO.infrastructure.Repositories
 
                 int result = await _context
                     .UsersEntity.Where(e => e.UserID == entity.UserID)
-                    .ExecuteUpdateAsync(s =>
-                        s.SetProperty(i => i.Surname, i => user.Surname)
-                            .SetProperty(i => i.Number, i => user.Number)
-                            .SetProperty(i => i.Name, i => user.Name)
-                            .SetProperty(i => i.Patronymic, i => user.Patronymic), cancellationToken
+                    .ExecuteUpdateAsync(
+                        s =>
+                            s.SetProperty(i => i.Surname, i => user.Surname)
+                                .SetProperty(i => i.Number, i => user.Number)
+                                .SetProperty(i => i.Name, i => user.Name)
+                                .SetProperty(i => i.Patronymic, i => user.Patronymic),
+                        cancellationToken
                     );
 
                 if (result < 1)
