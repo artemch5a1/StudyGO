@@ -83,7 +83,7 @@ namespace StudyGO.Application.Services.Account
             );
 
             if (!result.IsSuccess)
-                return Result<UserLoginResponseDto>.Failure(result.ErrorMessage!);
+                return Result<UserLoginResponseDto>.Failure(result.ErrorMessage!, result.ErrorType);
 
             var dbSearchCred = result.Value ?? new();
 
