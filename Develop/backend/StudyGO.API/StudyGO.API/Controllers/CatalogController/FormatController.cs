@@ -29,13 +29,13 @@ namespace StudyGO.API.Controllers.CatalogController
             return result.ToActionResult();
         }
 
-        [HttpGet("get-format-by-id/{formatID}")]
+        [HttpGet("get-format-by-id/{formatId}")]
         public async Task<ActionResult<FormatDto?>> GetFormatById(
-            int formatID,
+            int formatId,
             CancellationToken cancellationToken
         )
         {
-            var result = await _formatService.GetFormatById(formatID, cancellationToken);
+            var result = await _formatService.GetFormatById(formatId, cancellationToken);
 
             return result.ToActionResult();
         }
