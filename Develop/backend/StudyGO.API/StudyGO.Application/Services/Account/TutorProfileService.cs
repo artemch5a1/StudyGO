@@ -59,7 +59,7 @@ namespace StudyGO.Application.Services.Account
             return result.MapDataTo(_mapper.Map<TutorProfileDto?>);
         }
 
-        public async Task<Result<Guid>> TryRegistr(
+        public async Task<Result<Guid>> TryRegistry(
             TutorProfileRegistrDto profile,
             CancellationToken cancellationToken = default
         )

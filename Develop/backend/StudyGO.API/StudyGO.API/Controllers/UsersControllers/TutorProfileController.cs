@@ -30,7 +30,7 @@ namespace StudyGO.API.Controllers.UsersControllers
             CancellationToken cancellationToken
         )
         {
-            var result = await _tutorAccountService.TryRegistr(registryRequest, cancellationToken);
+            var result = await _tutorAccountService.TryRegistry(registryRequest, cancellationToken);
 
             return result.ToActionResult();
         }

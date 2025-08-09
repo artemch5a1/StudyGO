@@ -4,9 +4,9 @@ using StudyGO.Contracts.Dtos.TutorProfiles;
 
 namespace StudyGO.Application.Validations.TutorProfileValidation
 {
-    public class TutorProfileRegistrDtoValidation : BaseUserValidator<TutorProfileRegistrDto>
+    public class TutorProfileRegistryDtoValidation : BaseUserValidator<TutorProfileRegistrDto>
     {
-        public TutorProfileRegistrDtoValidation()
+        public TutorProfileRegistryDtoValidation()
         {
             RuleFor(x => x.User)
                 .NotNull()

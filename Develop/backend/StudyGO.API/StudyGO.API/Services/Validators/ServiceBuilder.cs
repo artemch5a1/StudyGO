@@ -18,7 +18,7 @@ public partial class ServiceBuilder
 
         _services.AddScoped<IValidator<UserCreateDto>, UserCreateDtoValidator>();
 
-        _services.AddScoped<IValidator<UserProfileRegistrDto>, UserProfileRegistrDtoValidator>();
+        _services.AddScoped<IValidator<UserProfileRegistrDto>, UserProfileRegistryDtoValidator>();
 
         _services.AddScoped<IValidator<UserProfileUpdateDto>, UserProfileUpdateDtoValidator>();
 
@@ -29,7 +29,7 @@ public partial class ServiceBuilder
             UserUpdateСredentialsDtoValidator
         >();
 
-        _services.AddScoped<IValidator<TutorProfileRegistrDto>, TutorProfileRegistrDtoValidation>();
+        _services.AddScoped<IValidator<TutorProfileRegistrDto>, TutorProfileRegistryDtoValidation>();
 
         _services.AddScoped<IValidator<TutorProfileUpdateDto>, TutorProfileUpdateDtoValidator>();
     }

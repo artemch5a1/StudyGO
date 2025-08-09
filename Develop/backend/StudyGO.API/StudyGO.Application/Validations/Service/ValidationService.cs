@@ -36,7 +36,7 @@ namespace StudyGO.Application.Validations.Service
                 );
             }
 
-            var validationResult = validator!.Validate(model);
+            var validationResult = validator.Validate(model);
 
             if (!validationResult.IsValid)
             {
@@ -68,7 +68,7 @@ namespace StudyGO.Application.Validations.Service
                 );
             }
 
-            var validationResult = await validator!.ValidateAsync(model, cancellationToken);
+            var validationResult = await validator.ValidateAsync(model, cancellationToken);
 
             if (!validationResult.IsValid)
             {
