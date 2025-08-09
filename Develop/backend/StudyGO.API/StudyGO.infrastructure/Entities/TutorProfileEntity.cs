@@ -19,5 +19,7 @@ namespace StudyGO.infrastructure.Entities
 
         [ForeignKey(nameof(FormatId))]
         public virtual FormatEntity? Format { get; set; }
+
+        public virtual ICollection<TutorSubjectsEntity> TutorSubjects { get; set; } = [];
     }
 }
