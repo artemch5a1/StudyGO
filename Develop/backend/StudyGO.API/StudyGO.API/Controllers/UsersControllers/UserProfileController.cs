@@ -24,13 +24,13 @@ namespace StudyGO.API.Controllers.UsersControllers
             _userAccountService = userAccountService;
         }
 
-        [HttpPost("registr")]
-        public async Task<ActionResult<Guid>> RegistrUser(
-            [FromBody] UserProfileRegistrDto registrRequest,
+        [HttpPost("registry")]
+        public async Task<ActionResult<Guid>> RegistryUser(
+            [FromBody] UserProfileRegistrDto registryRequest,
             CancellationToken cancellationToken
         )
         {
-            var result = await _userAccountService.TryRegistr(registrRequest, cancellationToken);
+            var result = await _userAccountService.TryRegistr(registryRequest, cancellationToken);
 
             return result.ToActionResult();
         }
@@ -46,14 +46,14 @@ namespace StudyGO.API.Controllers.UsersControllers
             return result.ToActionResult();
         }
 
-        [HttpGet("get-profile-by-id/{userID}")]
+        [HttpGet("get-profile-by-id/{userId}")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
         public async Task<ActionResult<UserProfileDto?>> GetProfileById(
-            Guid userID,
+            Guid userId,
             CancellationToken cancellationToken
         )
         {
-            var result = await _userAccountService.TryGetUserProfileById(userID, cancellationToken);
+            var result = await _userAccountService.TryGetUserProfileById(userId, cancellationToken);
 
             return result.ToActionResult();
         }
@@ -64,13 +64,13 @@ namespace StudyGO.API.Controllers.UsersControllers
             CancellationToken cancellationToken
         )
         {
-            var userID = User.ExtractGuid();
+            var userId = User.ExtractGuid();
 
-            if (!userID.IsSuccess)
-                return BadRequest(userID.ErrorMessage);
+            if (!userId.IsSuccess)
+                return BadRequest(userId.ErrorMessage);
 
             var result = await _userAccountService.TryGetUserProfileById(
-                userID.Value,
+                userId.Value,
                 cancellationToken
             );
 
@@ -84,7 +84,7 @@ namespace StudyGO.API.Controllers.UsersControllers
             CancellationToken cancellationToken
         )
         {
-            if (!User.VerifyGuid(userProfile.UserID))
+            if (!User.VerifyGuid(userProfile.UserId))
                 return Forbid();
 
             var result = await _userAccountService.TryUpdateUserProfile(

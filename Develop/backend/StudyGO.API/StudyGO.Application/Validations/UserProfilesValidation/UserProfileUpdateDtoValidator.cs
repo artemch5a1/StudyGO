@@ -7,7 +7,7 @@ namespace StudyGO.Application.Validations.UserProfilesValidation
     {
         public UserProfileUpdateDtoValidator()
         {
-            RuleFor(x => x.UserID).NotEmpty().WithMessage("ID пользователя обязателен");
+            RuleFor(x => x.UserId).NotEmpty().WithMessage("ID пользователя обязателен");
 
             RuleFor(x => x.DateBirth)
                 .NotEmpty()

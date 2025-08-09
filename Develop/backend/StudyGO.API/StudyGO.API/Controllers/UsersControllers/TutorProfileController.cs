@@ -24,13 +24,13 @@ namespace StudyGO.API.Controllers.UsersControllers
             _tutorAccountService = userAccountService;
         }
 
-        [HttpPost("registr")]
-        public async Task<ActionResult<Guid>> RegistrUser(
-            [FromBody] TutorProfileRegistrDto registrRequest,
+        [HttpPost("registry")]
+        public async Task<ActionResult<Guid>> RegistryUser(
+            [FromBody] TutorProfileRegistrDto registryRequest,
             CancellationToken cancellationToken
         )
         {
-            var result = await _tutorAccountService.TryRegistr(registrRequest, cancellationToken);
+            var result = await _tutorAccountService.TryRegistr(registryRequest, cancellationToken);
 
             return result.ToActionResult();
         }
@@ -46,15 +46,15 @@ namespace StudyGO.API.Controllers.UsersControllers
             return result.ToActionResult();
         }
 
-        [HttpGet("get-profile-by-id/{userID}")]
+        [HttpGet("get-profile-by-id/{userId}")]
         [Authorize(Policy = PolicyNames.UserOrAdmin)]
         public async Task<ActionResult<TutorProfileDto?>> GetProfileById(
-            Guid userID,
+            Guid userId,
             CancellationToken cancellationToken
         )
         {
             var result = await _tutorAccountService.TryGetUserProfileById(
-                userID,
+                userId,
                 cancellationToken
             );
 
@@ -87,7 +87,7 @@ namespace StudyGO.API.Controllers.UsersControllers
             CancellationToken cancellationToken
         )
         {
-            if (!User.VerifyGuid(userProfile.UserID))
+            if (!User.VerifyGuid(userProfile.UserId))
                 return Forbid();
 
             var result = await _tutorAccountService.TryUpdateUserProfile(

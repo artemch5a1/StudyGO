@@ -7,7 +7,7 @@ using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
-using StudyGO.infrastructure.Entites;
+using StudyGO.infrastructure.Entities;
 using StudyGO.infrastructure.Extensions;
 
 namespace StudyGO.infrastructure.Repositories
@@ -39,7 +39,7 @@ namespace StudyGO.infrastructure.Repositories
             try
             {
                 int count = await _context
-                    .UsersEntity.Where(x => x.UserID == id)
+                    .UsersEntity.Where(x => x.UserId == id)
                     .ExecuteDeleteAsync(cancellationToken);
                 if (count != 0)
                 {
@@ -86,7 +86,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 User? user = _mapper.Map<User?>(
                     await _context.UsersEntity.FirstOrDefaultAsync(
-                        x => x.UserID == id,
+                        x => x.UserId == id,
                         cancellationToken
                     )
                 );
@@ -119,7 +119,7 @@ namespace StudyGO.infrastructure.Repositories
                             Email = u.Email,
                             PasswordHash = u.PasswordHash,
                             Role = u.Role,
-                            Id = u.UserID,
+                            Id = u.UserId,
                         })
                         .FirstOrDefaultAsync(cancellationToken) ?? new UserLoginResponse();
 
@@ -143,7 +143,7 @@ namespace StudyGO.infrastructure.Repositories
             try
             {
                 bool isExistEmail = await _context.UsersEntity.AnyAsync(
-                    x => x.Email == user.Email && x.UserID != user.UserID,
+                    x => x.Email == user.Email && x.UserId != user.UserId,
                     cancellationToken
                 );
 
@@ -156,7 +156,7 @@ namespace StudyGO.infrastructure.Repositories
                 UserEntity entity = _mapper.Map<UserEntity>(user);
 
                 int result = await _context
-                    .UsersEntity.Where(e => e.UserID == entity.UserID)
+                    .UsersEntity.Where(e => e.UserId == entity.UserId)
                     .ExecuteUpdateAsync(
                         s =>
                             s.SetProperty(i => i.PasswordHash, i => user.PasswordHash)
@@ -167,7 +167,7 @@ namespace StudyGO.infrastructure.Repositories
                 if (result < 1)
                     return Result<Guid>.Failure("Данные не были обновлены", ErrorTypeEnum.NotFound);
 
-                return Result<Guid>.Success(user.UserID);
+                return Result<Guid>.Success(user.UserId);
             }
             catch (Exception ex)
             {
@@ -187,7 +187,7 @@ namespace StudyGO.infrastructure.Repositories
                 UserEntity entity = _mapper.Map<UserEntity>(user);
 
                 int result = await _context
-                    .UsersEntity.Where(e => e.UserID == entity.UserID)
+                    .UsersEntity.Where(e => e.UserId == entity.UserId)
                     .ExecuteUpdateAsync(
                         s =>
                             s.SetProperty(i => i.Surname, i => user.Surname)
@@ -200,7 +200,7 @@ namespace StudyGO.infrastructure.Repositories
                 if (result < 1)
                     return Result<Guid>.Failure("Данные не были обновлены", ErrorTypeEnum.NotFound);
 
-                return Result<Guid>.Success(user.UserID);
+                return Result<Guid>.Success(user.UserId);
             }
             catch (Exception ex)
             {

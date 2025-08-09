@@ -19,17 +19,17 @@ namespace StudyGO.Contracts.Result
 
         public static Result<T> SuccessWithoutValue() => new Result<T>(default, true, null);
 
-        public Result<AnotherT> MapDataTo<AnotherT>(Func<T, AnotherT> mapAction)
+        public Result<TAnotherT> MapDataTo<TAnotherT>(Func<T, TAnotherT> mapAction)
         {
             if (!IsSuccess)
             {
-                return Result<AnotherT>.Failure(ErrorMessage ?? string.Empty, this.ErrorType);
+                return Result<TAnotherT>.Failure(ErrorMessage ?? string.Empty, this.ErrorType);
             }
 
             if (Value == null)
-                return Result<AnotherT>.SuccessWithoutValue();
+                return Result<TAnotherT>.SuccessWithoutValue();
 
-            return new Result<AnotherT>(
+            return new Result<TAnotherT>(
                 mapAction.Invoke(this.Value),
                 this.IsSuccess,
                 this.ErrorMessage

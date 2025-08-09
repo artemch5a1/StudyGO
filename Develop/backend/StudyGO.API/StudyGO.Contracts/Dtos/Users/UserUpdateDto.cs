@@ -2,7 +2,7 @@
 {
     public class UserUpdateDto
     {
-        public Guid UserID { get; set; }
+        public Guid UserId { get; set; }
 
         public string Surname { get; set; } = null!;
 

@@ -1,6 +1,6 @@
 ﻿using EntityFramework.Exceptions.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
-using StudyGO.infrastructure.Entites;
+using StudyGO.infrastructure.Entities;
 
 namespace StudyGO.infrastructure.Data
 {
@@ -28,19 +28,19 @@ namespace StudyGO.infrastructure.Data
         {
             modelBuilder.Entity<UserEntity>(entity =>
             {
-                entity.HasKey(e => e.UserID);
-                entity.Property(e => e.UserID).HasDefaultValueSql("gen_random_uuid()");
+                entity.HasKey(e => e.UserId);
+                entity.Property(e => e.UserId).HasDefaultValueSql("gen_random_uuid()");
                 entity.HasIndex(e => e.Email).IsUnique();
             });
 
             modelBuilder.Entity<FormatEntity>(entity =>
             {
-                entity.HasKey(e => e.FormatID);
+                entity.HasKey(e => e.FormatId);
             });
 
             modelBuilder.Entity<TutorProfileEntity>(entity =>
             {
-                entity.HasKey(e => e.UserID);
+                entity.HasKey(e => e.UserId);
                 entity
                     .HasOne(e => e.User)
                     .WithOne(f => f.TutorProfile)
@@ -48,19 +48,19 @@ namespace StudyGO.infrastructure.Data
                 entity
                     .HasOne(e => e.Format)
                     .WithMany(f => f.TutorProfiles)
-                    .HasForeignKey(x => x.FormatID)
+                    .HasForeignKey(x => x.FormatId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<SubjectEntity>(entity =>
             {
-                entity.HasKey(e => e.SubjectID);
-                entity.Property(e => e.SubjectID).HasDefaultValueSql("gen_random_uuid()");
+                entity.HasKey(e => e.SubjectId);
+                entity.Property(e => e.SubjectId).HasDefaultValueSql("gen_random_uuid()");
             });
 
             modelBuilder.Entity<UserProfileEntity>(entity =>
             {
-                entity.HasKey(e => e.UserID);
+                entity.HasKey(e => e.UserId);
                 entity
                     .HasOne(e => e.User)
                     .WithOne(f => f.UserProfile)
@@ -68,7 +68,7 @@ namespace StudyGO.infrastructure.Data
                 entity
                     .HasOne(e => e.FavoriteSubject)
                     .WithMany(f => f.UserProfiles)
-                    .HasForeignKey(e => e.SubjectID)
+                    .HasForeignKey(e => e.SubjectId)
                     .OnDelete(DeleteBehavior.SetNull);
             });
         }

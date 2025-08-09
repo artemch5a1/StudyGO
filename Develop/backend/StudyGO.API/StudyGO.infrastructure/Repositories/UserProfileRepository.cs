@@ -9,7 +9,7 @@ using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
-using StudyGO.infrastructure.Entites;
+using StudyGO.infrastructure.Entities;
 using StudyGO.infrastructure.Extensions;
 
 namespace StudyGO.infrastructure.Repositories
@@ -42,7 +42,7 @@ namespace StudyGO.infrastructure.Repositories
 
             UserEntity user = _mapper.Map<UserEntity>(model.User);
 
-            if (user.Role != RolesEnum.user.GetString())
+            if (user.Role != RolesEnum.User.GetString())
             {
                 _logger.LogError("Неверная роль, откат операции");
                 return Result<Guid>.Failure("Неверная роль", ErrorTypeEnum.ServerError);
@@ -72,7 +72,7 @@ namespace StudyGO.infrastructure.Repositories
 
                 var profile = _mapper.Map<UserProfileEntity>(model);
 
-                profile.UserID = userEntry.Entity.UserID;
+                profile.UserId = userEntry.Entity.UserId;
 
                 profile.User = null;
 
@@ -86,7 +86,7 @@ namespace StudyGO.infrastructure.Repositories
 
                 _logger.LogInformation("Профиль успешно создан");
 
-                return Result<Guid>.Success(userEntry.Entity.UserID);
+                return Result<Guid>.Success(userEntry.Entity.UserId);
             }
             catch (Exception ex)
             {
@@ -129,7 +129,7 @@ namespace StudyGO.infrastructure.Repositories
                 UserProfileEntity? user = await _context
                     .UserProfilesEntity.Include(x => x.User)
                     .Include(x => x.FavoriteSubject)
-                    .FirstOrDefaultAsync(x => x.UserID == id, cancellationToken);
+                    .FirstOrDefaultAsync(x => x.UserId == id, cancellationToken);
 
                 if (user == null)
                     return Result<UserProfile?>.Failure(
@@ -157,17 +157,17 @@ namespace StudyGO.infrastructure.Repositories
                 UserProfileEntity entity = _mapper.Map<UserProfileEntity>(model);
 
                 int affectedRows = await _context
-                    .UserProfilesEntity.Where(e => e.UserID == model.UserID)
+                    .UserProfilesEntity.Where(e => e.UserId == model.UserId)
                     .ExecuteUpdateAsync(
                         u =>
-                            u.SetProperty(i => i.SubjectID, i => model.SubjectID)
+                            u.SetProperty(i => i.SubjectId, i => model.SubjectId)
                                 .SetProperty(i => i.DateBirth, i => model.DateBirth)
                                 .SetProperty(i => i.Description, i => model.Description),
                         cancellationToken
                     );
 
                 return affectedRows > 0
-                    ? Result<Guid>.Success(model.UserID)
+                    ? Result<Guid>.Success(model.UserId)
                     : Result<Guid>.Failure("Строка не была обновлена", ErrorTypeEnum.NotFound);
             }
             catch (Exception ex)

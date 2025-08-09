@@ -36,25 +36,25 @@ namespace StudyGO.API.Services
                 .AddAuthorizationBuilder()
                 .AddPolicy(
                     PolicyNames.AdminOnly,
-                    policy => policy.RequireRole(RolesEnum.admin.GetString())
+                    policy => policy.RequireRole(RolesEnum.Admin.GetString())
                 )
                 .AddPolicy(
                     PolicyNames.UserOrAdmin,
                     policy =>
-                        policy.RequireRole(RolesEnum.user.GetString(), RolesEnum.admin.GetString())
+                        policy.RequireRole(RolesEnum.User.GetString(), RolesEnum.Admin.GetString())
                 )
                 .AddPolicy(
                     PolicyNames.TutorOrAdmin,
                     policy =>
-                        policy.RequireRole(RolesEnum.tutor.GetString(), RolesEnum.admin.GetString())
+                        policy.RequireRole(RolesEnum.Tutor.GetString(), RolesEnum.Admin.GetString())
                 )
                 .AddPolicy(
                     PolicyNames.TutorOnly,
-                    policy => policy.RequireRole(RolesEnum.tutor.GetString())
+                    policy => policy.RequireRole(RolesEnum.Tutor.GetString())
                 )
                 .AddPolicy(
                     PolicyNames.UserOnly,
-                    policy => policy.RequireRole(RolesEnum.user.GetString())
+                    policy => policy.RequireRole(RolesEnum.User.GetString())
                 );
             ;
         }

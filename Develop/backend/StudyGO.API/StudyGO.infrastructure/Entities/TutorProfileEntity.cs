@@ -1,13 +1,12 @@
-﻿using StudyGO.Core.Models;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace StudyGO.infrastructure.Entites
+namespace StudyGO.infrastructure.Entities
 {
     public class TutorProfileEntity
     {
-        public Guid UserID { get; set; }
+        public Guid UserId { get; set; }
 
-        [ForeignKey(nameof(UserID))]
+        [ForeignKey(nameof(UserId))]
         public virtual UserEntity? User { get; set; }
 
         public string Bio { get; set; } = string.Empty;
@@ -16,9 +15,9 @@ namespace StudyGO.infrastructure.Entites
 
         public string City { get; set; } = string.Empty;
 
-        public int FormatID { get; set; }
+        public int FormatId { get; set; }
 
-        [ForeignKey(nameof(FormatID))]
+        [ForeignKey(nameof(FormatId))]
         public virtual FormatEntity? Format { get; set; }
     }
 }

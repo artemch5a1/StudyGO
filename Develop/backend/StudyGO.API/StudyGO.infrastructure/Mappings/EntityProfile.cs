@@ -2,7 +2,7 @@
 using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
-using StudyGO.infrastructure.Entites;
+using StudyGO.infrastructure.Entities;
 
 namespace StudyGO.infrastructure.Mappings
 {
@@ -23,10 +23,10 @@ namespace StudyGO.infrastructure.Mappings
 
             CreateMap<UserEntity, User>()
                 .ConstructUsing(x => new User(
-                    x.UserID,
+                    x.UserId,
                     x.Email,
                     x.PasswordHash,
-                    x.Role.GetRolesEnum() ?? RolesEnum.user,
+                    x.Role.GetRolesEnum() ?? RolesEnum.User,
                     x.Surname,
                     x.Name,
                     x.Patronymic,

@@ -7,7 +7,7 @@ namespace StudyGO.Application.Validations.TutorProfileValidation
     {
         public TutorProfileUpdateDtoValidator()
         {
-            RuleFor(x => x.UserID).NotEmpty().WithMessage("ID пользователя обязателен");
+            RuleFor(x => x.UserId).NotEmpty().WithMessage("ID пользователя обязателен");
 
             RuleFor(x => x.Bio)
                 .NotEmpty()
@@ -23,7 +23,7 @@ namespace StudyGO.Application.Validations.TutorProfileValidation
                 .NotEmpty()
                 .WithMessage("Необходимо указать цену за час обучения");
 
-            RuleFor(x => x.FormatID).NotEmpty().WithMessage("Необходимо указать формат обучения");
+            RuleFor(x => x.FormatId).NotEmpty().WithMessage("Необходимо указать формат обучения");
         }
     }
 }

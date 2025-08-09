@@ -2,7 +2,7 @@
 {
     public class TutorProfileUpdateDto
     {
-        public Guid UserID { get; set; }
+        public Guid UserId { get; set; }
 
         public string Bio { get; set; } = string.Empty;
 
@@ -10,6 +10,6 @@
 
         public string City { get; set; } = string.Empty;
 
-        public int FormatID { get; set; }
+        public int FormatId { get; set; }
     }
 }

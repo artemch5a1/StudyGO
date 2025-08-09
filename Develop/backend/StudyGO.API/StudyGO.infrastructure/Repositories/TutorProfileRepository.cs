@@ -9,7 +9,7 @@ using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
-using StudyGO.infrastructure.Entites;
+using StudyGO.infrastructure.Entities;
 using StudyGO.infrastructure.Extensions;
 
 namespace StudyGO.infrastructure.Repositories
@@ -42,7 +42,7 @@ namespace StudyGO.infrastructure.Repositories
 
             UserEntity user = _mapper.Map<UserEntity>(model.User);
 
-            if (user.Role != RolesEnum.tutor.GetString())
+            if (user.Role != RolesEnum.Tutor.GetString())
             {
                 _logger.LogError("Неверная роль, откат операции");
 
@@ -73,7 +73,7 @@ namespace StudyGO.infrastructure.Repositories
 
                 var profile = _mapper.Map<TutorProfileEntity>(model);
 
-                profile.UserID = userEntry.Entity.UserID;
+                profile.UserId = userEntry.Entity.UserId;
 
                 profile.User = null;
 
@@ -87,7 +87,7 @@ namespace StudyGO.infrastructure.Repositories
 
                 _logger.LogInformation("Профиль успешно создан");
 
-                return Result<Guid>.Success(profile.UserID);
+                return Result<Guid>.Success(profile.UserId);
             }
             catch (Exception ex)
             {
@@ -130,7 +130,7 @@ namespace StudyGO.infrastructure.Repositories
                 TutorProfileEntity? user = await _context
                     .TutorProfilesEntity.Include(x => x.User)
                     .Include(x => x.Format)
-                    .FirstOrDefaultAsync(x => x.UserID == id, cancellationToken);
+                    .FirstOrDefaultAsync(x => x.UserId == id, cancellationToken);
 
                 if (user == null)
                     return Result<TutorProfile?>.Failure(
@@ -158,18 +158,18 @@ namespace StudyGO.infrastructure.Repositories
                 TutorProfileEntity entity = _mapper.Map<TutorProfileEntity>(model);
 
                 int affectedRows = await _context
-                    .TutorProfilesEntity.Where(e => e.UserID == model.UserID)
+                    .TutorProfilesEntity.Where(e => e.UserId == model.UserId)
                     .ExecuteUpdateAsync(
                         u =>
                             u.SetProperty(i => i.PricePerHour, i => model.PricePerHour)
                                 .SetProperty(i => i.City, i => model.City)
-                                .SetProperty(i => i.FormatID, i => model.FormatID)
+                                .SetProperty(i => i.FormatId, i => model.FormatId)
                                 .SetProperty(i => i.Bio, i => model.Bio),
                         cancellationToken
                     );
 
                 return affectedRows > 0
-                    ? Result<Guid>.Success(model.UserID)
+                    ? Result<Guid>.Success(model.UserId)
                     : Result<Guid>.Failure("Не удалось обновить данные", ErrorTypeEnum.NotFound);
             }
             catch (Exception ex)

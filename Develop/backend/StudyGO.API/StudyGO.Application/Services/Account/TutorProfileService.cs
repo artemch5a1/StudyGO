@@ -81,7 +81,7 @@ namespace StudyGO.Application.Services.Account
 
             TutorProfile profileModel = _mapper.Map<TutorProfile>(profile);
 
-            profileModel.User!.Role = RolesEnum.tutor.GetString();
+            profileModel.User!.Role = RolesEnum.Tutor.GetString();
 
             return await _userRepository.Create(profileModel, cancellationToken);
         }

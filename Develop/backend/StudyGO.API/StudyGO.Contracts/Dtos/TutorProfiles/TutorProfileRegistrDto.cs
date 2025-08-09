@@ -13,6 +13,6 @@ namespace StudyGO.Contracts.Dtos.TutorProfiles
 
         public string City { get; set; } = string.Empty;
 
-        public int FormatID { get; set; }
+        public int FormatId { get; set; }
     }
 }

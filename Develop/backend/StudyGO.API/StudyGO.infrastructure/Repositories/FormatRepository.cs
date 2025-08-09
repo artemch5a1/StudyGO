@@ -8,7 +8,7 @@ using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
-using StudyGO.infrastructure.Entites;
+using StudyGO.infrastructure.Entities;
 using StudyGO.infrastructure.Extensions;
 
 namespace StudyGO.infrastructure.Repositories
@@ -60,7 +60,7 @@ namespace StudyGO.infrastructure.Repositories
             try
             {
                 FormatEntity? formatEntity = await _context.FormatsEntity.FirstOrDefaultAsync(
-                    x => x.FormatID == id,
+                    x => x.FormatId == id,
                     cancellationToken
                 );
 

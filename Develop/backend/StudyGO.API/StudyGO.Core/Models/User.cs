@@ -6,7 +6,7 @@ namespace StudyGO.Core.Models
     public class User
     {
         public User(
-            Guid userID,
+            Guid userId,
             string email,
             string passwordHash,
             RolesEnum role,
@@ -16,7 +16,7 @@ namespace StudyGO.Core.Models
             string? number
         )
         {
-            UserID = userID;
+            UserId = userId;
             Email = email;
             PasswordHash = passwordHash;
             Role = role.GetString();
@@ -26,9 +26,9 @@ namespace StudyGO.Core.Models
             Number = number;
         }
 
-        public User(Guid userID)
+        public User(Guid userId)
         {
-            UserID = userID;
+            UserId = userId;
             Email = string.Empty;
             PasswordHash = string.Empty;
             Role = string.Empty;
@@ -39,7 +39,7 @@ namespace StudyGO.Core.Models
 
         public User() { }
 
-        public Guid UserID { get; set; }
+        public Guid UserId { get; set; }
 
         public string Email { get; set; } = null!;
 

@@ -36,14 +36,14 @@ namespace StudyGO.API.Controllers.AccountControllers
             return result.ToActionResult();
         }
 
-        [HttpDelete("delete/{userID}")]
+        [HttpDelete("delete/{userId}")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
         public async Task<ActionResult<Guid>> DeleteUser(
-            Guid userID,
+            Guid userId,
             CancellationToken cancellationToken
         )
         {
-            var result = await _userAccountService.TryDeleteAccount(userID, cancellationToken);
+            var result = await _userAccountService.TryDeleteAccount(userId, cancellationToken);
 
             return result.ToActionResult();
         }
@@ -76,14 +76,14 @@ namespace StudyGO.API.Controllers.AccountControllers
             return result.ToActionResult();
         }
 
-        [HttpGet("user-by-id/{userID}")]
+        [HttpGet("user-by-id/{userId}")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
         public async Task<ActionResult<UserDto?>> GetUserById(
-            Guid userID,
+            Guid userId,
             CancellationToken cancellationToken
         )
         {
-            var result = await _userAccountService.TryGetAccountById(userID, cancellationToken);
+            var result = await _userAccountService.TryGetAccountById(userId, cancellationToken);
 
             return result.ToActionResult();
         }
@@ -114,7 +114,7 @@ namespace StudyGO.API.Controllers.AccountControllers
             CancellationToken cancellationToken
         )
         {
-            if (!User.VerifyGuid(updateDto.UserID))
+            if (!User.VerifyGuid(updateDto.UserId))
                 return Forbid();
 
             var result = await _userAccountService.TryUpdateAccount(updateDto, cancellationToken);
