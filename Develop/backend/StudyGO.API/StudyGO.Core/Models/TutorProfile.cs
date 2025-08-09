@@ -15,5 +15,7 @@
         public int FormatId { get; set; }
 
         public Format? Format { get; set; }
+
+        public ICollection<TutorSubjects> TutorSubjects { get; set; } = [];
     }
 }

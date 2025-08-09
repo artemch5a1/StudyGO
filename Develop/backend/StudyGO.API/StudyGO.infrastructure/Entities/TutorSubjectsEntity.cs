@@ -7,10 +7,10 @@ public class TutorSubjectsEntity
     public Guid TutorId { get; set; }
     
     [ForeignKey(nameof(TutorId))]
-    public TutorProfileEntity Tutor { get; set; } = null!;
+    public virtual TutorProfileEntity? Tutor { get; set; } = null!;
 
     public Guid SubjectId { get; set; }
     
     [ForeignKey(nameof(SubjectId))]
-    public SubjectEntity Subject { get; set; } = null!;
+    public virtual SubjectEntity? Subject { get; set; } = null!;
 }

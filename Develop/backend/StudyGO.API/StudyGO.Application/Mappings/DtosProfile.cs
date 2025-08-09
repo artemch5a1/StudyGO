@@ -56,7 +56,12 @@ namespace StudyGO.Application.Mappings
         public void ConfigureTutorProfilesDto()
         {
             CreateMap<TutorProfile, TutorProfileDto>();
-            CreateMap<TutorProfileRegistrDto, TutorProfile>();
+            CreateMap<TutorProfileRegistrDto, TutorProfile>().ForMember(dest => dest.TutorSubjects,
+                opt => opt
+                    .MapFrom(src => src.SubjectsId.Select(x => new TutorSubjects()
+                    {
+                        SubjectId = x,
+                    })));
             CreateMap<TutorProfileUpdateDto, TutorProfile>();
         }
     }
