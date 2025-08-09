@@ -1,4 +1,5 @@
 ﻿using StudyGO.Contracts.Dtos.Formats;
+using StudyGO.Contracts.Dtos.Subjects;
 using StudyGO.Contracts.Dtos.Users;
 
 namespace StudyGO.Contracts.Dtos.TutorProfiles
@@ -14,5 +15,7 @@ namespace StudyGO.Contracts.Dtos.TutorProfiles
         public string City { get; set; } = string.Empty;
 
         public FormatDto Format { get; set; } = null!;
+
+        public List<SubjectDto> Subjects { get; set; } = [];
     }
 }

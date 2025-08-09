@@ -108,6 +108,7 @@ namespace StudyGO.infrastructure.Repositories
                 List<TutorProfileEntity> user = await _context
                     .TutorProfilesEntity.Include(x => x.User)
                     .Include(x => x.Format)
+                    .Include(x => x.TutorSubjects)
                     .ToListAsync(cancellationToken);
 
                 return Result<List<TutorProfile>>.Success(_mapper.Map<List<TutorProfile>>(user));
@@ -130,6 +131,8 @@ namespace StudyGO.infrastructure.Repositories
                 TutorProfileEntity? user = await _context
                     .TutorProfilesEntity.Include(x => x.User)
                     .Include(x => x.Format)
+                    .Include(x => x.TutorSubjects)
+                    .ThenInclude(x => x.Subject)
                     .FirstOrDefaultAsync(x => x.UserId == id, cancellationToken);
 
                 if (user == null)
