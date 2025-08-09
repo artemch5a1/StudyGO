@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace StudyGO.infrastructure.Entites
+namespace StudyGO.infrastructure.Entities
 {
     public class SubjectEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid SubjectID { get; set; }
+        public Guid SubjectId { get; set; }
 
         public string Title { get; set; } = null!;
 

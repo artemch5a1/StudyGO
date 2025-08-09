@@ -7,15 +7,11 @@ namespace StudyGO.Application.Validations.UserProfilesValidation
     {
         public UserProfileUpdateDtoValidator()
         {
-            RuleFor(x => x.UserID).NotEmpty().WithMessage("ID пользователя обязателен");
+            RuleFor(x => x.UserId).NotEmpty().WithMessage("ID пользователя обязателен");
 
             RuleFor(x => x.DateBirth)
                 .NotEmpty()
-                .WithMessage("Дата рождения обязательна")
-                .LessThan(DateTime.Now.AddYears(-14))
-                .WithMessage("Возраст должен быть не менее 14 лет")
-                .GreaterThan(DateTime.Now.AddYears(-120))
-                .WithMessage("Некорректная дата рождения");
+                .WithMessage("Дата рождения обязательна");
 
             RuleFor(x => x.Description)
                 .NotEmpty()

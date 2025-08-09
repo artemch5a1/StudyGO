@@ -17,31 +17,31 @@ namespace StudyGO.infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("StudyGO.infrastructure.Entites.FormatEntity", b =>
+            modelBuilder.Entity("StudyGO.infrastructure.Entities.FormatEntity", b =>
                 {
-                    b.Property<int>("FormatID")
+                    b.Property<int>("FormatId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("FormatID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("FormatId"));
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("FormatID");
+                    b.HasKey("FormatId");
 
                     b.ToTable("FormatsEntity");
                 });
 
-            modelBuilder.Entity("StudyGO.infrastructure.Entites.SubjectEntity", b =>
+            modelBuilder.Entity("StudyGO.infrastructure.Entities.SubjectEntity", b =>
                 {
-                    b.Property<Guid>("SubjectID")
+                    b.Property<Guid>("SubjectId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
@@ -54,14 +54,14 @@ namespace StudyGO.infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("SubjectID");
+                    b.HasKey("SubjectId");
 
                     b.ToTable("SubjectsEntity");
                 });
 
-            modelBuilder.Entity("StudyGO.infrastructure.Entites.TutorProfileEntity", b =>
+            modelBuilder.Entity("StudyGO.infrastructure.Entities.TutorProfileEntity", b =>
                 {
-                    b.Property<Guid>("UserID")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Bio")
@@ -72,22 +72,22 @@ namespace StudyGO.infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("FormatID")
+                    b.Property<int>("FormatId")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("PricePerHour")
                         .HasColumnType("numeric");
 
-                    b.HasKey("UserID");
+                    b.HasKey("UserId");
 
-                    b.HasIndex("FormatID");
+                    b.HasIndex("FormatId");
 
                     b.ToTable("TutorProfilesEntity");
                 });
 
-            modelBuilder.Entity("StudyGO.infrastructure.Entites.UserEntity", b =>
+            modelBuilder.Entity("StudyGO.infrastructure.Entities.UserEntity", b =>
                 {
-                    b.Property<Guid>("UserID")
+                    b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
@@ -119,7 +119,7 @@ namespace StudyGO.infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("UserID");
+                    b.HasKey("UserId");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -127,39 +127,39 @@ namespace StudyGO.infrastructure.Migrations
                     b.ToTable("UsersEntity");
                 });
 
-            modelBuilder.Entity("StudyGO.infrastructure.Entites.UserProfileEntity", b =>
+            modelBuilder.Entity("StudyGO.infrastructure.Entities.UserProfileEntity", b =>
                 {
-                    b.Property<Guid>("UserID")
+                    b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("DateBirth")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("DateBirth")
+                        .HasColumnType("date");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("SubjectID")
+                    b.Property<Guid?>("SubjectId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("UserID");
+                    b.HasKey("UserId");
 
-                    b.HasIndex("SubjectID");
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("UserProfilesEntity");
                 });
 
-            modelBuilder.Entity("StudyGO.infrastructure.Entites.TutorProfileEntity", b =>
+            modelBuilder.Entity("StudyGO.infrastructure.Entities.TutorProfileEntity", b =>
                 {
-                    b.HasOne("StudyGO.infrastructure.Entites.FormatEntity", "Format")
+                    b.HasOne("StudyGO.infrastructure.Entities.FormatEntity", "Format")
                         .WithMany("TutorProfiles")
-                        .HasForeignKey("FormatID")
+                        .HasForeignKey("FormatId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("StudyGO.infrastructure.Entites.UserEntity", "User")
+                    b.HasOne("StudyGO.infrastructure.Entities.UserEntity", "User")
                         .WithOne("TutorProfile")
-                        .HasForeignKey("StudyGO.infrastructure.Entites.TutorProfileEntity", "UserID")
+                        .HasForeignKey("StudyGO.infrastructure.Entities.TutorProfileEntity", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -168,16 +168,16 @@ namespace StudyGO.infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("StudyGO.infrastructure.Entites.UserProfileEntity", b =>
+            modelBuilder.Entity("StudyGO.infrastructure.Entities.UserProfileEntity", b =>
                 {
-                    b.HasOne("StudyGO.infrastructure.Entites.SubjectEntity", "FavoriteSubject")
+                    b.HasOne("StudyGO.infrastructure.Entities.SubjectEntity", "FavoriteSubject")
                         .WithMany("UserProfiles")
-                        .HasForeignKey("SubjectID")
+                        .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("StudyGO.infrastructure.Entites.UserEntity", "User")
+                    b.HasOne("StudyGO.infrastructure.Entities.UserEntity", "User")
                         .WithOne("UserProfile")
-                        .HasForeignKey("StudyGO.infrastructure.Entites.UserProfileEntity", "UserID")
+                        .HasForeignKey("StudyGO.infrastructure.Entities.UserProfileEntity", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -186,17 +186,17 @@ namespace StudyGO.infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("StudyGO.infrastructure.Entites.FormatEntity", b =>
+            modelBuilder.Entity("StudyGO.infrastructure.Entities.FormatEntity", b =>
                 {
                     b.Navigation("TutorProfiles");
                 });
 
-            modelBuilder.Entity("StudyGO.infrastructure.Entites.SubjectEntity", b =>
+            modelBuilder.Entity("StudyGO.infrastructure.Entities.SubjectEntity", b =>
                 {
                     b.Navigation("UserProfiles");
                 });
 
-            modelBuilder.Entity("StudyGO.infrastructure.Entites.UserEntity", b =>
+            modelBuilder.Entity("StudyGO.infrastructure.Entities.UserEntity", b =>
                 {
                     b.Navigation("TutorProfile");
 

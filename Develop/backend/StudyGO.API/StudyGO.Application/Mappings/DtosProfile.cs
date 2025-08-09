@@ -44,7 +44,7 @@ namespace StudyGO.Application.Mappings
 
             CreateMap<UserProfileRegistrDto, UserProfile>();
 
-            CreateMap<UserUpdateDto, UserProfile>();
+            CreateMap<UserProfileUpdateDto, UserProfile>();
         }
 
         public void ConfigureFormatDto()

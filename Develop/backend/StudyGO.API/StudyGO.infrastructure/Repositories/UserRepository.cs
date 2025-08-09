@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
-using StudyGO.infrastructure.Entites;
+using StudyGO.infrastructure.Entities;
 using StudyGO.infrastructure.Extensions;
 
 namespace StudyGO.infrastructure.Repositories
@@ -30,13 +31,16 @@ namespace StudyGO.infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Result<Guid>> Delete(Guid id)
+        public async Task<Result<Guid>> Delete(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 int count = await _context
-                    .UsersEntity.Where(x => x.UserID == id)
-                    .ExecuteDeleteAsync();
+                    .UsersEntity.Where(x => x.UserId == id)
+                    .ExecuteDeleteAsync(cancellationToken);
                 if (count != 0)
                 {
                     _logger.LogInformation($"Пользователь с айди {id} был удален");
@@ -45,7 +49,7 @@ namespace StudyGO.infrastructure.Repositories
                 }
                 _logger.LogWarning($"Пользователь с айди {id} не был удален");
 
-                return Result<Guid>.Failure("Ошибка удаления");
+                return Result<Guid>.Failure("Ошибка удаления", ErrorTypeEnum.NotFound);
             }
             catch (Exception ex)
             {
@@ -55,12 +59,12 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<List<User>>> GetAll()
+        public async Task<Result<List<User>>> GetAll(CancellationToken cancellationToken = default)
         {
             try
             {
                 List<User> users = _mapper.Map<List<User>>(
-                    await _context.UsersEntity.ToListAsync()
+                    await _context.UsersEntity.ToListAsync(cancellationToken)
                 );
 
                 return Result<List<User>>.Success(users);
@@ -73,18 +77,24 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<User?>> GetById(Guid id)
+        public async Task<Result<User?>> GetById(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 User? user = _mapper.Map<User?>(
-                    await _context.UsersEntity.FirstOrDefaultAsync(x => x.UserID == id)
+                    await _context.UsersEntity.FirstOrDefaultAsync(
+                        x => x.UserId == id,
+                        cancellationToken
+                    )
                 );
 
                 if (user != null)
                     return Result<User?>.Success(user);
 
-                return Result<User?>.Failure("Пользователь не найден");
+                return Result<User?>.Failure("Пользователь не найден", ErrorTypeEnum.NotFound);
             }
             catch (Exception ex)
             {
@@ -94,7 +104,10 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<UserLoginResponse>> GetCredentialByEmail(string email)
+        public async Task<Result<UserLoginResponse>> GetCredentialByEmail(
+            string email,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
@@ -106,12 +119,9 @@ namespace StudyGO.infrastructure.Repositories
                             Email = u.Email,
                             PasswordHash = u.PasswordHash,
                             Role = u.Role,
-                            Id = u.UserID,
+                            Id = u.UserId,
                         })
-                        .FirstOrDefaultAsync() ?? new UserLoginResponse();
-
-                if (string.IsNullOrWhiteSpace(response.Email))
-                    return Result<UserLoginResponse>.Failure("Пользователь не найден");
+                        .FirstOrDefaultAsync(cancellationToken) ?? new UserLoginResponse();
 
                 return Result<UserLoginResponse>.Success(response);
             }
@@ -125,29 +135,72 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<Guid>> Update(User user)
+        public async Task<Result<Guid>> UpdateСredentials(
+            User user,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                bool isExistEmail = await _context.UsersEntity.AnyAsync(
+                    x => x.Email == user.Email && x.UserId != user.UserId,
+                    cancellationToken
+                );
+
+                if (isExistEmail)
+                    return Result<Guid>.Failure(
+                        $"Пользователь с таким email уже существует",
+                        ErrorTypeEnum.Duplicate
+                    );
+
+                UserEntity entity = _mapper.Map<UserEntity>(user);
+
+                int result = await _context
+                    .UsersEntity.Where(e => e.UserId == entity.UserId)
+                    .ExecuteUpdateAsync(
+                        s =>
+                            s.SetProperty(i => i.PasswordHash, i => user.PasswordHash)
+                                .SetProperty(i => i.Email, i => user.Email),
+                        cancellationToken
+                    );
+
+                if (result < 1)
+                    return Result<Guid>.Failure("Данные не были обновлены", ErrorTypeEnum.NotFound);
+
+                return Result<Guid>.Success(user.UserId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+
+                return ex.HandleException<Guid>();
+            }
+        }
+
+        public async Task<Result<Guid>> Update(
+            User user,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
                 UserEntity entity = _mapper.Map<UserEntity>(user);
 
-                await _context
-                    .UsersEntity.Where(e => e.UserID == entity.UserID)
-                    .ExecuteUpdateAsync(s =>
-                        s.SetProperty(i => i.Surname, i => user.Surname)
-                            .SetProperty(i => i.Number, i => user.Number)
-                            .SetProperty(i => i.Name, i => user.Name)
-                            .SetProperty(i => i.PasswordHash, i => user.PasswordHash)
-                            .SetProperty(i => i.Patronymic, i => user.Patronymic)
-                            .SetProperty(i => i.Email, i => user.Email)
+                int result = await _context
+                    .UsersEntity.Where(e => e.UserId == entity.UserId)
+                    .ExecuteUpdateAsync(
+                        s =>
+                            s.SetProperty(i => i.Surname, i => user.Surname)
+                                .SetProperty(i => i.Number, i => user.Number)
+                                .SetProperty(i => i.Name, i => user.Name)
+                                .SetProperty(i => i.Patronymic, i => user.Patronymic),
+                        cancellationToken
                     );
 
-                int affectedRows = await _context.SaveChangesAsync();
+                if (result < 1)
+                    return Result<Guid>.Failure("Данные не были обновлены", ErrorTypeEnum.NotFound);
 
-                if (affectedRows > 0)
-                    return Result<Guid>.Success(user.UserID);
-
-                return Result<Guid>.Failure("Запись не была обновлена");
+                return Result<Guid>.Success(user.UserId);
             }
             catch (Exception ex)
             {

@@ -1,14 +1,15 @@
 ﻿using AutoMapper;
-using FluentValidation;
 using Microsoft.Extensions.Logging;
 using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Auth;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Abstractions.Utils;
+using StudyGO.Core.Abstractions.ValidationService;
 using StudyGO.Core.Models;
 
 namespace StudyGO.Application.Services.Account
@@ -25,9 +26,7 @@ namespace StudyGO.Application.Services.Account
 
         private readonly IJwtTokenProvider _jwtTokenProvider;
 
-        private readonly IValidator<UserUpdateDto> _validatorUpdate;
-
-        private readonly IValidator<UserUpdateСredentialsDto> _validatorUpdateСredentials;
+        private readonly IValidationService _validationService;
 
         public UserAccountService(
             IUserRepository userRepository,
@@ -35,8 +34,7 @@ namespace StudyGO.Application.Services.Account
             ILogger<UserAccountService> logger,
             IPasswordHasher passwordHasher,
             IJwtTokenProvider jwtTokenProvider,
-            IValidator<UserUpdateDto> validator,
-            IValidator<UserUpdateСredentialsDto> validatorUpdateСredentials
+            IValidationService validationService
         )
         {
             _userRepository = userRepository;
@@ -44,43 +42,54 @@ namespace StudyGO.Application.Services.Account
             _logger = logger;
             _passwordHasher = passwordHasher;
             _jwtTokenProvider = jwtTokenProvider;
-            _validatorUpdate = validator;
-            _validatorUpdateСredentials = validatorUpdateСredentials;
+            _validationService = validationService;
         }
 
-        public async Task<Result<Guid>> TryDeleteAccount(Guid id)
+        public async Task<Result<Guid>> TryDeleteAccount(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
         {
-            return await _userRepository.Delete(id);
+            return await _userRepository.Delete(id, cancellationToken);
         }
 
-        public async Task<Result<UserDto?>> TryGetAccountById(Guid id)
+        public async Task<Result<UserDto?>> TryGetAccountById(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
         {
-            Result<User?> result = await _userRepository.GetById(id);
+            Result<User?> result = await _userRepository.GetById(id, cancellationToken);
 
-            return result.MapTo(x => _mapper.Map<UserDto?>(x));
+            return result.MapDataTo(x => _mapper.Map<UserDto?>(x));
         }
 
-        public async Task<Result<List<UserDto>>> TryGetAllAccount()
+        public async Task<Result<List<UserDto>>> TryGetAllAccount(
+            CancellationToken cancellationToken = default
+        )
         {
-            Result<List<User>> result = await _userRepository.GetAll();
+            Result<List<User>> result = await _userRepository.GetAll(cancellationToken);
 
-            return result.MapTo(_mapper.Map<List<UserDto>>);
+            return result.MapDataTo(_mapper.Map<List<UserDto>>);
         }
 
-        public async Task<Result<UserLoginResponseDto>> TryLogIn(UserLoginRequest userLogin)
+        public async Task<Result<UserLoginResponseDto>> TryLogIn(
+            UserLoginRequest userLogin,
+            CancellationToken cancellationToken = default
+        )
         {
             Result<UserLoginResponse> result = await _userRepository.GetCredentialByEmail(
-                userLogin.Email
+                userLogin.Email,
+                cancellationToken
             );
 
             if (!result.IsSuccess)
-                return Result<UserLoginResponseDto>.Failure(result.ErrorMessage!);
+                return Result<UserLoginResponseDto>.Failure(result.ErrorMessage!, result.ErrorType);
 
             var dbSearchCred = result.Value ?? new();
 
-            bool IsAccess = IsSuccessUserLogin(userLogin, dbSearchCred);
+            bool isAccess = IsSuccessUserLogin(userLogin, dbSearchCred);
 
-            if (IsAccess)
+            if (isAccess)
             {
                 var responseDto = new UserLoginResponseDto()
                 {
@@ -91,38 +100,65 @@ namespace StudyGO.Application.Services.Account
                 return Result<UserLoginResponseDto>.Success(responseDto);
             }
 
-            return Result<UserLoginResponseDto>.Failure("Invalid credentials");
+            return Result<UserLoginResponseDto>.Failure(
+                "Invalid credentials",
+                ErrorTypeEnum.AuthenticationError
+            );
         }
 
-        public async Task<Result<Guid>> TryUpdateAccount(UserUpdateDto user)
+        public async Task<Result<Guid>> TryUpdateAccount(
+            UserUpdateDto user,
+            CancellationToken cancellationToken = default
+        )
         {
-            var validationResult = await _validatorUpdate.ValidateAsync(user);
+            var validationResult = await _validationService.ValidateAsync(user, cancellationToken);
 
-            if (!validationResult.IsValid)
+            if (!validationResult.IsSuccess)
+            {
                 return Result<Guid>.Failure(
-                    validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
+                    validationResult.ErrorMessage ?? string.Empty,
+                    validationResult.ErrorType
                 );
+            }
 
-            return await TryUpdate(user);
-        }
-
-        public async Task<Result<Guid>> TryUpdateAccount(UserUpdateСredentialsDto user)
-        {
-            var validationResult = await _validatorUpdateСredentials.ValidateAsync(user);
-
-            if (!validationResult.IsValid)
-                return Result<Guid>.Failure(
-                    validationResult.Errors.FirstOrDefault()?.ErrorMessage ?? string.Empty
-                );
-
-            return await TryUpdate(user);
-        }
-
-        private async Task<Result<Guid>> TryUpdate<T>(T user)
-        {
             User userModel = _mapper.Map<User>(user);
 
-            return await _userRepository.Update(userModel);
+            return await _userRepository.Update(userModel, cancellationToken);
+        }
+
+        public async Task<Result<Guid>> TryUpdateAccount(
+            UserUpdateСredentialsDto user,
+            CancellationToken cancellationToken = default
+        )
+        {
+            var validationResult = await _validationService.ValidateAsync(user, cancellationToken);
+
+            if (!validationResult.IsSuccess)
+            {
+                return Result<Guid>.Failure(
+                    validationResult.ErrorMessage ?? string.Empty,
+                    validationResult.ErrorType
+                );
+            }
+
+            var result = await _userRepository.GetById(user.UserId, cancellationToken);
+
+            if (!result.IsSuccess)
+                return Result<Guid>.Failure("Неверный ID", ErrorTypeEnum.NotFound);
+
+            var check = user.OldPassword.VerifyPassword(
+                result.Value!.PasswordHash,
+                _passwordHasher
+            );
+
+            if (!check)
+                return Result<Guid>.Failure("Неверный пароль", ErrorTypeEnum.AuthenticationError);
+
+            user.Password = user.Password.HashedPassword(_passwordHasher);
+
+            User userModel = _mapper.Map<User>(user);
+
+            return await _userRepository.UpdateСredentials(userModel, cancellationToken);
         }
 
         private bool IsSuccessUserLogin(UserLoginRequest expected, UserLoginResponse actual)

@@ -1,35 +1,39 @@
-﻿namespace StudyGO.Contracts.Result
+﻿using StudyGO.Contracts.Result.ErrorTypes;
+
+namespace StudyGO.Contracts.Result
 {
-    public class Result<T>
+    public class Result<T> : ResultBase<T>
     {
-        public T? Value { get; }
+        protected Result(T? value, bool isSuccess, string? errorMessage)
+            : base(value, isSuccess, errorMessage) { }
 
-        public bool IsSuccess { get; }
+        protected Result(string errorMessage, ErrorTypeEnum errorType)
+            : base(errorMessage, errorType) { }
 
-        public string? ErrorMessage { get; }
-
-        private Result(T? value, bool isSuccess, string? errorMessage)
-        {
-            Value = value;
-            IsSuccess = isSuccess;
-            ErrorMessage = errorMessage;
-        }
-
-        public delegate AnotherT MapAction<AnotherT>(T? value);
-
-        public static Result<T> Failure(string error) => new Result<T>(default, false, error);
+        public static Result<T> Failure(
+            string error,
+            ErrorTypeEnum errorType = ErrorTypeEnum.Unknown
+        ) => new Result<T>(error, errorType);
 
         public static Result<T> Success(T value) => new Result<T>(value, true, null);
 
-        public Result<AnotherT> MapTo<AnotherT>(MapAction<AnotherT> mapAction)
+        public static Result<T> SuccessWithoutValue() => new Result<T>(default, true, null);
+
+        public Result<TAnotherT> MapDataTo<TAnotherT>(Func<T, TAnotherT> mapAction)
         {
             if (!IsSuccess)
-                return Result<AnotherT>.Failure(ErrorMessage!);
+            {
+                return Result<TAnotherT>.Failure(ErrorMessage ?? string.Empty, this.ErrorType);
+            }
 
             if (Value == null)
-                return Result<AnotherT>.Success(default);
+                return Result<TAnotherT>.SuccessWithoutValue();
 
-            return new Result<AnotherT>(mapAction.Invoke(this.Value), this.IsSuccess, this.ErrorMessage);
+            return new Result<TAnotherT>(
+                mapAction.Invoke(this.Value),
+                this.IsSuccess,
+                this.ErrorMessage
+            );
         }
     }
 }

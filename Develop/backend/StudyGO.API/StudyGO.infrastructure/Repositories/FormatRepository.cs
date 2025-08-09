@@ -1,11 +1,14 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
-using StudyGO.infrastructure.Entites;
+using StudyGO.infrastructure.Entities;
 using StudyGO.infrastructure.Extensions;
 
 namespace StudyGO.infrastructure.Repositories
@@ -29,11 +32,15 @@ namespace StudyGO.infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Result<List<Format>>> GetAll()
+        public async Task<Result<List<Format>>> GetAll(
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                List<FormatEntity> formatEntity = await _context.FormatsEntity.ToListAsync();
+                List<FormatEntity> formatEntity = await _context.FormatsEntity.ToListAsync(
+                    cancellationToken
+                );
 
                 return Result<List<Format>>.Success(_mapper.Map<List<Format>>(formatEntity));
             }
@@ -45,13 +52,21 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<Format?>> GetById(int id)
+        public async Task<Result<Format?>> GetById(
+            int id,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                FormatEntity? formatEntity = await _context.FormatsEntity.FirstOrDefaultAsync(x =>
-                    x.FormatID == id
+                FormatEntity? formatEntity = await _context.FormatsEntity.FirstOrDefaultAsync(
+                    x => x.FormatId == id,
+                    cancellationToken
                 );
+
+                if (formatEntity == null)
+                    return Result<Format?>.Failure("Формата не существует", ErrorTypeEnum.NotFound);
+
                 return Result<Format?>.Success(_mapper.Map<Format?>(formatEntity));
             }
             catch (Exception ex)

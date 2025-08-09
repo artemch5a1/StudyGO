@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using StudyGO.API.Enums;
+using StudyGO.API.Extensions;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -22,14 +25,116 @@ namespace StudyGO.API.Controllers.AccountControllers
             _userAccountService = userAccountService;
         }
 
-        [HttpPost(Name = "login")]
+        [HttpPost("login")]
         public async Task<ActionResult<UserLoginResponseDto>> LoginUser(
-            [FromBody] UserLoginRequest loginRequest
+            [FromBody] UserLoginRequest loginRequest,
+            CancellationToken cancellationToken
         )
         {
-            var result = await _userAccountService.TryLogIn(loginRequest);
+            var result = await _userAccountService.TryLogIn(loginRequest, cancellationToken);
 
-            return result.IsSuccess ? Ok(result.Value) : BadRequest(result.ErrorMessage);
+            return result.ToActionResult();
+        }
+
+        [HttpDelete("delete/{userId}")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
+        public async Task<ActionResult<Guid>> DeleteUser(
+            Guid userId,
+            CancellationToken cancellationToken
+        )
+        {
+            var result = await _userAccountService.TryDeleteAccount(userId, cancellationToken);
+
+            return result.ToActionResult();
+        }
+
+        [HttpDelete("delete-current-user")]
+        [Authorize]
+        public async Task<ActionResult<Guid>> DeleteCurrentUser(CancellationToken cancellationToken)
+        {
+            var userId = User.ExtractGuid();
+
+            if (!userId.IsSuccess)
+                return BadRequest(userId.ErrorMessage);
+
+            var result = await _userAccountService.TryDeleteAccount(
+                userId.Value,
+                cancellationToken
+            );
+
+            return result.ToActionResult();
+        }
+
+        [HttpGet("all-users")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
+        public async Task<ActionResult<List<UserDto>>> GetAllUsers(
+            CancellationToken cancellationToken
+        )
+        {
+            var result = await _userAccountService.TryGetAllAccount(cancellationToken);
+
+            return result.ToActionResult();
+        }
+
+        [HttpGet("user-by-id/{userId}")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
+        public async Task<ActionResult<UserDto?>> GetUserById(
+            Guid userId,
+            CancellationToken cancellationToken
+        )
+        {
+            var result = await _userAccountService.TryGetAccountById(userId, cancellationToken);
+
+            return result.ToActionResult();
+        }
+
+        [HttpGet("current-user")]
+        [Authorize]
+        public async Task<ActionResult<UserDto?>> GetCurrentUser(
+            CancellationToken cancellationToken
+        )
+        {
+            var userId = User.ExtractGuid();
+
+            if (!userId.IsSuccess)
+                return BadRequest(userId.ErrorMessage);
+
+            var result = await _userAccountService.TryGetAccountById(
+                userId.Value,
+                cancellationToken
+            );
+
+            return result.ToActionResult();
+        }
+
+        [HttpPut("update-user")]
+        [Authorize]
+        public async Task<ActionResult<Guid>> UpdateUser(
+            [FromBody] UserUpdateDto updateDto,
+            CancellationToken cancellationToken
+        )
+        {
+            if (!User.VerifyGuid(updateDto.UserId))
+                return Forbid();
+
+            var result = await _userAccountService.TryUpdateAccount(updateDto, cancellationToken);
+
+            return result.ToActionResult();
+        }
+
+        [HttpPut("update-user-credentials")]
+        [Authorize]
+        public async Task<ActionResult<Guid>> UpdateCredentials(
+            [FromBody] UserUpdate—redentialsDto updateDto,
+            CancellationToken cancellationToken
+        )
+        {
+            if (!User.VerifyGuid(updateDto.UserId))
+                return Forbid();
+
+            var result = await _userAccountService.TryUpdateAccount(updateDto, cancellationToken);
+
+            return result.ToActionResult();
         }
     }
 }

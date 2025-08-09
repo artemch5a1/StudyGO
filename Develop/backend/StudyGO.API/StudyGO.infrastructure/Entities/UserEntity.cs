@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace StudyGO.infrastructure.Entites
+namespace StudyGO.infrastructure.Entities
 {
     public class UserEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid UserID { get; set; }
+        public Guid UserId { get; set; }
 
         public string Email { get; set; } = null!;
 

@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
-using StudyGO.Application.Services.Account;
 using StudyGO.Contracts.Dtos.Formats;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services;
-using StudyGO.Core.Abstractions.Utils;
 
 namespace StudyGO.Application.Services
 {
@@ -28,18 +26,23 @@ namespace StudyGO.Application.Services
             _logger = logger;
         }
 
-        public async Task<Result<List<FormatDto>>> GetAllFormats()
+        public async Task<Result<List<FormatDto>>> GetAllFormats(
+            CancellationToken cancellationToken = default
+        )
         {
-            var result = await _formatRepository.GetAll();
+            var result = await _formatRepository.GetAll(cancellationToken);
 
-            return result.MapTo(_mapper.Map<List<FormatDto>>);
+            return result.MapDataTo(_mapper.Map<List<FormatDto>>);
         }
 
-        public async Task<Result<FormatDto?>> GetFormatById(int id)
+        public async Task<Result<FormatDto?>> GetFormatById(
+            int id,
+            CancellationToken cancellationToken = default
+        )
         {
-            var result = await _formatRepository.GetById(id);
+            var result = await _formatRepository.GetById(id, cancellationToken);
 
-            return result.MapTo( _mapper.Map<FormatDto?>);
+            return result.MapDataTo(_mapper.Map<FormatDto?>);
         }
     }
 }

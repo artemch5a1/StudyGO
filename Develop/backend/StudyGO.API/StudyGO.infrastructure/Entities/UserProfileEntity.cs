@@ -1,21 +1,20 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.RegularExpressions;
 
-namespace StudyGO.infrastructure.Entites
+namespace StudyGO.infrastructure.Entities
 {
     public class UserProfileEntity
     {
-        public Guid UserID { get; set; }
+        public Guid UserId { get; set; }
 
-        [ForeignKey(nameof(UserID))]
+        [ForeignKey(nameof(UserId))]
         public virtual UserEntity? User { get; set; } = null!;
 
-        public DateTime DateBirth { get; set; }
+        public DateOnly DateBirth { get; set; }
 
-        public Guid? SubjectID { get; set; } = null;
+        public Guid? SubjectId { get; set; } = null;
 
 
-        [ForeignKey(nameof(SubjectID))]
+        [ForeignKey(nameof(SubjectId))]
         public virtual SubjectEntity? FavoriteSubject { get; set; } = null;
 
         public string Description { get; set; } = null!;

@@ -26,18 +26,23 @@ namespace StudyGO.Application.Services
             _logger = logger;
         }
 
-        public async Task<Result<List<SubjectDto>>> GetAllSubjects()
+        public async Task<Result<List<SubjectDto>>> GetAllSubjects(
+            CancellationToken cancellationToken = default
+        )
         {
-            var result = await _subjectRepository.GetAll();
+            var result = await _subjectRepository.GetAll(cancellationToken);
 
-            return result.MapTo(_mapper.Map<List<SubjectDto>>);
+            return result.MapDataTo(_mapper.Map<List<SubjectDto>>);
         }
 
-        public async Task<Result<SubjectDto?>> GetSubjectById(Guid id)
+        public async Task<Result<SubjectDto?>> GetSubjectById(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
         {
-            var result = await _subjectRepository.GetById(id);
+            var result = await _subjectRepository.GetById(id, cancellationToken);
 
-            return result.MapTo(_mapper.Map<SubjectDto?>);
+            return result.MapDataTo(_mapper.Map<SubjectDto?>);
         }
     }
 }

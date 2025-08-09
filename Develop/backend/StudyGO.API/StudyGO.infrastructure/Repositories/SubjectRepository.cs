@@ -2,10 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 using StudyGO.infrastructure.Data;
-using StudyGO.infrastructure.Entites;
+using StudyGO.infrastructure.Entities;
 using StudyGO.infrastructure.Extensions;
 
 namespace StudyGO.infrastructure.Repositories
@@ -29,11 +30,15 @@ namespace StudyGO.infrastructure.Repositories
             _logger = logger;
         }
 
-        public async Task<Result<List<Subject>>> GetAll()
+        public async Task<Result<List<Subject>>> GetAll(
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                List<SubjectEntity> formatEntity = await _context.SubjectsEntity.ToListAsync();
+                List<SubjectEntity> formatEntity = await _context.SubjectsEntity.ToListAsync(
+                    cancellationToken
+                );
 
                 return Result<List<Subject>>.Success(_mapper.Map<List<Subject>>(formatEntity));
             }
@@ -45,13 +50,23 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<Subject?>> GetById(Guid id)
+        public async Task<Result<Subject?>> GetById(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                SubjectEntity? formatEntity = await _context.SubjectsEntity.FirstOrDefaultAsync(x =>
-                    x.SubjectID == id
+                SubjectEntity? formatEntity = await _context.SubjectsEntity.FirstOrDefaultAsync(
+                    x => x.SubjectId == id,
+                    cancellationToken
                 );
+
+                if (formatEntity == null)
+                    return Result<Subject?>.Failure(
+                        "Формата не существует",
+                        ErrorTypeEnum.NotFound
+                    );
 
                 return Result<Subject?>.Success(_mapper.Map<Subject?>(formatEntity));
             }

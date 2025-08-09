@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using StudyGO.Contracts.Dtos.Users;
 
-namespace StudyGO.Application.Validations.UserProfilesValidation
+namespace StudyGO.Application.Validations.UsersValidation
 {
     public class UserCreateDtoValidator : BaseUserValidator<UserCreateDto>
     {

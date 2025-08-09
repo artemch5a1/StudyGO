@@ -2,7 +2,7 @@
 {
     public class Subject
     {
-        public Guid SubjectID { get; set; }
+        public Guid SubjectId { get; set; }
 
         public string Title { get; set; } = null!;
 
