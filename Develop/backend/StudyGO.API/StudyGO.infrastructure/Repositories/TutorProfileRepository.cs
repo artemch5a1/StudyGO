@@ -109,6 +109,7 @@ namespace StudyGO.infrastructure.Repositories
                     .TutorProfilesEntity.Include(x => x.User)
                     .Include(x => x.Format)
                     .Include(x => x.TutorSubjects)
+                    .ThenInclude(x => x.Subject)
                     .ToListAsync(cancellationToken);
 
                 return Result<List<TutorProfile>>.Success(_mapper.Map<List<TutorProfile>>(user));
