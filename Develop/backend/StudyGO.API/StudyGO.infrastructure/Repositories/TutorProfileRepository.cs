@@ -160,17 +160,28 @@ namespace StudyGO.infrastructure.Repositories
             {
                 TutorProfileEntity entity = _mapper.Map<TutorProfileEntity>(model);
 
-                int affectedRows = await _context
-                    .TutorProfilesEntity.Where(e => e.UserId == model.UserId)
-                    .ExecuteUpdateAsync(
-                        u =>
-                            u.SetProperty(i => i.PricePerHour, i => model.PricePerHour)
-                                .SetProperty(i => i.City, i => model.City)
-                                .SetProperty(i => i.FormatId, i => model.FormatId)
-                                .SetProperty(i => i.Bio, i => model.Bio),
-                        cancellationToken
-                    );
+                var tutorProfile = await _context.TutorProfilesEntity
+                    .Include(e => e.TutorSubjects) 
+                    .FirstOrDefaultAsync(e => e.UserId == entity.UserId, cancellationToken);
 
+                int affectedRows = 0;
+                
+                if (tutorProfile != null)
+                {
+                    tutorProfile.PricePerHour = entity.PricePerHour;
+                    tutorProfile.City = entity.City;
+                    tutorProfile.FormatId = entity.FormatId;
+                    tutorProfile.Bio = entity.Bio;
+                    
+                    tutorProfile.TutorSubjects.Clear(); 
+                    foreach (var subject in entity.TutorSubjects)
+                    {
+                        tutorProfile.TutorSubjects.Add(subject);
+                    }
+    
+                    affectedRows = await _context.SaveChangesAsync(cancellationToken);
+                }
+                
                 return affectedRows > 0
                     ? Result<Guid>.Success(model.UserId)
                     : Result<Guid>.Failure("Не удалось обновить данные", ErrorTypeEnum.NotFound);
