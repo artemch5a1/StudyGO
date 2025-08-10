@@ -1,6 +1,8 @@
 ﻿using System.Linq.Expressions;
 using FluentValidation;
 
+namespace StudyGO.Application.Validations.Base;
+
 public abstract class BaseUserValidator<T> : AbstractValidator<T>
     where T : class
 {
@@ -52,8 +54,8 @@ public abstract class BaseUserValidator<T> : AbstractValidator<T>
     protected void AddNumberRule(Expression<Func<T, string>> expression)
     {
         RuleFor(expression)
-                .MaximumLength(11).WithMessage("Номер телефона не должен превышать 11 символов")
-                .Matches(@"^[\d\+\-\(\)\s]*$").WithMessage("Номер содержит недопустимые символы")
-                .When(x => !string.IsNullOrEmpty(expression.Compile()(x)));
+            .MaximumLength(11).WithMessage("Номер телефона не должен превышать 11 символов")
+            .Matches(@"^[\d\+\-\(\)\s]*$").WithMessage("Номер содержит недопустимые символы")
+            .When(x => !string.IsNullOrEmpty(expression.Compile()(x)));
     }
 }

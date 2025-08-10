@@ -1,5 +1,5 @@
-﻿using StudyGO.Application.Helpers;
-using StudyGO.Core.Abstractions.Utils;
+﻿using StudyGO.Core.Abstractions.Utils;
+using StudyGO.infrastructure.Utils;
 
 namespace StudyGO.API.Services
 {

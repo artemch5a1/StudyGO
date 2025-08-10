@@ -1,6 +1,6 @@
 ﻿using StudyGO.Core.Abstractions.Utils;
 
-namespace StudyGO.Application.Helpers
+namespace StudyGO.infrastructure.Utils
 {
     public class PasswordHasher : IPasswordHasher
     {

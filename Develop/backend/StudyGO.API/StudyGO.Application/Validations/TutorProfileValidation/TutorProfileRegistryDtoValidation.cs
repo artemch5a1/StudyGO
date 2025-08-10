@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using StudyGO.Application.Validations.Base;
 using StudyGO.Application.Validations.UsersValidation;
 using StudyGO.Contracts.Dtos.TutorProfiles;
 
