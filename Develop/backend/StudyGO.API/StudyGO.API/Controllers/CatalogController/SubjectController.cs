@@ -2,6 +2,7 @@
 using StudyGO.API.Extensions;
 using StudyGO.Contracts.Dtos.Subjects;
 using StudyGO.Core.Abstractions.Services;
+using StudyGO.Core.Extensions;
 
 namespace StudyGO.API.Controllers.CatalogController
 {
@@ -25,7 +26,11 @@ namespace StudyGO.API.Controllers.CatalogController
         )
         {
             var result = await _subjectService.GetAllSubjects(cancellationToken);
-
+            
+            _logger.LogResult(result, 
+                "Успешно получены предметы", 
+                "Ошибка получения предметов");
+            
             return result.ToActionResult();
         }
 
@@ -36,7 +41,12 @@ namespace StudyGO.API.Controllers.CatalogController
         )
         {
             var result = await _subjectService.GetSubjectById(subjectId, cancellationToken);
-
+            
+            _logger.LogResult(result, 
+                "Успешно получен предмет по id", 
+                "Ошибка получения предмета по id", 
+                new { SubjectId = subjectId });
+            
             return result.ToActionResult();
         }
     }

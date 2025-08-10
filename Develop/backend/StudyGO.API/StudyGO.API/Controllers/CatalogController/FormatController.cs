@@ -2,6 +2,7 @@
 using StudyGO.API.Extensions;
 using StudyGO.Contracts.Dtos.Formats;
 using StudyGO.Core.Abstractions.Services;
+using StudyGO.Core.Extensions;
 
 namespace StudyGO.API.Controllers.CatalogController
 {
@@ -25,7 +26,11 @@ namespace StudyGO.API.Controllers.CatalogController
         )
         {
             var result = await _formatService.GetAllFormats(cancellationToken);
-
+            
+            _logger.LogResult(result, 
+                "Успешно получены форматы", 
+                "Ошибка получения форматов");
+            
             return result.ToActionResult();
         }
 
@@ -36,7 +41,12 @@ namespace StudyGO.API.Controllers.CatalogController
         )
         {
             var result = await _formatService.GetFormatById(formatId, cancellationToken);
-
+            
+            _logger.LogResult(result, 
+                "Успешно получен формат по id", 
+                "Ошибка получения формата по id", 
+                new { FormatId = formatId });
+            
             return result.ToActionResult();
         }
     }

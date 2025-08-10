@@ -4,6 +4,7 @@ using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.Contracts.Dtos.TutorProfiles;
 using StudyGO.Core.Abstractions.Services.Account;
+using StudyGO.Core.Extensions;
 
 namespace StudyGO.API.Controllers.UsersControllers
 {
@@ -30,8 +31,16 @@ namespace StudyGO.API.Controllers.UsersControllers
             CancellationToken cancellationToken
         )
         {
+            _logger.LogInformation("Попытка регистрации учителя с email: {Email}", 
+                LoggingExtensions.MaskEmail(registryRequest.User.Email));
+            
             var result = await _tutorAccountService.TryRegistry(registryRequest, cancellationToken);
-
+            
+            _logger.LogResult(result, 
+                "Успешная регистрация учителя", 
+                "Ошибка регистрации учителя",
+                new { UserId = result.Value });
+            
             return result.ToActionResult();
         }
 
@@ -41,8 +50,17 @@ namespace StudyGO.API.Controllers.UsersControllers
             CancellationToken cancellationToken
         )
         {
+            _logger.LogInformation("Запрос всех учителей");
+            
             var result = await _tutorAccountService.GetAllUserProfiles(cancellationToken);
-
+            
+            _logger.LogResult(
+                result,
+                "Учителя успешно получены",
+                "Ошибка при получении списка учителей",
+                new { CountTeacher = result.Value?.Count }
+            );
+            
             return result.ToActionResult();
         }
 
@@ -53,11 +71,20 @@ namespace StudyGO.API.Controllers.UsersControllers
             CancellationToken cancellationToken
         )
         {
+            _logger.LogInformation("Запрос учителя по ID: {userId}", userId);
+            
             var result = await _tutorAccountService.TryGetUserProfileById(
                 userId,
                 cancellationToken
             );
-
+            
+            _logger.LogResult(
+                result,
+                "Учитель найден",
+                "Учитель не найден",
+                new { UserId = userId }
+            );
+            
             return result.ToActionResult();
         }
 
@@ -70,13 +97,25 @@ namespace StudyGO.API.Controllers.UsersControllers
             var userId = User.ExtractGuid();
 
             if (!userId.IsSuccess)
+            {
+                _logger.LogWarning("Невалидный ID пользователя в токене");
                 return BadRequest(userId.ErrorMessage);
-
+            }
+            
+            _logger.LogDebug("Запрос данных текущего учителя {userId}", userId.Value);
+            
             var result = await _tutorAccountService.TryGetUserProfileById(
                 userId.Value,
                 cancellationToken
             );
-
+            
+            _logger.LogResult(
+                result,
+                "Данные учителя успешно получены",
+                "Учитель не найден",
+                new { UserId = userId }
+            );
+            
             return result.ToActionResult();
         }
 
@@ -88,13 +127,25 @@ namespace StudyGO.API.Controllers.UsersControllers
         )
         {
             if (!User.VerifyGuid(userProfile.UserId))
+            {
+                _logger.LogWarning("Попытка обновления не своего аккаунта: {UserId}", userProfile.UserId);
                 return Forbid();
-
+            }
+            
+            _logger.LogInformation("Обновление учителя {UserId}", userProfile.UserId);
+            
             var result = await _tutorAccountService.TryUpdateUserProfile(
                 userProfile,
                 cancellationToken
             );
-
+            
+            _logger.LogResult(
+                result,
+                "Учитель успешно обновлён",
+                "Ошибка обновления учителя",
+                new { userProfile.UserId }
+            );
+            
             return result.ToActionResult();
         }
     }
