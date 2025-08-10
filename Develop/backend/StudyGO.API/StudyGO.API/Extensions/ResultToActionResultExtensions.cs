@@ -13,12 +13,7 @@ namespace StudyGO.API.Extensions
                 return new OkObjectResult(result.Value);
             }
 
-            var statusCode = ErrorTypeHttpStatusMapping.Map.TryGetValue(
-                result.ErrorType,
-                out var code
-            )
-                ? code
-                : StatusCodes.Status500InternalServerError;
+            var statusCode = ErrorTypeHttpStatusMapping.Map.GetValueOrDefault(result.ErrorType, StatusCodes.Status500InternalServerError);
 
             var problemDetails = new ProblemDetails
             {
