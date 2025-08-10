@@ -15,5 +15,7 @@ namespace StudyGO.infrastructure.Entities
         /// Пользователи, которые посчитали этот предмет любимым
         /// </summary>
         public virtual ICollection<UserProfileEntity> UserProfiles { get; set; } = [];
+
+        public virtual ICollection<TutorSubjectsEntity> TutorSubjects { get; set; } = [];
     }
 }

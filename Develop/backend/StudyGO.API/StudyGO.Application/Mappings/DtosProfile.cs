@@ -19,7 +19,7 @@ namespace StudyGO.Application.Mappings
             ConfigureTutorProfilesDto();
         }
 
-        public void ConfigureUsersDto()
+        private void ConfigureUsersDto()
         {
             CreateMap<User, UserDto>();
 
@@ -32,13 +32,13 @@ namespace StudyGO.Application.Mappings
                 .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password));
         }
 
-        public void ConfigureSubjectsDto()
+        private void ConfigureSubjectsDto()
         {
             CreateMap<Subject, SubjectDto>();
             CreateMap<SubjectCreateDto, Subject>();
         }
 
-        public void ConfigureUserProfilesDto()
+        private void ConfigureUserProfilesDto()
         {
             CreateMap<UserProfile, UserProfileDto>();
 
@@ -47,17 +47,31 @@ namespace StudyGO.Application.Mappings
             CreateMap<UserProfileUpdateDto, UserProfile>();
         }
 
-        public void ConfigureFormatDto()
+        private void ConfigureFormatDto()
         {
             CreateMap<Format, FormatDto>();
             CreateMap<CreateFormatDto, Format>();
         }
 
-        public void ConfigureTutorProfilesDto()
+        private void ConfigureTutorProfilesDto()
         {
-            CreateMap<TutorProfile, TutorProfileDto>();
-            CreateMap<TutorProfileRegistrDto, TutorProfile>();
-            CreateMap<TutorProfileUpdateDto, TutorProfile>();
+            CreateMap<TutorProfile, TutorProfileDto>().ForMember(dest => dest.Subjects, 
+                opt => 
+                opt.MapFrom(src => src.TutorSubjects.Select(x => x.Subject)));
+            
+            CreateMap<TutorProfileRegistrDto, TutorProfile>().ForMember(dest => dest.TutorSubjects,
+                opt => opt
+                    .MapFrom(src => src.SubjectsId.Select(x => new TutorSubjects()
+                    {
+                        SubjectId = x,
+                    })));
+            CreateMap<TutorProfileUpdateDto, TutorProfile>().ForMember(dest => dest.TutorSubjects,
+                opt => opt
+                    .MapFrom(src => src.SubjectsId.Select(x => new TutorSubjects()
+                    {
+                        TutorId = src.UserId,
+                        SubjectId = x,
+                    })));
         }
     }
 }

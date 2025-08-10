@@ -24,6 +24,8 @@ namespace StudyGO.infrastructure.Data
 
         public DbSet<SubjectEntity> SubjectsEntity { get; set; }
 
+        public DbSet<TutorSubjectsEntity> TutorSubjectsEntity { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserEntity>(entity =>
@@ -70,6 +72,19 @@ namespace StudyGO.infrastructure.Data
                     .WithMany(f => f.UserProfiles)
                     .HasForeignKey(e => e.SubjectId)
                     .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            modelBuilder.Entity<TutorSubjectsEntity>(entity =>
+            {
+                entity.HasKey(e => new {e.SubjectId, e.TutorId});
+
+                entity.HasOne(e => e.Subject)
+                    .WithMany(e => e.TutorSubjects)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Tutor)
+                    .WithMany(e => e.TutorSubjects)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

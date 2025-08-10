@@ -15,6 +15,7 @@ namespace StudyGO.infrastructure.Mappings
             ConfigureUserProfileMappings();
             ConfigureFormatMappings();
             ConfigureTutorProfileMappings();
+            ConfigureTutorSubjectsMappings();
         }
 
         private void ConfigureUsersMappings()
@@ -57,6 +58,12 @@ namespace StudyGO.infrastructure.Mappings
         {
             CreateMap<TutorProfile, TutorProfileEntity>();
             CreateMap<TutorProfileEntity, TutorProfile>();
+        }
+
+        private void ConfigureTutorSubjectsMappings()
+        {
+            CreateMap<TutorSubjects, TutorSubjectsEntity>();
+            CreateMap<TutorSubjectsEntity, TutorSubjects>();
         }
     }
 }

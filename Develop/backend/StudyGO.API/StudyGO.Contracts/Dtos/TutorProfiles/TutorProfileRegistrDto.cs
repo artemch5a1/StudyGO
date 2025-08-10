@@ -14,5 +14,7 @@ namespace StudyGO.Contracts.Dtos.TutorProfiles
         public string City { get; set; } = string.Empty;
 
         public int FormatId { get; set; }
+
+        public List<Guid> SubjectsId { get; set; } = [];
     }
 }

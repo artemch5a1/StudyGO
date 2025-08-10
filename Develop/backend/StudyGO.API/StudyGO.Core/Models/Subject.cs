@@ -9,5 +9,7 @@
         public string Description { get; set; } = string.Empty;
 
         public ICollection<UserProfile> UserProfiles { get; set; } = [];
+
+        public ICollection<TutorSubjects> TutorSubjects { get; set; } = [];
     }
 }
