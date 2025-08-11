@@ -48,8 +48,8 @@ namespace StudyGO.API.Controllers.UsersControllers
         [HttpGet("get-all-profiles")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
         public async Task<ActionResult<List<UserProfileDto>>> GetAllProfiles(
-            CancellationToken cancellationToken,
-            [FromQuery] Pagination paginationParams
+            [FromQuery] Pagination paginationParams,
+            CancellationToken cancellationToken
         )
         {
             _logger.LogInformation("Запрос всех профилей пользователей");
@@ -66,7 +66,7 @@ namespace StudyGO.API.Controllers.UsersControllers
             return result.ToActionResult();
         }
 
-        [HttpGet("get-profile-by-id/{userId}")]
+        [HttpGet("get-profile-by-id/{userId:guid}")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
         public async Task<ActionResult<UserProfileDto?>> GetProfileById(
             Guid userId,
