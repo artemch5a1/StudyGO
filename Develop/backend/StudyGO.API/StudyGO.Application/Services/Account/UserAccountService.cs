@@ -10,6 +10,7 @@ using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Abstractions.Utils;
 using StudyGO.Core.Abstractions.ValidationService;
+using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
 
 namespace StudyGO.Application.Services.Account
@@ -50,6 +51,7 @@ namespace StudyGO.Application.Services.Account
             CancellationToken cancellationToken = default
         )
         {
+            _logger.LogDebug("Отправлен запрос на удаление пользователя {UserId}", id);
             return await _userRepository.Delete(id, cancellationToken);
         }
 
@@ -58,8 +60,14 @@ namespace StudyGO.Application.Services.Account
             CancellationToken cancellationToken = default
         )
         {
+            _logger.LogInformation("Попытка получить аккаунт по id {UserId}", id);
             Result<User?> result = await _userRepository.GetById(id, cancellationToken);
-
+            
+            _logger.LogResult(result, 
+                "Успешно найден пользователь",
+                "Пользователь не найден",
+            new {UserId = id});
+            
             return result.MapDataTo(x => _mapper.Map<UserDto?>(x));
         }
 
@@ -67,8 +75,12 @@ namespace StudyGO.Application.Services.Account
             CancellationToken cancellationToken = default
         )
         {
+            _logger.LogInformation("Попытка получить всех пользователей");
+            
             Result<List<User>> result = await _userRepository.GetAll(cancellationToken);
-
+            
+            _logger.LogInformation("Получено {count} аккаунтов", result.Value?.Count);
+            
             return result.MapDataTo(_mapper.Map<List<UserDto>>);
         }
 
@@ -77,29 +89,44 @@ namespace StudyGO.Application.Services.Account
             CancellationToken cancellationToken = default
         )
         {
+            _logger.LogInformation("Получение аккаунта по email: {Email}", LoggingExtensions.MaskEmail(userLogin.Email));
             Result<UserLoginResponse> result = await _userRepository.GetCredentialByEmail(
                 userLogin.Email,
                 cancellationToken
             );
-
+            
             if (!result.IsSuccess)
                 return Result<UserLoginResponseDto>.Failure(result.ErrorMessage!, result.ErrorType);
 
             var dbSearchCred = result.Value ?? new();
 
+            if (result.Value != null)
+            {
+                _logger.LogInformation("Аккаунт был получен {UserId}", result.Value.Id);
+            }
+            else
+            {
+                _logger.LogInformation("Аккаунта не существует");
+            }
+            
             bool isAccess = IsSuccessUserLogin(userLogin, dbSearchCred);
 
             if (isAccess)
             {
+                _logger.LogInformation("Аутентификация пройдена, генерация токена...");
+                
                 var responseDto = new UserLoginResponseDto()
                 {
                     Token = _jwtTokenProvider.GenerateToken(dbSearchCred),
                     Id = dbSearchCred.Id,
                 };
-
+                
+                _logger.LogInformation("Токен успешно сгенерирован.");
+                
                 return Result<UserLoginResponseDto>.Success(responseDto);
             }
-
+            
+            _logger.LogInformation("Аутентификация провалена");
             return Result<UserLoginResponseDto>.Failure(
                 "Invalid credentials",
                 ErrorTypeEnum.AuthenticationError
@@ -111,10 +138,13 @@ namespace StudyGO.Application.Services.Account
             CancellationToken cancellationToken = default
         )
         {
+            _logger.LogInformation("Обновление данных аккаунта: {UserId}", user.UserId);
+            
             var validationResult = await _validationService.ValidateAsync(user, cancellationToken);
-
+            
             if (!validationResult.IsSuccess)
             {
+                _logger.LogWarning("Ошибка валидации при обновлении данных аккаунта: {Error}", validationResult.ErrorMessage);
                 return Result<Guid>.Failure(
                     validationResult.ErrorMessage ?? string.Empty,
                     validationResult.ErrorType
@@ -122,7 +152,9 @@ namespace StudyGO.Application.Services.Account
             }
 
             User userModel = _mapper.Map<User>(user);
-
+            
+            _logger.LogDebug("Отправлен запрос в репозиторий");
+            
             return await _userRepository.Update(userModel, cancellationToken);
         }
 
@@ -131,10 +163,13 @@ namespace StudyGO.Application.Services.Account
             CancellationToken cancellationToken = default
         )
         {
+            _logger.LogInformation("Обновление учетных данных аккаунта: {UserId}", user.UserId);
+            
             var validationResult = await _validationService.ValidateAsync(user, cancellationToken);
 
             if (!validationResult.IsSuccess)
             {
+                _logger.LogWarning("Ошибка валидации при учетных данных аккаунта: {Error}", validationResult.ErrorMessage);
                 return Result<Guid>.Failure(
                     validationResult.ErrorMessage ?? string.Empty,
                     validationResult.ErrorType
@@ -145,19 +180,28 @@ namespace StudyGO.Application.Services.Account
 
             if (!result.IsSuccess)
                 return Result<Guid>.Failure("Неверный ID", ErrorTypeEnum.NotFound);
-
+            
+            _logger.LogDebug("Проверка пароля");
+            
             var check = user.OldPassword.VerifyPassword(
                 result.Value!.PasswordHash,
                 _passwordHasher
             );
-
+            
             if (!check)
+            {
+                _logger.LogInformation("Неверный пароль для подтверждения обновления");
                 return Result<Guid>.Failure("Неверный пароль", ErrorTypeEnum.AuthenticationError);
-
+            }
+            
+            _logger.LogDebug("Успешное подтверждение, хеширование пароля...");
+            
             user.Password = user.Password.HashedPassword(_passwordHasher);
 
             User userModel = _mapper.Map<User>(user);
-
+            
+            _logger.LogDebug("Отправлен запрос в репозиторий");
+            
             return await _userRepository.UpdateСredentials(userModel, cancellationToken);
         }
 
