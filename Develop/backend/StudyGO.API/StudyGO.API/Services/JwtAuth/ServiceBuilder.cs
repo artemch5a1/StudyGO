@@ -10,7 +10,7 @@ namespace StudyGO.API.Services
 {
     public partial class ServiceBuilder
     {
-        public void ConfigureJwtAuthentication()
+        private void ConfigureJwtAuthentication()
         {
             _services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
