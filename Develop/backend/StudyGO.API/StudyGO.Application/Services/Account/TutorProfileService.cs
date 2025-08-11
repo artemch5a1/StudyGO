@@ -44,8 +44,12 @@ namespace StudyGO.Application.Services.Account
             CancellationToken cancellationToken = default
         )
         {
+            _logger.LogInformation("Получение всех профилей учителей");
+            
             var result = await _userRepository.GetAll(cancellationToken);
-
+            
+            _logger.LogDebug("Получено {Count} профилей учителей", result?.Value?.Count ?? 0);
+            
             return result.MapDataTo(_mapper.Map<List<TutorProfileDto>>);
         }
 
@@ -54,8 +58,15 @@ namespace StudyGO.Application.Services.Account
             CancellationToken cancellationToken = default
         )
         {
+            _logger.LogInformation("Поиск профиля учителя по ID: {UserId}", userId);
+            
             var result = await _userRepository.GetById(userId, cancellationToken);
-
+            
+            _logger.LogResult(result, 
+                "Профиль учителя найден", 
+                "Профиль учителя не найден", 
+                new { UserId = userId });
+            
             return result.MapDataTo(_mapper.Map<TutorProfileDto?>);
         }
 
@@ -64,6 +75,9 @@ namespace StudyGO.Application.Services.Account
             CancellationToken cancellationToken = default
         )
         {
+            _logger.LogInformation("Попытка регистрации учителя с email: {Email}", 
+                LoggingExtensions.MaskEmail(profile.User.Email));
+            
             var validatorResult = await _validationService.ValidateAsync(
                 profile,
                 cancellationToken
@@ -71,18 +85,24 @@ namespace StudyGO.Application.Services.Account
 
             if (!validatorResult.IsSuccess)
             {
+                _logger.LogWarning("Ошибка валидации при регистрации учителя: {Error}", validatorResult.ErrorMessage);
                 return Result<Guid>.Failure(
                     validatorResult.ErrorMessage ?? string.Empty,
                     validatorResult.ErrorType
                 );
             }
-
+            
+            _logger.LogDebug("Валидация прошла успешно. Хеширование пароля...");
             profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
-
+            
+            _logger.LogDebug("Маппинг и установление роли");
+            
             TutorProfile profileModel = _mapper.Map<TutorProfile>(profile);
 
             profileModel.User!.Role = RolesEnum.Tutor.GetString();
-
+            
+            _logger.LogDebug("Отправлен запрос в репозиторий");
+            
             return await _userRepository.Create(profileModel, cancellationToken);
         }
 
@@ -91,6 +111,8 @@ namespace StudyGO.Application.Services.Account
             CancellationToken cancellationToken = default
         )
         {
+            _logger.LogInformation("Обновление профиля учителя: {UserId}", newProfile.UserId);
+            
             var validatorResult = await _validationService.ValidateAsync(
                 newProfile,
                 cancellationToken
@@ -98,12 +120,15 @@ namespace StudyGO.Application.Services.Account
 
             if (!validatorResult.IsSuccess)
             {
+                _logger.LogWarning("Ошибка валидации при обновлении профиля учителя: {Error}", validatorResult.ErrorMessage);
                 return Result<Guid>.Failure(
                     validatorResult.ErrorMessage ?? string.Empty,
                     validatorResult.ErrorType
                 );
             }
-
+            
+            _logger.LogDebug("Отправлен запрос в репозиторий");
+            
             return await _userRepository.Update(
                 _mapper.Map<TutorProfile>(newProfile),
                 cancellationToken
