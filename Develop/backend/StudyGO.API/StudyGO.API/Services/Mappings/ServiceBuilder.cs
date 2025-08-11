@@ -5,7 +5,7 @@ namespace StudyGO.API.Services;
 
 public partial class ServiceBuilder
 {
-    public void ConfigureAutoMapper()
+    private void ConfigureAutoMapper()
     {
         _services.AddAutoMapper(cfg =>
         {
