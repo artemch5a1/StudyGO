@@ -53,7 +53,7 @@ namespace StudyGO.API.Controllers.AccountControllers
             return result.ToActionResult();
         }
 
-        [HttpDelete("delete/{userId}")]
+        [HttpDelete("delete/{userId:guid}")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
         public async Task<ActionResult<Guid>> DeleteUser(
             Guid userId,
