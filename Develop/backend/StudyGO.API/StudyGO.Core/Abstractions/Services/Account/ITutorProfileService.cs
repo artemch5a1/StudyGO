@@ -1,4 +1,5 @@
 ﻿using StudyGO.Contracts.Dtos.TutorProfiles;
+using StudyGO.Contracts.PaginationContract;
 using StudyGO.Contracts.Result;
 
 namespace StudyGO.Core.Abstractions.Services.Account
@@ -11,6 +12,7 @@ namespace StudyGO.Core.Abstractions.Services.Account
 
         public Task<Result<TutorProfileDto?>> TryGetUserProfileById(Guid userId, CancellationToken cancellationToken = default);
 
-        public Task<Result<List<TutorProfileDto>>> GetAllUserProfiles(CancellationToken cancellationToken = default);
+        public Task<Result<List<TutorProfileDto>>> GetAllUserProfiles(CancellationToken cancellationToken = default, 
+            Pagination? value = null);
     }
 }

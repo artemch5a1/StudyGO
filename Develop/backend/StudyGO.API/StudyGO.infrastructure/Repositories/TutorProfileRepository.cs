@@ -131,6 +131,7 @@ namespace StudyGO.infrastructure.Repositories
                     .Include(x => x.Format)
                     .Include(x => x.TutorSubjects)
                     .ThenInclude(x => x.Subject)
+                    .OrderBy(x => x.UserId)
                     .Skip(skip)
                     .Take(take)
                     .ToListAsync(cancellationToken);

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Dtos.TutorProfiles;
+using StudyGO.Contracts.PaginationContract;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -41,12 +42,14 @@ namespace StudyGO.Application.Services.Account
         }
 
         public async Task<Result<List<TutorProfileDto>>> GetAllUserProfiles(
-            CancellationToken cancellationToken = default
+            CancellationToken cancellationToken = default,
+            Pagination? value = null
         )
         {
             _logger.LogInformation("Получение всех профилей учителей");
             
-            var result = await _userRepository.GetAll(cancellationToken);
+            var result = value == null ? await _userRepository.GetAll(cancellationToken) : 
+                await _userRepository.GetPages(value.Skip, value.Take, cancellationToken);
             
             _logger.LogDebug("Получено {Count} профилей учителей", result.Value?.Count ?? 0);
             
