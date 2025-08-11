@@ -34,7 +34,7 @@ namespace StudyGO.API.Controllers.CatalogController
             return result.ToActionResult();
         }
 
-        [HttpGet("get-subject-by-id/{subjectId}")]
+        [HttpGet("get-subject-by-id/{subjectId:guid}")]
         public async Task<ActionResult<SubjectDto?>> GetFormatById(
             Guid subjectId,
             CancellationToken cancellationToken
