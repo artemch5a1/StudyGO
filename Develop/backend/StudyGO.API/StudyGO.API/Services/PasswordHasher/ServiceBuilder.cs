@@ -5,7 +5,7 @@ namespace StudyGO.API.Services
 {
     public partial class ServiceBuilder
     {
-        public void ConfigurePasswordHasher()
+        private void ConfigurePasswordHasher()
         {
             _services.AddScoped<IPasswordHasher, PasswordHasher>();
         }
