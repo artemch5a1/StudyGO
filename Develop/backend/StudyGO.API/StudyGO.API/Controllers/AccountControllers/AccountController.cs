@@ -86,7 +86,7 @@ namespace StudyGO.API.Controllers.AccountControllers
                 return BadRequest(userId.ErrorMessage);
             }
 
-            _logger.LogInformation($"Пользователь {userId} запросил удаление своего аккаунта");
+            _logger.LogInformation("Пользователь {userId} запросил удаление своего аккаунта", userId);
 
             var result = await _userAccountService.TryDeleteAccount(
                 userId.Value,
@@ -130,7 +130,7 @@ namespace StudyGO.API.Controllers.AccountControllers
             CancellationToken cancellationToken
         )
         {
-            _logger.LogInformation($"Запрос пользователя по ID: {userId}");
+            _logger.LogInformation("Запрос пользователя по ID: {userId}", userId);
 
             var result = await _userAccountService.TryGetAccountById(userId, cancellationToken);
 
@@ -158,7 +158,7 @@ namespace StudyGO.API.Controllers.AccountControllers
                 return BadRequest(userId.ErrorMessage);
             }
 
-            _logger.LogDebug($"Запрос данных текущего пользователя {userId.Value}");
+            _logger.LogDebug("Запрос данных текущего пользователя {userId}", userId.Value);
 
             var result = await _userAccountService.TryGetAccountById(
                 userId.Value,
@@ -184,11 +184,11 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             if (!User.VerifyGuid(updateDto.UserId))
             {
-                _logger.LogWarning($"Попытка обновления не своего аккаунта: {updateDto.UserId}");
+                _logger.LogWarning("Попытка обновления не своего аккаунта: {UserId}", updateDto.UserId);
                 return Forbid();
             }
 
-            _logger.LogInformation($"Обновление пользователя {updateDto.UserId}");
+            _logger.LogInformation("Обновление пользователя {UserId}", updateDto.UserId);
 
             var result = await _userAccountService.TryUpdateAccount(updateDto, cancellationToken);
 
@@ -211,11 +211,11 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             if (!User.VerifyGuid(updateDto.UserId))
             {
-                _logger.LogWarning($"Попытка обновления не своего аккаунта: {updateDto.UserId}");
+                _logger.LogWarning("Попытка обновления не своего аккаунта: {UserId}", updateDto.UserId);
                 return Forbid();
             }
 
-            _logger.LogInformation($"Обновление учётных данных пользователя {updateDto.UserId}");
+            _logger.LogInformation("Обновление учётных данных пользователя {UserId}", updateDto.UserId);
 
             var result = await _userAccountService.TryUpdateAccount(updateDto, cancellationToken);
 
