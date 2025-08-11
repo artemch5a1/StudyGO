@@ -7,7 +7,7 @@ public static  class LoggingExtensions
 {
     public static void LogResult<T>(
         this ILogger logger,
-        Result<T> result,
+        ResultBase<T> result,
         string successMessage,
         string errorMessage,
         object? context = null
