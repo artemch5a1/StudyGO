@@ -20,7 +20,7 @@
             ConfigureJwtProvider();
             ConfigurePasswordHasher();
             ConfigureServicesApp();
-            CofigureValidators();
+            ConfigureValidators();
             ConfigureJwtAuthentication();
         }
     }

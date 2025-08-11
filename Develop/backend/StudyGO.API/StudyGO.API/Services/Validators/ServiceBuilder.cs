@@ -12,7 +12,7 @@ namespace StudyGO.API.Services;
 
 public partial class ServiceBuilder
 {
-    private void CofigureValidators()
+    private void ConfigureValidators()
     {
         _services.AddScoped<IValidationService, ValidationService>();
 
