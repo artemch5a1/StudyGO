@@ -31,7 +31,9 @@ namespace StudyGO.Application.Services
         )
         {
             var result = await _subjectRepository.GetAll(cancellationToken);
-
+            
+            _logger.LogDebug("Отправлен запрос на получение предметов");
+            
             return result.MapDataTo(_mapper.Map<List<SubjectDto>>);
         }
 
@@ -41,7 +43,9 @@ namespace StudyGO.Application.Services
         )
         {
             var result = await _subjectRepository.GetById(id, cancellationToken);
-
+            
+            _logger.LogDebug("Отправлен запрос на получение предмета по id {SubjectId}", id);
+            
             return result.MapDataTo(_mapper.Map<SubjectDto?>);
         }
     }

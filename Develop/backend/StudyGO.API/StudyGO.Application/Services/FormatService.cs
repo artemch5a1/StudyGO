@@ -31,7 +31,9 @@ namespace StudyGO.Application.Services
         )
         {
             var result = await _formatRepository.GetAll(cancellationToken);
-
+            
+            _logger.LogDebug("Отправлен запрос на получение форматов");
+            
             return result.MapDataTo(_mapper.Map<List<FormatDto>>);
         }
 
@@ -41,7 +43,9 @@ namespace StudyGO.Application.Services
         )
         {
             var result = await _formatRepository.GetById(id, cancellationToken);
-
+            
+            _logger.LogDebug("Отправлен запрос на получение формата по id {FormatId}", id);
+            
             return result.MapDataTo(_mapper.Map<FormatDto?>);
         }
     }
