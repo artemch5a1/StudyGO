@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.Contracts.Dtos.UserProfiles;
+using StudyGO.Contracts.PaginationContract;
 using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Extensions;
 
@@ -47,12 +48,13 @@ namespace StudyGO.API.Controllers.UsersControllers
         [HttpGet("get-all-profiles")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
         public async Task<ActionResult<List<UserProfileDto>>> GetAllProfiles(
-            CancellationToken cancellationToken
+            CancellationToken cancellationToken,
+            [FromQuery] Pagination paginationParams
         )
         {
-            _logger.LogInformation("Запрос всех профелей пользователей");
+            _logger.LogInformation("Запрос всех профилей пользователей");
             
-            var result = await _userAccountService.GetAllUserProfiles(cancellationToken);
+            var result = await _userAccountService.GetAllUserProfiles(cancellationToken, paginationParams);
             
             _logger.LogResult(
                 result,

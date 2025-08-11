@@ -119,6 +119,28 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
+        public async Task<Result<List<UserProfile>>> GetPages(int skip, int take, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                List<UserProfileEntity> user = await _context
+                    .UserProfilesEntity.Include(x => x.User)
+                    .Include(x => x.FavoriteSubject)
+                    .OrderBy(x => x.UserId)
+                    .Skip(skip)
+                    .Take(take)
+                    .ToListAsync(cancellationToken);
+
+                return Result<List<UserProfile>>.Success(_mapper.Map<List<UserProfile>>(user));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
+
+                return ex.HandleException<List<UserProfile>>();
+            }
+        }
+        
         public async Task<Result<UserProfile?>> GetById(
             Guid id,
             CancellationToken cancellationToken = default
