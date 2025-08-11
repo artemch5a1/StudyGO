@@ -48,7 +48,7 @@ namespace StudyGO.Application.Services.Account
             
             var result = await _userRepository.GetAll(cancellationToken);
             
-            _logger.LogDebug("Получено {Count} профилей учителей", result?.Value?.Count ?? 0);
+            _logger.LogDebug("Получено {Count} профилей учителей", result.Value?.Count ?? 0);
             
             return result.MapDataTo(_mapper.Map<List<TutorProfileDto>>);
         }
