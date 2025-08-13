@@ -42,7 +42,26 @@ namespace StudyGO.Core.Models
             Patronymic = patronymic;
             Number = number;
         }
-
+        
+        public User(
+            string email,
+            string passwordHash,
+            string surname,
+            string name,
+            string patronymic,
+            string? number,
+            RolesEnum role
+        )
+        {
+            Email = email.ToLower();
+            PasswordHash = passwordHash;
+            Surname = surname;
+            Name = name;
+            Patronymic = patronymic;
+            Number = number;
+            Role = role.GetString();
+        }
+        
         public User(Guid userId, string email, string passwordHash)
         {
             UserId = userId;

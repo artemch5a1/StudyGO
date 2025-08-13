@@ -23,15 +23,6 @@ namespace StudyGO.Application.Mappings
         {
             CreateMap<User, UserDto>();
 
-            CreateMap<UserCreateDto, User>().ConvertUsing(x => new User(
-                x.Email,
-                x.Password,
-                x.Surname,
-                x.Name,
-                x.Patronymic,
-                x.Number
-                ));
-
             CreateMap<UserUpdateDto, User>().ConvertUsing( x => new User(
                 x.UserId,
                 x.Surname,
@@ -57,9 +48,28 @@ namespace StudyGO.Application.Mappings
         {
             CreateMap<UserProfile, UserProfileDto>();
 
-            CreateMap<UserProfileRegistrDto, UserProfile>();
+            CreateMap<UserProfileRegistrDto, UserProfile>().ConvertUsing(x => 
+                UserProfile.CreateUser(
+                    x.User.Email,
+                    x.User.Password,
+                    x.User.Surname,
+                    x.User.Name,
+                    x.User.Patronymic,
+                    x.User.Number,
+                    x.DateBirth,
+                    x.SubjectId,
+                    x.Description
+                    )
+                );
 
-            CreateMap<UserProfileUpdateDto, UserProfile>();
+            CreateMap<UserProfileUpdateDto, UserProfile>().ConvertUsing(x => 
+                UserProfile.UpdateUser(
+                    x.UserId,
+                    x.DateBirth,
+                    x.SubjectId,
+                    x.Description
+                    )
+                );
         }
 
         private void ConfigureFormatDto()
@@ -74,19 +84,34 @@ namespace StudyGO.Application.Mappings
                 opt => 
                 opt.MapFrom(src => src.TutorSubjects.Select(x => x.Subject)));
             
-            CreateMap<TutorProfileRegistrDto, TutorProfile>().ForMember(dest => dest.TutorSubjects,
-                opt => opt
-                    .MapFrom(src => src.SubjectsId.Select(x => new TutorSubjects()
-                    {
-                        SubjectId = x,
-                    })));
-            CreateMap<TutorProfileUpdateDto, TutorProfile>().ForMember(dest => dest.TutorSubjects,
-                opt => opt
-                    .MapFrom(src => src.SubjectsId.Select(x => new TutorSubjects()
-                    {
-                        TutorId = src.UserId,
-                        SubjectId = x,
-                    })));
+            CreateMap<TutorProfileRegistrDto, TutorProfile>().ConvertUsing(x => 
+                TutorProfile.CreateTutor
+                    (
+                        x.User.Email,
+                        x.User.Password,
+                        x.User.Surname,
+                        x.User.Name,
+                        x.User.Patronymic,
+                        x.User.Number,
+                        x.Bio,
+                        x.PricePerHour,
+                        x.City,
+                        x.FormatId,
+                        x.SubjectsId
+                        )
+                );
+            
+            CreateMap<TutorProfileUpdateDto, TutorProfile>().ConvertUsing(x => 
+                TutorProfile.UpdateTutor
+                (
+                    x.UserId,
+                    x.Bio,
+                    x.PricePerHour,
+                    x.City,
+                    x.FormatId,
+                    x.SubjectsId
+                    )
+                );
         }
     }
 }

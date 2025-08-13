@@ -1,7 +1,35 @@
-﻿namespace StudyGO.Core.Models
+﻿using StudyGO.Core.Enums;
+
+namespace StudyGO.Core.Models
 {
     public class UserProfile
     {
+        public UserProfile(
+            Guid userId, 
+            DateOnly dateBirth, 
+            Guid? subjectId,
+            string description
+        )
+        {
+            UserId = userId;
+            DateBirth = dateBirth;
+            SubjectId = subjectId;
+            Description = description;
+        }
+        
+        public UserProfile(
+            User user, 
+            DateOnly dateBirth, 
+            Guid? subjectId,
+            string description
+            )
+        {
+            User = user;
+            DateBirth = dateBirth;
+            SubjectId = subjectId;
+            Description = description;
+        }
+        
         public Guid UserId { get; set; }
 
         public User? User { get; set; }
@@ -13,5 +41,32 @@
         public Subject? FavoriteSubject { get; set; } = null;
 
         public string Description { get; set; } = null!;
+
+        public static UserProfile CreateUser(
+            string email,
+            string passwordHash,
+            string surname,
+            string name,
+            string patronymic,
+            string? number,
+            DateOnly dateBirth, 
+            Guid? subjectId,
+            string description
+            )
+        {
+            var user = new User(email, passwordHash, surname, name, patronymic, number, RolesEnum.User);
+            
+            return new UserProfile(user, dateBirth, subjectId, description);
+        }
+
+        public static UserProfile UpdateUser(
+            Guid userId,
+            DateOnly dateBirth,
+            Guid? subjectId,
+            string description
+        )
+        {
+            return new UserProfile(userId, dateBirth, subjectId, description);
+        }
     }
 }

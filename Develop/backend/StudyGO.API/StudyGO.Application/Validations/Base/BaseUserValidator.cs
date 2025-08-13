@@ -21,25 +21,32 @@ public abstract class BaseUserValidator<T> : AbstractValidator<T>
     {
         RuleFor(expression)
             .NotEmpty()
-            .WithMessage($"Имя обязательно")
+            .WithMessage("Имя обязательно для заполнения")
             .MaximumLength(100)
-            .WithMessage($"Имя не должно превышать 100 символов");
+            .WithMessage("Имя не должно превышать 100 символов")
+            .Matches(@"^[a-zA-Zа-яА-ЯёЁ\-]+$")
+            .WithMessage("Имя содержит недопустимые символы");
     }
 
     protected void AddSurnameRule(Expression<Func<T, string>> expression)
     {
         RuleFor(expression)
             .NotEmpty()
-            .WithMessage($"Фамилия обязательна")
+            .WithMessage("Фамилия обязательна для заполнения")
             .MaximumLength(100)
-            .WithMessage($"Фамилия не должна превышать 100 символов");
+            .WithMessage("Фамилия не должна превышать 100 символов")
+            .Matches(@"^[a-zA-Zа-яА-ЯёЁ\-]+$")
+            .WithMessage("Фамилия содержит недопустимые символы");
     }
 
     protected void AddPatronymicRule(Expression<Func<T, string>> expression)
     {
         RuleFor(expression)
             .MaximumLength(100)
-            .WithMessage($"Отчество не должно превышать 100 символов");
+            .WithMessage("Отчество не должно превышать 100 символов")
+            .Matches(@"^[a-zA-Zа-яА-ЯёЁ\-]*$")
+            .WithMessage("Отчество содержит недопустимые символы")
+            .When(x => !string.IsNullOrEmpty(expression.Compile()(x)));
     }
 
     protected void AddPasswordRule(Expression<Func<T, string>> expression)

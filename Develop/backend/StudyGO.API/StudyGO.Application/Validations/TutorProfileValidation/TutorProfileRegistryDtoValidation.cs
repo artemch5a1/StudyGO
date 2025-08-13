@@ -5,7 +5,7 @@ using StudyGO.Contracts.Dtos.TutorProfiles;
 
 namespace StudyGO.Application.Validations.TutorProfileValidation
 {
-    public class TutorProfileRegistryDtoValidation : BaseUserValidator<TutorProfileRegistrDto>
+    public class TutorProfileRegistryDtoValidation : AbstractValidator<TutorProfileRegistrDto>
     {
         public TutorProfileRegistryDtoValidation()
         {
