@@ -204,7 +204,13 @@ namespace StudyGO.Application.Services.Account
             
             return await _userRepository.UpdateСredentials(userModel, cancellationToken);
         }
-
+        
+        public async Task<Result<Guid>> ConfirmEmailAsync(Guid userId, string userToken,
+            CancellationToken cancellationToken = default)
+        {
+            return await _userRepository.ConfirmEmailAsync(userId, userToken, cancellationToken);
+        }
+        
         private bool IsSuccessUserLogin(UserLoginRequest expected, UserLoginResponse actual)
         {
             string passwordHash = actual.PasswordHash;

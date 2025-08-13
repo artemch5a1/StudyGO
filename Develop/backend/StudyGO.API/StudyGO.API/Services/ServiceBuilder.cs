@@ -23,6 +23,7 @@
             ConfigureValidators();
             ConfigureJwtAuthentication();
             ConfigureEmailService();
+            ConfigureEmailTokenProvider();
         }
     }
 }
