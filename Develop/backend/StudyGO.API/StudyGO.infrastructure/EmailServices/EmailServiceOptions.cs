@@ -1,4 +1,4 @@
-namespace StudyGO.infrastructure.RegistryVerification;
+namespace StudyGO.infrastructure.EmailServices;
 
 public class EmailServiceOptions
 {

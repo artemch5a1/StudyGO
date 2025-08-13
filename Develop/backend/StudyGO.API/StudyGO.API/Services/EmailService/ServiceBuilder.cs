@@ -1,5 +1,5 @@
 using StudyGO.Core.Abstractions.EmailServices;
-using StudyGO.infrastructure.RegistryVerification;
+using StudyGO.infrastructure.EmailServices;
 
 namespace StudyGO.API.Services;
 

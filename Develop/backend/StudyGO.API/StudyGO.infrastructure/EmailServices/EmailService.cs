@@ -9,7 +9,7 @@ using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.EmailServices;
 using StudyGO.Core.Enums;
 
-namespace StudyGO.infrastructure.RegistryVerification;
+namespace StudyGO.infrastructure.EmailServices;
 
 public class EmailService : IEmailService
 {
