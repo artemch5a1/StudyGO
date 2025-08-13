@@ -32,23 +32,6 @@ namespace StudyGO.Core.Models
             string surname,
             string name,
             string patronymic,
-            string? number
-        )
-        {
-            Email = email.ToLower();
-            PasswordHash = passwordHash;
-            Surname = surname;
-            Name = name;
-            Patronymic = patronymic;
-            Number = number;
-        }
-        
-        public User(
-            string email,
-            string passwordHash,
-            string surname,
-            string name,
-            string patronymic,
             string? number,
             RolesEnum role
         )

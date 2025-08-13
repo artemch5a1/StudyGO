@@ -98,11 +98,9 @@ namespace StudyGO.Application.Services.Account
             _logger.LogDebug("Валидация прошла успешно. Хеширование пароля...");
             profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
             
-            _logger.LogDebug("Маппинг и установление роли");
+            _logger.LogDebug("Маппинг...");
             
             TutorProfile profileModel = _mapper.Map<TutorProfile>(profile);
-
-            profileModel.User!.Role = RolesEnum.Tutor.GetString();
             
             _logger.LogDebug("Отправлен запрос в репозиторий");
             
