@@ -5,7 +5,7 @@ namespace StudyGO.Core.Models
 {
     public class User
     {
-        public User(
+        private User(
             Guid userId,
             string email,
             string passwordHash,
@@ -13,7 +13,10 @@ namespace StudyGO.Core.Models
             string surname,
             string name,
             string patronymic,
-            string? number
+            string? number,
+            DateTime dateRegistry,
+            bool verified,
+            DateTime? verifiedDate
         )
         {
             UserId = userId;
@@ -24,9 +27,12 @@ namespace StudyGO.Core.Models
             Name = name;
             Patronymic = patronymic;
             Number = number;
+            DateRegistry = dateRegistry;
+            Verified = verified;
+            VerifiedDate = verifiedDate;
         }
         
-        public User(
+        private User(
             string email,
             string passwordHash,
             string surname,
@@ -43,9 +49,12 @@ namespace StudyGO.Core.Models
             Patronymic = patronymic;
             Number = number;
             Role = role.GetString();
+            Verified = false;
+            DateRegistry = DateTime.UtcNow;
+            VerifiedDate = null;
         }
         
-        public User(Guid userId, string email, string passwordHash)
+        private User(Guid userId, string email, string passwordHash)
         {
             UserId = userId;
             Email = email.ToLower();
@@ -56,7 +65,7 @@ namespace StudyGO.Core.Models
             Number = String.Empty;
         }
         
-        public User(
+        private User(
             Guid userId,
             string surname,
             string name,
@@ -86,5 +95,70 @@ namespace StudyGO.Core.Models
         public string Patronymic { get; set; } = null!;
 
         public string? Number { get; set; }
+        
+        public DateTime DateRegistry { get; set; }
+
+        public bool Verified { get; set; }
+
+        public DateTime? VerifiedDate { get; set; }
+
+        public static User MapToUserFromEntity
+        (
+            Guid userId,
+            string email,
+            string passwordHash,
+            RolesEnum role,
+            string surname,
+            string name,
+            string patronymic,
+            string? number,
+            DateTime dateRegistry,
+            bool verified,
+            DateTime? verifiedDate
+            )
+        {
+            return new User(
+                userId,
+                email,
+                passwordHash,
+                role,
+                surname,
+                name,
+                patronymic,
+                number,
+                dateRegistry,
+                verified,
+                verifiedDate
+            );
+        }
+
+        public static User CreateUser(
+            string email,
+            string passwordHash,
+            string surname,
+            string name,
+            string patronymic,
+            string? number,
+            RolesEnum role
+        )
+        {
+            return new User(email, passwordHash, surname, name, patronymic, number, role);
+        }
+
+        public static User UpdateUser(
+            Guid userId,
+            string surname,
+            string name,
+            string patronymic,
+            string? number
+            )
+        {
+            return new User(userId, surname, name, patronymic, number);
+        }
+
+        public static User UpdateUserCredentials(Guid userId, string email, string passwordHash)
+        {
+            return new User(userId, email, passwordHash);
+        }
     }
 }

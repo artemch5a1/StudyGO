@@ -4,7 +4,7 @@ namespace StudyGO.Core.Models
 {
     public class UserProfile
     {
-        public UserProfile(
+        private UserProfile(
             Guid userId, 
             DateOnly dateBirth, 
             Guid? subjectId,
@@ -17,7 +17,7 @@ namespace StudyGO.Core.Models
             Description = description;
         }
         
-        public UserProfile(
+        private UserProfile(
             User user, 
             DateOnly dateBirth, 
             Guid? subjectId,
@@ -54,7 +54,7 @@ namespace StudyGO.Core.Models
             string description
             )
         {
-            var user = new User(email, passwordHash, surname, name, patronymic, number, RolesEnum.User);
+            var user = User.CreateUser(email, passwordHash, surname, name, patronymic, number, RolesEnum.User);
             
             return new UserProfile(user, dateBirth, subjectId, description);
         }

@@ -23,7 +23,7 @@ namespace StudyGO.Application.Mappings
         {
             CreateMap<User, UserDto>();
 
-            CreateMap<UserUpdateDto, User>().ConvertUsing( x => new User(
+            CreateMap<UserUpdateDto, User>().ConvertUsing( x => User.UpdateUser(
                 x.UserId,
                 x.Surname,
                 x.Name,
@@ -31,7 +31,7 @@ namespace StudyGO.Application.Mappings
                 x.Number
                 ));
 
-            CreateMap<UserUpdateСredentialsDto, User>().ConvertUsing(x => new User(
+            CreateMap<UserUpdateСredentialsDto, User>().ConvertUsing(x => User.UpdateUserCredentials(
                 x.UserId,
                 x.Email,
                 x.Password

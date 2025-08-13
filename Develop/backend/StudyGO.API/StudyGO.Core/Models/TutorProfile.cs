@@ -4,7 +4,7 @@ namespace StudyGO.Core.Models
 {
     public class TutorProfile 
     {
-        public TutorProfile(
+        private TutorProfile(
             Guid userId,
             string bio, 
             decimal pricePerHour, 
@@ -21,7 +21,7 @@ namespace StudyGO.Core.Models
             TutorSubjects = tutorSubjects;
         }
 
-        public TutorProfile(
+        private TutorProfile(
             string bio, 
             decimal pricePerHour, 
             string city, 
@@ -67,7 +67,7 @@ namespace StudyGO.Core.Models
             int formatId,
             ICollection<Guid> subjectsId)
         {
-            User user = new User(email, passwordHash, surname, name, patronymic, number, RolesEnum.Tutor);
+            User user = User.CreateUser(email, passwordHash, surname, name, patronymic, number, RolesEnum.Tutor);
 
             return new TutorProfile(bio, pricePerHour, city, formatId, subjectsId.Select(x => new TutorSubjects() 
             {
