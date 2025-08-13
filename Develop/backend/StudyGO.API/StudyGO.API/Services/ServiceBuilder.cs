@@ -22,6 +22,7 @@
             ConfigureServicesApp();
             ConfigureValidators();
             ConfigureJwtAuthentication();
+            ConfigureEmailService();
         }
     }
 }
