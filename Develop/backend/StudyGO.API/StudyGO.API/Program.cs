@@ -56,7 +56,8 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-app.UseExceptionHandler();
+app.MapFallback("/error", () => Results.Problem());
+app.UseExceptionHandler("/error");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

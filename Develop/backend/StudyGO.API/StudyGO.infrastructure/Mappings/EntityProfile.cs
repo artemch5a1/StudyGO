@@ -23,7 +23,7 @@ namespace StudyGO.infrastructure.Mappings
             CreateMap<User, UserEntity>();
 
             CreateMap<UserEntity, User>()
-                .ConstructUsing(x => new User(
+                .ConvertUsing(x => new User(
                     x.UserId,
                     x.Email,
                     x.PasswordHash,

@@ -17,7 +17,7 @@ namespace StudyGO.Core.Models
         )
         {
             UserId = userId;
-            Email = email;
+            Email = email.ToLower();
             PasswordHash = passwordHash;
             Role = role.GetString();
             Surname = surname;
@@ -25,19 +25,49 @@ namespace StudyGO.Core.Models
             Patronymic = patronymic;
             Number = number;
         }
-
-        public User(Guid userId)
+        
+        public User(
+            string email,
+            string passwordHash,
+            string surname,
+            string name,
+            string patronymic,
+            string? number
+        )
         {
-            UserId = userId;
-            Email = string.Empty;
-            PasswordHash = string.Empty;
-            Role = string.Empty;
-            Surname = string.Empty;
-            Name = string.Empty;
-            Patronymic = string.Empty;
+            Email = email.ToLower();
+            PasswordHash = passwordHash;
+            Surname = surname;
+            Name = name;
+            Patronymic = patronymic;
+            Number = number;
         }
 
-        public User() { }
+        public User(Guid userId, string email, string passwordHash)
+        {
+            UserId = userId;
+            Email = email.ToLower();
+            PasswordHash = passwordHash;
+            Surname = String.Empty;
+            Name = String.Empty;
+            Patronymic = String.Empty;
+            Number = String.Empty;
+        }
+        
+        public User(
+            Guid userId,
+            string surname,
+            string name,
+            string patronymic,
+            string? number
+        )
+        {
+            UserId = userId;
+            Surname = surname;
+            Name = name;
+            Patronymic = patronymic;
+            Number = number;
+        }
 
         public Guid UserId { get; set; }
 

@@ -23,13 +23,28 @@ namespace StudyGO.Application.Mappings
         {
             CreateMap<User, UserDto>();
 
-            CreateMap<UserCreateDto, User>()
-                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password));
+            CreateMap<UserCreateDto, User>().ConvertUsing(x => new User(
+                x.Email,
+                x.Password,
+                x.Surname,
+                x.Name,
+                x.Patronymic,
+                x.Number
+                ));
 
-            CreateMap<UserUpdateDto, User>();
+            CreateMap<UserUpdateDto, User>().ConvertUsing( x => new User(
+                x.UserId,
+                x.Surname,
+                x.Name,
+                x.Patronymic,
+                x.Number
+                ));
 
-            CreateMap<UserUpdateСredentialsDto, User>()
-                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password));
+            CreateMap<UserUpdateСredentialsDto, User>().ConvertUsing(x => new User(
+                x.UserId,
+                x.Email,
+                x.Password
+            ));
         }
 
         private void ConfigureSubjectsDto()

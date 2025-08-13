@@ -91,7 +91,7 @@ namespace StudyGO.Application.Services.Account
         {
             _logger.LogInformation("Получение аккаунта по email: {Email}", LoggingExtensions.MaskEmail(userLogin.Email));
             Result<UserLoginResponse> result = await _userRepository.GetCredentialByEmail(
-                userLogin.Email,
+                userLogin.Email.ToLower(),
                 cancellationToken
             );
             
@@ -209,7 +209,7 @@ namespace StudyGO.Application.Services.Account
         {
             string passwordHash = actual.PasswordHash;
 
-            return expected.Email == actual.Email
+            return expected.Email.ToLower() == actual.Email
                 && expected.Password.VerifyPassword(passwordHash, _passwordHasher);
         }
     }
