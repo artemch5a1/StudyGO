@@ -100,6 +100,8 @@ namespace StudyGO.Core.Models
 
         public bool Verified { get; set; }
 
+        public string? VerifiedToken { get; set; } = null;
+
         public DateTime? VerifiedDate { get; set; }
 
         public static User MapToUserFromEntity

@@ -29,6 +29,8 @@ namespace StudyGO.infrastructure.Entities
 
         public bool Verified { get; set; }
 
+        public string? VerifiedToken { get; set; } = null;
+        
         public DateTime? VerifiedDate { get; set; } = null;
     }
 }

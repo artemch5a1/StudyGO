@@ -209,5 +209,37 @@ namespace StudyGO.infrastructure.Repositories
                 return ex.HandleException<Guid>();
             }
         }
+
+        public async Task<Result<Guid>> ConfirmEmailAsync(Guid userId, string userToken, CancellationToken cancellationToken = default)
+        {
+            var result = await _context.UsersEntity
+                .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+
+            if(result != null && result.VerifiedToken == userToken)
+            {
+                try
+                {
+                    result.Verified = true;
+                    result.VerifiedToken = null;
+                    result.VerifiedDate = DateTime.UtcNow;
+                    int affectedRows = await _context.SaveChangesAsync(cancellationToken);
+
+                    if(affectedRows > 0)
+                    {
+                        return Result<Guid>.Success(result.UserId);
+                    }
+
+                    return Result<Guid>.Failure("Ошибка обновления данных", ErrorTypeEnum.DbError);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+
+                    return ex.HandleException<Guid>();
+                }
+            }
+            
+            return Result<Guid>.Failure("Верификация email провалена", ErrorTypeEnum.ValidationError);
+        }
     }
 }

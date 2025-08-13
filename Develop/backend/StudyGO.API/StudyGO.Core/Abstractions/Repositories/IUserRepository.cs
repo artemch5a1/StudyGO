@@ -14,5 +14,7 @@ namespace StudyGO.Core.Abstractions.Repositories
         public Task<Result<Guid>> Delete(Guid id, CancellationToken cancellationToken = default);
 
         public Task<Result<UserLoginResponse>> GetCredentialByEmail(string email, CancellationToken cancellationToken = default);
+
+        public Task<Result<Guid>> ConfirmEmailAsync(Guid userId, string userToken, CancellationToken cancellationToken = default);
     }
 }
