@@ -5,5 +5,5 @@ namespace StudyGO.Core.Abstractions.EmailServices;
 
 public interface IEmailService
 {
-    Task<ResultError<SmtpSendRequest, ErrorSendEmailType>> SendVerificationEmailAsync(string email, string message, string subject);
+    Task<ResultError<SmtpSendRequest, ErrorSendEmailType>> SendVerificationEmailAsync(string email, string message, string subject, CancellationToken cancellationToken = default);
 }

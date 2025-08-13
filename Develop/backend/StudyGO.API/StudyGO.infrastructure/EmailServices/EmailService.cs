@@ -25,7 +25,8 @@ public class EmailService : IEmailService
     public async Task<ResultError<SmtpSendRequest, ErrorSendEmailType>> SendVerificationEmailAsync(
         string email,
         string message,
-        string subject
+        string subject,
+        CancellationToken cancellationToken = default
     )
     {
         try
@@ -49,7 +50,7 @@ public class EmailService : IEmailService
 
             try
             {
-                await client.ConnectAsync(_options.SmtpServer, _options.Port, true);
+                await client.ConnectAsync(_options.SmtpServer, _options.Port, true, cancellationToken);
             }
             catch (SmtpCommandException ex)
                 when (ex.StatusCode == SmtpStatusCode.ServiceNotAvailable)
@@ -71,7 +72,7 @@ public class EmailService : IEmailService
 
             try
             {
-                await client.AuthenticateAsync(_options.Username, _options.Password);
+                await client.AuthenticateAsync(_options.Username, _options.Password, cancellationToken);
             }
             catch (AuthenticationException ex)
             {
@@ -84,7 +85,7 @@ public class EmailService : IEmailService
 
             try
             {
-                await client.SendAsync(emailMessage);
+                await client.SendAsync(emailMessage, cancellationToken);
             }
             catch (SmtpCommandException ex)
                 when (ex.StatusCode == SmtpStatusCode.MailboxUnavailable)
@@ -105,7 +106,7 @@ public class EmailService : IEmailService
                 );
             }
 
-            await client.DisconnectAsync(true);
+            await client.DisconnectAsync(true, cancellationToken);
             return ResultError<SmtpSendRequest, ErrorSendEmailType>.SuccessWithoutValue();
         }
         catch (TimeoutException ex)
