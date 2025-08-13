@@ -11,8 +11,7 @@ public abstract class BaseUserValidator<T> : AbstractValidator<T>
         RuleFor(expression)
             .NotEmpty()
             .WithMessage("Email обязателен")
-            .EmailAddress()
-            .WithMessage("Некорректный формат email")
+            .StrictEmail()
             .MaximumLength(255)
             .WithMessage("Слишком длинный email");
     }
