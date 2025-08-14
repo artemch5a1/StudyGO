@@ -91,7 +91,7 @@ public class EmailService : IEmailService
                 when (ex.StatusCode == SmtpStatusCode.MailboxUnavailable)
             {
                 return ResultError<SmtpSendRequest, ErrorSendEmailType>.Failure(
-                    ex.Message,
+                    "Email не найден",
                     ErrorSendEmailType.MailboxDoesNotExist,
                     ErrorTypeEnum.ValidationError
                 );
