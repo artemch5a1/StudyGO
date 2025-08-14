@@ -210,6 +210,29 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
+        public async Task<Result<Guid>> InsertVerifiedToken(Guid userId, string verifiedToken, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                int result = await _context.UsersEntity.Where(e => e.UserId == userId).ExecuteUpdateAsync(
+                    s =>
+                        s.SetProperty(i => i.VerifiedToken, i => verifiedToken),
+                    cancellationToken
+                );
+
+                if (result > 0)
+                    return Result<Guid>.Success(userId);
+
+                return Result<Guid>.Failure("Пользователь не найден", ErrorTypeEnum.NotFound);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+
+                return ex.HandleException<Guid>();
+            }
+        }
+
         public async Task<Result<Guid>> ConfirmEmailAsync(Guid userId, string userToken, CancellationToken cancellationToken = default)
         {
             var result = await _context.UsersEntity

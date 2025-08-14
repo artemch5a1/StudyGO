@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Auth;
 using StudyGO.Core.Abstractions.EmailServices;
 using StudyGO.Core.Abstractions.Repositories;
@@ -66,7 +67,12 @@ public class VerificationService : IVerificationService
         
         _logger.LogInformation("Сообщение с подтверждением пользователя {userId}, была отправлена на {email}", userId,
             LoggingExtensions.MaskEmail(email));
-        
+
+        var resultInsertToken = await _userRepository.InsertVerifiedToken(userId, token, cancellationToken);
+
+        if (!resultInsertToken.IsSuccess)
+            return Result<string>.Failure("Ошибка регистрации", ErrorTypeEnum.ServerError);
+
         return Result<string>.Success(token);
     }
 }
