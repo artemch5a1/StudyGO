@@ -17,5 +17,8 @@ namespace StudyGO.Core.Abstractions.Services.Account
         public Task<Result<List<UserDto>>> TryGetAllAccount(CancellationToken cancellationToken = default);
 
         public Task<Result<UserDto?>> TryGetAccountById(Guid id, CancellationToken cancellationToken = default);
+
+        public Task<Result<Guid>> ConfirmEmailAsync(Guid userId, string userToken,
+            CancellationToken cancellationToken = default);
     }
 }

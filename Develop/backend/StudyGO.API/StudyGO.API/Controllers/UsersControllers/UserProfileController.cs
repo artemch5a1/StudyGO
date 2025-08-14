@@ -37,7 +37,7 @@ namespace StudyGO.API.Controllers.UsersControllers
             
             string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
             
-            string confirmEmailEndpoint = $"{baseUrl}/api/Account/ConfirmEmail";
+            string confirmEmailEndpoint = $"{baseUrl}/Account/ConfirmEmail";
             
             var result = await _userAccountService.TryRegistry(registryRequest, confirmEmailEndpoint, cancellationToken);
             
