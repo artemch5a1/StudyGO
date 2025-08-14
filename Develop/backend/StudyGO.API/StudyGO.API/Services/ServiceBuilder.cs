@@ -24,6 +24,7 @@
             ConfigureJwtAuthentication();
             ConfigureEmailService();
             ConfigureEmailTokenProvider();
+            ConfigureVerificationService();
         }
     }
 }

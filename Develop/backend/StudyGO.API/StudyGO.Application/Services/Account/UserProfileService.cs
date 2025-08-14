@@ -11,6 +11,7 @@ using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Abstractions.Utils;
 using StudyGO.Core.Abstractions.ValidationService;
+using StudyGO.Core.Abstractions.Verification;
 using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
@@ -28,32 +29,22 @@ namespace StudyGO.Application.Services.Account
         private readonly IPasswordHasher _passwordHasher;
 
         private readonly IValidationService _validationService;
+
+        private readonly IVerificationService _verificationService;
         
-        private readonly IEmailVerifyTokenProvider _emailTokenProvider;
-
-        private readonly IEmailService _emailService;
-
-        private readonly IConfiguration _configuration;
-
         public UserProfileService(
             IUserProfileRepository userRepository,
             IMapper mapper,
             ILogger<UserProfileService> logger,
             IPasswordHasher passwordHasher,
-            IValidationService validationService,
-            IEmailVerifyTokenProvider emailTokenProvider,
-            IEmailService emailService,
-            IConfiguration configuration
-        )
+            IValidationService validationService, IVerificationService verificationService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
             _passwordHasher = passwordHasher;
             _validationService = validationService;
-            _emailTokenProvider = emailTokenProvider;
-            _emailService = emailService;
-            _configuration = configuration;
+            _verificationService = verificationService;
         }
 
         public async Task<Result<List<UserProfileDto>>> GetAllUserProfiles(
@@ -90,6 +81,7 @@ namespace StudyGO.Application.Services.Account
 
         public async Task<Result<Guid>> TryRegistry(
             UserProfileRegistrDto profile,
+            string confirmEmailEndpoint,
             CancellationToken cancellationToken = default
         )
         {
@@ -116,21 +108,26 @@ namespace StudyGO.Application.Services.Account
             _logger.LogDebug("Маппинг...");
             
             UserProfile profileModel = _mapper.Map<UserProfile>(profile);
+            
+            _logger.LogDebug("Отправлен запрос в репозиторий");
+            
+            var resultCreate = await _userRepository.Create(profileModel, cancellationToken);
 
-            var resultToken = await CreateTokenAndSendMessage(profileModel.UserId, 
+            if (!resultCreate.IsSuccess)
+            {
+                return resultCreate;
+            }
+
+            var resultToken = await _verificationService.CreateTokenAndSendMessage(resultCreate.Value, 
                 profileModel.User?.Email ?? "", 
-                cancellationToken);
-
+                confirmEmailEndpoint, cancellationToken);
+            
             if(!resultToken.IsSuccess)
             {
                 return Result<Guid>.Failure(resultToken.ErrorMessage ?? "", resultToken.ErrorType);
             }
 
-            profileModel.User!.VerifiedToken = resultToken.Value;
-            
-            _logger.LogDebug("Отправлен запрос в репозиторий");
-            
-            return await _userRepository.Create(profileModel, cancellationToken);
+            return resultCreate;
         }
 
         public async Task<Result<Guid>> TryUpdateUserProfile(
@@ -159,24 +156,6 @@ namespace StudyGO.Application.Services.Account
             _logger.LogDebug("Отправлен запрос в репозиторий");
             
             return await _userRepository.Update(user, cancellationToken);
-        }
-        
-        private async Task<Result<string>> CreateTokenAndSendMessage(Guid userId, string email, CancellationToken cancellationToken)
-        {
-            string token = _emailTokenProvider.GenerateToken(userId);
-            
-            var baseUrl = _configuration["EmailSettings:BaseUrl"] 
-                          ?? throw new InvalidOperationException("BaseUrl не настроен в конфигурации");
-            
-            var verificationLink = $"{baseUrl.TrimEnd('/')}/VerifyEmail?userId={userId}&token={Uri.EscapeDataString(token)}";
-            
-            var result = await _emailService.SendVerificationEmailAsync(email, 
-                verificationLink, 
-                "Подтверждение email", cancellationToken);
-
-            return result.IsSuccess ? 
-                Result<string>.Success(token) : 
-                Result<string>.Failure(result.ErrorMessage ?? "", result.ErrorType);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace StudyGO.API.Controllers.UsersControllers
     public class UserProfileController : ControllerBase
     {
         private readonly ILogger<UserProfileController> _logger;
-
+        
         private readonly IUserProfileService _userAccountService;
 
         public UserProfileController(
@@ -35,7 +35,11 @@ namespace StudyGO.API.Controllers.UsersControllers
             _logger.LogInformation("Попытка регистрации пользователя с email: {Email}", 
                 LoggingExtensions.MaskEmail(registryRequest.User.Email));
             
-            var result = await _userAccountService.TryRegistry(registryRequest, cancellationToken);
+            string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+            
+            string confirmEmailEndpoint = $"{baseUrl}/api/Account/ConfirmEmail";
+            
+            var result = await _userAccountService.TryRegistry(registryRequest, confirmEmailEndpoint, cancellationToken);
             
             _logger.LogResult(result, 
                 "Успешная регистрация пользователя", 
