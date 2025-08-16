@@ -54,11 +54,11 @@ namespace StudyGO.API.Controllers.AccountControllers
         }
 
         [HttpGet("ConfirmEmail")]
-        public async Task<ActionResult<string>> ConfirmEmail([FromQuery] Guid userId, [FromQuery] string token)
+        public async Task<ActionResult<Guid>> ConfirmEmail([FromQuery] Guid userId, [FromQuery] string token)
         {
             var result = await _userAccountService.ConfirmEmailAsync(userId, token);
 
-            return result.IsSuccess ? Ok("Email успешно подтвержден") : BadRequest("Ошибка подтверждения email");
+            return result.ToActionResult();
         }
 
         [HttpDelete("delete/{userId:guid}")]
