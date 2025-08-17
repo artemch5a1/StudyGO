@@ -7,7 +7,7 @@ using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Verification;
 using StudyGO.Core.Extensions;
 
-namespace StudyGO.infrastructure.Verification;
+namespace StudyGO.infrastructure.Extensions;
 
 public class VerificationService : IVerificationService
 {
@@ -51,9 +51,11 @@ public class VerificationService : IVerificationService
             htmlBody, 
             "Подтверждение аккаунта в StudyGO", cancellationToken);
 
-        if (!result.IsSuccess)
+        if (!result.Success)
         {
-            _logger.LogError("Сообщение с подтверждением не было отправлено: {Error}", result.ErrorMessage);
+            var resultFailure = result.ToResultFailure<string>();
+            
+            _logger.LogError("Сообщение с подтверждением не было отправлено: {Error}", resultFailure.ErrorMessage);
             var deleteResult = await _userRepository.Delete(userId, cancellationToken);
 
             if (!deleteResult.IsSuccess)
@@ -62,7 +64,7 @@ public class VerificationService : IVerificationService
                     userId, deleteResult.ErrorMessage);
             }
 
-            return Result<string>.Failure(result.ErrorMessage ?? "", result.ErrorType);
+            return resultFailure;
         }
         
         _logger.LogInformation("Сообщение с подтверждением пользователя {userId}, была отправлена на {email}", userId,

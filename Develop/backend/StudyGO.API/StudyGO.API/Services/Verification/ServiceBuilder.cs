@@ -1,5 +1,5 @@
 using StudyGO.Core.Abstractions.Verification;
-using StudyGO.infrastructure.Verification;
+using StudyGO.infrastructure.Extensions;
 
 namespace StudyGO.API.Services;
 

@@ -1,4 +1,4 @@
-namespace StudyGO.infrastructure.Verification;
+namespace StudyGO.infrastructure.Extensions;
 
 public class VerificationServiceOptions
 {
