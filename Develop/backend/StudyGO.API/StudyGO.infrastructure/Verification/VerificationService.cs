@@ -47,7 +47,7 @@ public class VerificationService : IVerificationService
         
         string htmlBody = $"<html><body><p>Чтобы подтвердить свой email, пожалуйста, <a href=\"{verificationLink}\">{linkText}</a>.</p></body></html>";
         
-        var result = await _emailService.SendVerificationEmailAsync(email, 
+        var result = await _emailService.SendEmailAsync(email, 
             htmlBody, 
             "Подтверждение аккаунта в StudyGO", cancellationToken);
 

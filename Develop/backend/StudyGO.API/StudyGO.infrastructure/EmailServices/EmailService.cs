@@ -21,7 +21,7 @@ public class EmailService : IEmailService
         _options = options.Value;
     }
 
-    public async Task<SmtpSendRequest> SendVerificationEmailAsync(
+    public async Task<SmtpSendRequest> SendEmailAsync(
         string email,
         string message,
         string subject,
@@ -31,107 +31,115 @@ public class EmailService : IEmailService
         var sw = Stopwatch.StartNew();
         try
         {
-            if(string.IsNullOrWhiteSpace(email))
-            {
-                return SmtpSendRequest
-                    .FailureSend(sw.Elapsed, ErrorSendEmailType.InvalidEmailFormat);
-            }
+            if (string.IsNullOrWhiteSpace(email))
+                return Failure(sw, ErrorSendEmailType.InvalidEmailFormat);
 
-            using var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress(_options.Fromname, _options.Username));
-            emailMessage.To.Add(new MailboxAddress("", email));
-            emailMessage.Subject = subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = message };
-
+            using var emailMessage = BuildMessage(email, subject, message);
             using var client = new SmtpClient();
 
-            try
-            {
-                await client.ConnectAsync(_options.SmtpServer, _options.Port, true, cancellationToken);
-            }
-            catch (SmtpCommandException ex)
-                when (ex.StatusCode == SmtpStatusCode.ServiceNotAvailable)
-            {
-                _logger
-                    .LogError("Ошибка при отправки сообщения через {ServiceName}: {Error}"
-                        , nameof(EmailService), ex.Message);
-                return SmtpSendRequest
-                    .FailureSend(sw.Elapsed, ErrorSendEmailType.SmtpServerUnavailable);
-            }
-            catch (SocketException ex)
-            {
-                _logger
-                    .LogError("Ошибка при отправки сообщения через {ServiceName}: {Error}"
-                        , nameof(EmailService), ex.Message);
-                return SmtpSendRequest
-                    .FailureSend(sw.Elapsed, ErrorSendEmailType.NetworkError);
-            }
+            var connectResult = await TryConnectAsync(client, cancellationToken);
+            if (connectResult is not null) return Failure(sw, connectResult.Value);
 
-            try
-            {
-                await client.AuthenticateAsync(_options.Username, _options.Password, cancellationToken);
-            }
-            catch (AuthenticationException ex)
-            {
-                _logger
-                    .LogError("Ошибка при отправки сообщения через {ServiceName}: {Error}"
-                        , nameof(EmailService), ex.Message);
-                return SmtpSendRequest
-                    .FailureSend(sw.Elapsed, ErrorSendEmailType.SmtpAuthenticationFailed);
-            }
+            var authResult = await TryAuthenticateAsync(client, cancellationToken);
+            if (authResult is not null) return Failure(sw, authResult.Value);
 
-            try
-            {
-                await client.SendAsync(emailMessage, cancellationToken);
-            }
-            catch (SmtpCommandException ex)
-                when (ex.StatusCode == SmtpStatusCode.MailboxUnavailable)
-            {
-                _logger
-                    .LogInformation("Ошибка при отправки сообщения через {ServiceName}: {Error}"
-                        , nameof(EmailService), ex.Message);
-                return SmtpSendRequest
-                    .FailureSend(sw.Elapsed, ErrorSendEmailType.MailboxDoesNotExist);
-            }
-            catch (SmtpCommandException ex)
-                when (ex.StatusCode == SmtpStatusCode.ExceededStorageAllocation)
-            {
-                _logger
-                    .LogError("Ошибка при отправки сообщения через {ServiceName}: {Error}"
-                        , nameof(EmailService), ex.Message);
-                return SmtpSendRequest
-                    .FailureSend(sw.Elapsed, ErrorSendEmailType.MailboxFull);
-            }
+            var sendResult = await TrySendAsync(client, emailMessage, cancellationToken);
+            if (sendResult is not null) return Failure(sw, sendResult.Value);
 
             await client.DisconnectAsync(true, cancellationToken);
-            return SmtpSendRequest
-                .SuccessSend(sw.Elapsed);
-        }
-        catch (TimeoutException ex)
-        {
-            _logger
-                .LogError("Ошибка при отправки сообщения через {ServiceName}: {Error}"
-                    , nameof(EmailService), ex.Message);
-            return SmtpSendRequest
-                .FailureSend(sw.Elapsed, ErrorSendEmailType.OperationTimedOut);
-        }
-        catch (ArgumentException ex)
-        {
-            _logger
-                .LogInformation("Ошибка при отправки сообщения через {ServiceName}: {Error}"
-                    , nameof(EmailService), ex.Message);
-            return SmtpSendRequest
-                .FailureSend(sw.Elapsed, ErrorSendEmailType.InvalidEmailFormat);
+            return Success(sw);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Неизвестная ошибка при отправке email");
-            return SmtpSendRequest
-                .FailureSend(sw.Elapsed, ErrorSendEmailType.ServerError);
+            return HandleUnexpectedError(sw, ex);
         }
         finally
         {
             sw.Stop();
         }
+    }
+    
+    private MimeMessage BuildMessage(string email, string subject, string body)
+    {
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress(_options.Fromname, _options.Username));
+        message.To.Add(new MailboxAddress("", email));
+        message.Subject = subject;
+        message.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };
+        return message;
+    }
+    
+    private async Task<ErrorSendEmailType?> TryConnectAsync(SmtpClient client, CancellationToken token)
+    {
+        try
+        {
+            await client.ConnectAsync(_options.SmtpServer, _options.Port, true, token);
+            return null;
+        }
+        catch (SmtpCommandException ex) when (ex.StatusCode == SmtpStatusCode.ServiceNotAvailable)
+        {
+            _logger.LogError("SMTP сервер недоступен: {Error}", ex.Message);
+            return ErrorSendEmailType.SmtpServerUnavailable;
+        }
+        catch (SocketException ex)
+        {
+            _logger.LogError("Ошибка сети: {Error}", ex.Message);
+            return ErrorSendEmailType.NetworkError;
+        }
+    }
+    
+    private async Task<ErrorSendEmailType?> TryAuthenticateAsync(SmtpClient client, CancellationToken token)
+    {
+        try
+        {
+            await client.AuthenticateAsync(_options.Username, _options.Password, token);
+            return null;
+        }
+        catch (AuthenticationException ex)
+        {
+            _logger.LogError("Ошибка аутентификации: {Error}", ex.Message);
+            return ErrorSendEmailType.SmtpAuthenticationFailed;
+        }
+    }
+    
+    private async Task<ErrorSendEmailType?> TrySendAsync(SmtpClient client, MimeMessage message, CancellationToken token)
+    {
+        try
+        {
+            await client.SendAsync(message, token);
+            return null;
+        }
+        catch (SmtpCommandException ex) when (ex.StatusCode == SmtpStatusCode.MailboxUnavailable)
+        {
+            _logger.LogInformation("Ящик не существует: {Error}", ex.Message);
+            return ErrorSendEmailType.MailboxDoesNotExist;
+        }
+        catch (SmtpCommandException ex) when (ex.StatusCode == SmtpStatusCode.ExceededStorageAllocation)
+        {
+            _logger.LogError("Ящик переполнен: {Error}", ex.Message);
+            return ErrorSendEmailType.MailboxFull;
+        }
+    }
+
+    private SmtpSendRequest Failure(Stopwatch sw, ErrorSendEmailType type) =>
+        SmtpSendRequest.FailureSend(sw.Elapsed, type);
+
+    private SmtpSendRequest Success(Stopwatch sw) =>
+        SmtpSendRequest.SuccessSend(sw.Elapsed);
+
+    private SmtpSendRequest HandleUnexpectedError(Stopwatch sw, Exception ex)
+    {
+        return ex switch
+        {
+            TimeoutException => Failure(sw, ErrorSendEmailType.OperationTimedOut),
+            ArgumentException => Failure(sw, ErrorSendEmailType.InvalidEmailFormat),
+            _ => LogAndReturnServerError(sw, ex)
+        };
+    }
+    
+    private SmtpSendRequest LogAndReturnServerError(Stopwatch sw, Exception ex)
+    {
+        _logger.LogError(ex, "Неизвестная ошибка при отправке email");
+        return Failure(sw, ErrorSendEmailType.ServerError);
     }
 }
