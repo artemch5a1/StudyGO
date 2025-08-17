@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using StudyGO.Application.Extensions;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.PaginationContract;
@@ -85,33 +86,7 @@ namespace StudyGO.Application.Services.Account
             CancellationToken cancellationToken = default
         )
         {
-            _logger.LogInformation("Попытка регистрации пользователя с email: {Email}", 
-                LoggingExtensions.MaskEmail(profile.User.Email));
-            
-            var validatorResult = await _validationService.ValidateAsync(
-                profile,
-                cancellationToken
-            );
-
-            if (!validatorResult.IsSuccess)
-            {
-                _logger.LogWarning("Ошибка валидации при регистрации учителя: {Error}", validatorResult.ErrorMessage);
-                return Result<Guid>.Failure(
-                    validatorResult.ErrorMessage ?? string.Empty,
-                    validatorResult.ErrorType
-                );
-            }
-
-            _logger.LogDebug("Валидация прошла успешно. Хеширование пароля...");
-            profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
-            
-            _logger.LogDebug("Маппинг...");
-            
-            UserProfile profileModel = _mapper.Map<UserProfile>(profile);
-            
-            _logger.LogDebug("Отправлен запрос в репозиторий");
-            
-            var resultCreate = await _userRepository.Create(profileModel, cancellationToken);
+            var resultCreate = await RegistryLogic(profile, cancellationToken);
 
             if (!resultCreate.IsSuccess)
             {
@@ -119,7 +94,7 @@ namespace StudyGO.Application.Services.Account
             }
 
             var resultToken = await _verificationService.CreateTokenAndSendMessage(resultCreate.Value, 
-                profileModel.User?.Email ?? "", 
+                profile.User?.Email ?? "", 
                 confirmEmailEndpoint, cancellationToken);
             
             if(!resultToken.IsSuccess)
@@ -156,6 +131,38 @@ namespace StudyGO.Application.Services.Account
             _logger.LogDebug("Отправлен запрос в репозиторий");
             
             return await _userRepository.Update(user, cancellationToken);
+        }
+
+        private async Task<Result<Guid>> RegistryLogic(UserProfileRegistrDto profile,
+            CancellationToken cancellationToken = default)
+        {
+            _logger.LogInformation("Попытка регистрации пользователя с email: {Email}", 
+                LoggingExtensions.MaskEmail(profile.User.Email));
+            
+            var validatorResult = await _validationService.ValidateAsync(
+                profile,
+                cancellationToken
+            );
+
+            if (!validatorResult.IsSuccess)
+            {
+                _logger.LogWarning("Ошибка валидации при регистрации учителя: {Error}", validatorResult.ErrorMessage);
+                return Result<Guid>.Failure(
+                    validatorResult.ErrorMessage ?? string.Empty,
+                    validatorResult.ErrorType
+                );
+            }
+
+            _logger.LogDebug("Валидация прошла успешно. Хеширование пароля...");
+            profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
+            
+            _logger.LogDebug("Маппинг...");
+            
+            UserProfile profileModel = _mapper.Map<UserProfile>(profile);
+            
+            _logger.LogDebug("Отправлен запрос в репозиторий");
+            
+            return await _userRepository.Create(profileModel, cancellationToken);
         }
     }
 }
