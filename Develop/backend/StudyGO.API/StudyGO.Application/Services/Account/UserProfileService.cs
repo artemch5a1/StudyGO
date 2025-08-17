@@ -1,21 +1,16 @@
 ﻿using AutoMapper;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Win32;
 using StudyGO.Application.Extensions;
 using StudyGO.Application.Options;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.PaginationContract;
 using StudyGO.Contracts.Result;
-using StudyGO.Core.Abstractions.Auth;
-using StudyGO.Core.Abstractions.EmailServices;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Abstractions.Utils;
 using StudyGO.Core.Abstractions.ValidationService;
 using StudyGO.Core.Abstractions.Verification;
-using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
 
