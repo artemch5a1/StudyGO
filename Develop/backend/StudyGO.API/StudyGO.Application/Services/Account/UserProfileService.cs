@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 using StudyGO.Application.Extensions;
+using StudyGO.Application.Options;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.PaginationContract;
 using StudyGO.Contracts.Result;
@@ -32,13 +34,17 @@ namespace StudyGO.Application.Services.Account
         private readonly IValidationService _validationService;
 
         private readonly IVerificationService _verificationService;
+
+        private readonly UserProfileServiceOptions _options;
         
         public UserProfileService(
             IUserProfileRepository userRepository,
             IMapper mapper,
             ILogger<UserProfileService> logger,
             IPasswordHasher passwordHasher,
-            IValidationService validationService, IVerificationService verificationService)
+            IValidationService validationService, 
+            IVerificationService verificationService, 
+            IOptions<UserProfileServiceOptions> options)
         {
             _userRepository = userRepository;
             _mapper = mapper;
@@ -46,6 +52,7 @@ namespace StudyGO.Application.Services.Account
             _passwordHasher = passwordHasher;
             _validationService = validationService;
             _verificationService = verificationService;
+            _options = options.Value;
         }
 
         public async Task<Result<List<UserProfileDto>>> GetAllUserProfiles(
@@ -88,21 +95,12 @@ namespace StudyGO.Application.Services.Account
         {
             var resultCreate = await RegistryLogic(profile, cancellationToken);
 
-            if (!resultCreate.IsSuccess)
-            {
-                return resultCreate;
-            }
-
-            var resultToken = await _verificationService.CreateTokenAndSendMessage(resultCreate.Value, 
-                profile.User?.Email ?? "", 
-                confirmEmailEndpoint, cancellationToken);
-            
-            if(!resultToken.IsSuccess)
-            {
-                return Result<Guid>.Failure(resultToken.ErrorMessage ?? "", resultToken.ErrorType);
-            }
-
-            return resultCreate;
+            return await VerificationLogic(
+                resultCreate,
+                confirmEmailEndpoint,
+                profile.User.Email,
+                cancellationToken
+            );
         }
 
         public async Task<Result<Guid>> TryUpdateUserProfile(
@@ -163,6 +161,57 @@ namespace StudyGO.Application.Services.Account
             _logger.LogDebug("Отправлен запрос в репозиторий");
             
             return await _userRepository.Create(profileModel, cancellationToken);
+        }
+
+        private async Task<Result<Guid>> VerificationLogic(
+            Result<Guid> resultCreate, 
+            string confirmEmailEndpoint,
+            string email,
+            CancellationToken cancellationToken = default
+            )
+        {
+            if (!resultCreate.IsSuccess)
+            {
+                return resultCreate;
+            }
+
+            if(_options.RequireEmailVerification)
+            {
+                return await SmtpConfirm(
+                    resultCreate, 
+                    confirmEmailEndpoint,
+                    email,
+                    cancellationToken
+                    );
+            }
+
+            return await DefaultConfirm(resultCreate.Value, cancellationToken);
+        }
+
+        private async Task<Result<Guid>> DefaultConfirm(Guid userId, CancellationToken cancellationToken = default)
+        {
+            return await _userRepository.DefaultVerification(userId, cancellationToken);
+        }
+
+        private async Task<Result<Guid>> SmtpConfirm(
+            Result<Guid> resultCreate, 
+            string confirmEmailEndpoint,
+            string email,
+            CancellationToken cancellationToken = default
+            )
+        {
+            var resultToken = await _verificationService.CreateTokenAndSendMessage(
+                resultCreate.Value, 
+                email,
+                confirmEmailEndpoint, 
+                cancellationToken);
+            
+            if(!resultToken.IsSuccess)
+            {
+                return Result<Guid>.Failure(resultToken.ErrorMessage ?? "", resultToken.ErrorType);
+            }
+
+            return resultCreate;
         }
     }
 }

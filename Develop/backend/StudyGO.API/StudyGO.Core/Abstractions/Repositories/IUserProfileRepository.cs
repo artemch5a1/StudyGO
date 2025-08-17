@@ -9,5 +9,6 @@ namespace StudyGO.Core.Abstractions.Repositories
         Task<Result<Guid>> Create(UserProfile model, CancellationToken cancellationToken = default);
         Task<Result<Guid>> Update(UserProfile model, CancellationToken cancellationToken = default);
         Task<Result<List<UserProfile>>> GetPages(int skip, int take, CancellationToken cancellationToken = default);
+        Task<Result<Guid>> DefaultVerification(Guid userId, CancellationToken cancellationToken = default);
     }
 }

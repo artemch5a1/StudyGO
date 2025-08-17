@@ -199,5 +199,41 @@ namespace StudyGO.infrastructure.Repositories
                 return ex.HandleException<Guid>();
             }
         }
+
+        public async Task<Result<Guid>> DefaultVerification(
+            Guid userId, 
+            CancellationToken cancellationToken = default
+            )
+        {
+            try
+            {
+                var user = await _context.UserProfilesEntity
+                    .Select(x => x.User)
+                    .FirstOrDefaultAsync(x => x != null && x.UserId == userId, cancellationToken);
+
+                if(user == null)
+                {
+                    _logger.LogError($"Произошла ошибка при попытке подтверждения пользователя: пользователь не найден");
+                    return Result<Guid>.Failure("Ошибка сервера", ErrorTypeEnum.DbError);
+                }
+
+                user.Verified = true;
+                user.VerifiedToken = null;
+                user.VerifiedDate = DateTime.UtcNow;
+
+                int affectedRows = await _context.SaveChangesAsync(cancellationToken);
+
+                if(affectedRows > 0)
+                    return Result<Guid>.Success(userId);
+                
+                return Result<Guid>.Failure("Ошибка сервера", ErrorTypeEnum.DbError);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+
+                return ex.HandleException<Guid>();
+            }
+        }
     }
 }
