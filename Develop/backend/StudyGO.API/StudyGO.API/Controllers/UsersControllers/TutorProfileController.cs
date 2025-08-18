@@ -35,7 +35,11 @@ namespace StudyGO.API.Controllers.UsersControllers
             _logger.LogInformation("Попытка регистрации учителя с email: {Email}", 
                 LoggingExtensions.MaskEmail(registryRequest.User.Email));
             
-            var result = await _tutorAccountService.TryRegistry(registryRequest, cancellationToken);
+            string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+            
+            string confirmEmailEndpoint = $"{baseUrl}/Account/ConfirmEmailPage";
+            
+            var result = await _tutorAccountService.TryRegistry(registryRequest, confirmEmailEndpoint, cancellationToken);
             
             _logger.LogResult(result, 
                 "Успешная регистрация учителя", 
