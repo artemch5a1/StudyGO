@@ -64,7 +64,23 @@ namespace StudyGO.Application.Services.Account
             
             return result.MapDataTo(_mapper.Map<List<UserProfileDto>>);
         }
-
+        
+        public async Task<Result<List<UserProfileDto>>> GetAllUserVerifiedProfiles(
+            CancellationToken cancellationToken = default,
+            Pagination? value = null
+        )
+        {
+            _logger.LogInformation("Получение всех подтвержденных профилей пользователей");
+            
+            var result = value == null ? await _userRepository.GetAllVerified(cancellationToken) 
+                : await _userRepository.GetPagesVerified(value.Skip, value.Take,
+                cancellationToken);
+            
+            _logger.LogDebug("Получено {Count} подтвержденных профилей пользователей", result.Value?.Count ?? 0);
+            
+            return result.MapDataTo(_mapper.Map<List<UserProfileDto>>);
+        }
+        
         public async Task<Result<UserProfileDto?>> TryGetUserProfileById(
             Guid userId,
             CancellationToken cancellationToken = default
@@ -81,7 +97,24 @@ namespace StudyGO.Application.Services.Account
             
             return result.MapDataTo(_mapper.Map<UserProfileDto?>);
         }
-
+        
+        public async Task<Result<UserProfileDto?>> TryGetVerifiedUserProfileById(
+            Guid userId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            _logger.LogInformation("Поиск профиля пользователя по ID: {UserId}", userId);
+            
+            var result = await _userRepository.GetByIdVerified(userId, cancellationToken);
+            
+            _logger.LogResult(result, 
+                "Подтвержденный профиль пользователя найден", 
+                "Профиль пользователя не найден среди подтвержденых", 
+                new { UserId = userId });
+            
+            return result.MapDataTo(_mapper.Map<UserProfileDto?>);
+        }
+        
         public async Task<Result<Guid>> TryRegistry(
             UserProfileRegistrDto profile,
             string confirmEmailEndpoint,
