@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Подтверждение Email</title>
+</head>
+<body style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
+<h2>Подтверждение Email</h2>
+<p>Нажмите кнопку ниже, чтобы подтвердить адрес электронной почты.</p>
+<button id="confirmBtn" style="padding: 10px 20px; font-size: 16px;">
+    Подтвердить Email
+</button>
+
+<p id="status" style="margin-top: 20px; font-weight: bold;"></p>
+
+<script>
+    const userId = "{USER_ID}";
+    const token = "{TOKEN}";
+
+    document.getElementById('confirmBtn').addEventListener('click', async () => {
+        try {
+            const response = await fetch('/Account/ConfirmEmail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    token: token
+                })
+            });
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('status').innerText = '✅ Email успешно подтверждён!';
+            } else {
+                const error = await response.json();
+                document.getElementById('status').innerText = '❌ Ошибка: ' + (error.detail || 'Не удалось подтвердить.');
+            }
+        } catch (e) {
+            document.getElementById('status').innerText = '❌ Ошибка запроса';
+        }
+    });
+</script>
+</body>
+</html>

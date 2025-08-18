@@ -16,14 +16,17 @@ namespace StudyGO.API.Controllers.AccountControllers
         private readonly ILogger<AccountController> _logger;
 
         private readonly IUserAccountService _userAccountService;
-
+        
+        private readonly IWebHostEnvironment _env;
+        
         public AccountController(
             ILogger<AccountController> logger,
-            IUserAccountService userAccountService
-        )
+            IUserAccountService userAccountService, 
+            IWebHostEnvironment env)
         {
             _logger = logger;
             _userAccountService = userAccountService;
+            _env = env;
         }
 
         [HttpPost("login")]
@@ -53,14 +56,34 @@ namespace StudyGO.API.Controllers.AccountControllers
             return result.ToActionResult();
         }
 
-        [HttpGet("ConfirmEmail")]
-        public async Task<ActionResult<Guid>> ConfirmEmail([FromQuery] Guid userId, [FromQuery] string token)
+        [HttpPost("ConfirmEmail")]
+        public async Task<ActionResult<Guid>> ConfirmEmail([FromBody] ConfirmEmailRequest request)
         {
-            var result = await _userAccountService.ConfirmEmailAsync(userId, token);
+            var result = await _userAccountService.ConfirmEmailAsync(request.UserId, request.Token);
 
             return result.ToActionResult();
         }
+        
+        [HttpGet("ConfirmEmailPage")]
+        public async Task<IActionResult> ConfirmEmailPage([FromQuery] Guid userId, [FromQuery] string token)
+        {
+            var filePath = Path.Combine(_env.WebRootPath, "html", "confirm-email.html");
 
+            if (!System.IO.File.Exists(filePath))
+            {
+                _logger.LogError("Файл confirm-email.html не найден по пути {Path}", filePath);
+                return NotFound("Страница подтверждения не найдена");
+            }
+
+            var html = await System.IO.File.ReadAllTextAsync(filePath);
+            
+            html = html.Replace("{USER_ID}", userId.ToString())
+                .Replace("{TOKEN}", token);
+
+            return Content(html, "text/html");
+        }
+        
+        
         [HttpDelete("delete/{userId:guid}")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
         public async Task<ActionResult<Guid>> DeleteUser(
