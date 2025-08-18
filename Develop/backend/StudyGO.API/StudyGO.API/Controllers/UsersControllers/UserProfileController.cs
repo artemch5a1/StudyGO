@@ -49,6 +49,27 @@ namespace StudyGO.API.Controllers.UsersControllers
             return result.ToActionResult();
         }
 
+        [HttpGet("get-all-verified-profiles")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
+        public async Task<ActionResult<List<UserProfileDto>>> GetAllVerifiedProfiles(
+            [FromQuery] Pagination paginationParams,
+            CancellationToken cancellationToken
+        )
+        {
+            _logger.LogInformation("Запрос всех подтвержденных профилей пользователей");
+            
+            var result = await _userAccountService.GetAllUserVerifiedProfiles(cancellationToken, paginationParams);
+            
+            _logger.LogResult(
+                result,
+                "Профили успешно получены",
+                "Ошибка при получении списка подтвержденных профилей",
+                new { CountTeacher = result.Value?.Count }
+            );
+            
+            return result.ToActionResult();
+        }
+        
         [HttpGet("get-all-profiles")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
         public async Task<ActionResult<List<UserProfileDto>>> GetAllProfiles(
@@ -69,7 +90,7 @@ namespace StudyGO.API.Controllers.UsersControllers
             
             return result.ToActionResult();
         }
-
+        
         [HttpGet("get-profile-by-id/{userId:guid}")]
         [Authorize(Policy = PolicyNames.AdminOnly)]
         public async Task<ActionResult<UserProfileDto?>> GetProfileById(
@@ -90,7 +111,28 @@ namespace StudyGO.API.Controllers.UsersControllers
             
             return result.ToActionResult();
         }
-
+        
+        [HttpGet("get-verified-profile-by-id/{userId:guid}")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
+        public async Task<ActionResult<UserProfileDto?>> GetVerifiedProfileById(
+            Guid userId,
+            CancellationToken cancellationToken
+        )
+        {
+            _logger.LogInformation("Запрос профиля пользователя по ID: {userId}", userId);
+            
+            var result = await _userAccountService.TryGetVerifiedUserProfileById(userId, cancellationToken);
+            
+            _logger.LogResult(
+                result,
+                "Профиль найден",
+                "Профиль не найден среди подтвержденных",
+                new { UserId = userId }
+            );
+            
+            return result.ToActionResult();
+        }
+        
         [HttpGet("get-current-profile")]
         [Authorize]
         public async Task<ActionResult<UserProfileDto?>> GetCurrentProfile(
