@@ -121,8 +121,58 @@ namespace StudyGO.infrastructure.Repositories
                 return ex.HandleException<List<TutorProfile>>();
             }
         }
+        
+        public async Task<Result<List<TutorProfile>>> GetAllVerified(
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                List<TutorProfileEntity> user = await _context
+                    .TutorProfilesEntity.Include(x => x.User)
+                    .Include(x => x.Format)
+                    .Include(x => x.TutorSubjects)
+                    .ThenInclude(x => x.Subject)
+                    .Where(x => x.User != null && x.User.Verified)
+                    .ToListAsync(cancellationToken);
 
+                return Result<List<TutorProfile>>.Success(_mapper.Map<List<TutorProfile>>(user));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
+
+                return ex.HandleException<List<TutorProfile>>();
+            }
+        }
+        
         public async Task<Result<List<TutorProfile>>> GetPages(int skip, int take, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                List<TutorProfileEntity> user = await _context
+                    .TutorProfilesEntity.Include(x => x.User)
+                    .Include(x => x.Format)
+                    .Include(x => x.TutorSubjects)
+                    .ThenInclude(x => x.Subject)
+                    .OrderBy(x => x.UserId)
+                    .Skip(skip)
+                    .Take(take)
+                    .Where(x => x.User != null && x.User.Verified)
+                    .ToListAsync(cancellationToken);
+
+                return Result<List<TutorProfile>>.Success(_mapper.Map<List<TutorProfile>>(user));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
+
+                return ex.HandleException<List<TutorProfile>>();
+            }
+        }
+
+        public async Task<Result<List<TutorProfile>>> GetPagesVerified(int skip, int take,
+            CancellationToken cancellationToken = default)
         {
             try
             {
@@ -145,7 +195,7 @@ namespace StudyGO.infrastructure.Repositories
                 return ex.HandleException<List<TutorProfile>>();
             }
         }
-        
+
         public async Task<Result<TutorProfile?>> GetById(
             Guid id,
             CancellationToken cancellationToken = default
@@ -175,7 +225,37 @@ namespace StudyGO.infrastructure.Repositories
                 return ex.HandleException<TutorProfile?>();
             }
         }
+        
+        public async Task<Result<TutorProfile?>> GetByIdVerified(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                TutorProfileEntity? user = await _context
+                    .TutorProfilesEntity.Include(x => x.User)
+                    .Include(x => x.Format)
+                    .Include(x => x.TutorSubjects)
+                    .ThenInclude(x => x.Subject)
+                    .FirstOrDefaultAsync(x => x.UserId == id && x.User != null && x.User.Verified, cancellationToken);
 
+                if (user == null)
+                    return Result<TutorProfile?>.Failure(
+                        "Пользователь не найден",
+                        ErrorTypeEnum.NotFound
+                    );
+
+                return Result<TutorProfile?>.Success(_mapper.Map<TutorProfile?>(user));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
+
+                return ex.HandleException<TutorProfile?>();
+            }
+        }
+        
         public async Task<Result<Guid>> Update(
             TutorProfile model,
             CancellationToken cancellationToken = default

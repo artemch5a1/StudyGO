@@ -14,5 +14,15 @@ namespace StudyGO.Core.Abstractions.Services.Account
 
         public Task<Result<List<TutorProfileDto>>> GetAllUserProfiles(CancellationToken cancellationToken = default, 
             Pagination? value = null);
+        
+        Task<Result<List<TutorProfileDto>>> GetAllUserVerifiedProfiles(
+            CancellationToken cancellationToken = default,
+            Pagination? value = null
+        );
+
+        Task<Result<TutorProfileDto?>> TryGetVerifiedUserProfileById(
+            Guid userId,
+            CancellationToken cancellationToken = default
+        );
     }
 }

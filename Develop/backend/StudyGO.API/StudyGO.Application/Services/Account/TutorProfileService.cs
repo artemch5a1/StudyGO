@@ -66,6 +66,21 @@ namespace StudyGO.Application.Services.Account
             return result.MapDataTo(_mapper.Map<List<TutorProfileDto>>);
         }
 
+        public async Task<Result<List<TutorProfileDto>>> GetAllUserVerifiedProfiles(
+            CancellationToken cancellationToken = default,
+            Pagination? value = null
+        )
+        {
+            _logger.LogInformation("Получение всех подтвержденных профилей учителей");
+            
+            var result = value == null ? await _userRepository.GetAllVerified(cancellationToken) : 
+                await _userRepository.GetPages(value.Skip, value.Take, cancellationToken);
+            
+            _logger.LogDebug("Получено {Count} профилей учителей", result.Value?.Count ?? 0);
+            
+            return result.MapDataTo(_mapper.Map<List<TutorProfileDto>>);
+        }
+
         public async Task<Result<TutorProfileDto?>> TryGetUserProfileById(
             Guid userId,
             CancellationToken cancellationToken = default
@@ -74,6 +89,23 @@ namespace StudyGO.Application.Services.Account
             _logger.LogInformation("Поиск профиля учителя по ID: {UserId}", userId);
             
             var result = await _userRepository.GetById(userId, cancellationToken);
+            
+            _logger.LogResult(result, 
+                "Профиль учителя найден", 
+                "Профиль учителя не найден", 
+                new { UserId = userId });
+            
+            return result.MapDataTo(_mapper.Map<TutorProfileDto?>);
+        }
+
+        public async Task<Result<TutorProfileDto?>> TryGetVerifiedUserProfileById(
+            Guid userId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            _logger.LogInformation("Поиск профиля подтвержденного учителя по ID: {UserId}", userId);
+            
+            var result = await _userRepository.GetByIdVerified(userId, cancellationToken);
             
             _logger.LogResult(result, 
                 "Профиль учителя найден", 
