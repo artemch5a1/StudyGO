@@ -113,7 +113,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 UserLoginResponse response =
                     await _context
-                        .UsersEntity.Where(u => u.Email == email)
+                        .UsersEntity.Where(u => u.Email == email && u.Verified)
                         .Select(u => new UserLoginResponse
                         {
                             Email = u.Email,
