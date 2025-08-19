@@ -39,7 +39,7 @@ namespace StudyGO.Application.Services.Account
             ILogger<UserProfileService> logger,
             IPasswordHasher passwordHasher,
             IValidationService validationService, 
-            IOptions<UserProfileServiceOptions> options, 
+            IOptionsSnapshot<UserProfileServiceOptions> options, 
             Channel<VerificationJob> verificationQueue)
         {
             _userRepository = userRepository;
