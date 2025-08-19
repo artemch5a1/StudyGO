@@ -1,3 +1,4 @@
+using StudyGO.API.Options;
 using StudyGO.Core.Abstractions.Verification;
 using StudyGO.infrastructure.Extensions;
 
@@ -7,6 +8,8 @@ public partial class ServiceBuilder
 {
     private void ConfigureVerificationService()
     {
+        _services.Configure<EmailConfirmationOptions>(_configuration.GetSection("EmailConfirmation"));
+        
         _services.AddScoped<IVerificationService, VerificationService>();
     }
 }

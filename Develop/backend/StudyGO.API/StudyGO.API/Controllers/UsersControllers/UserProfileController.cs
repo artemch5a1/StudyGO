@@ -1,7 +1,10 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
+using StudyGO.API.Options;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.PaginationContract;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -16,14 +19,18 @@ namespace StudyGO.API.Controllers.UsersControllers
         private readonly ILogger<UserProfileController> _logger;
         
         private readonly IUserProfileService _userAccountService;
-
+        
+        private readonly EmailConfirmationOptions _emailOptions;
+        
         public UserProfileController(
             ILogger<UserProfileController> logger,
-            IUserProfileService userAccountService
+            IUserProfileService userAccountService,
+            IOptions<EmailConfirmationOptions> emailOptions
         )
         {
             _logger = logger;
             _userAccountService = userAccountService;
+            _emailOptions = emailOptions.Value;
         }
 
         [HttpPost("registry")]
@@ -35,9 +42,19 @@ namespace StudyGO.API.Controllers.UsersControllers
             _logger.LogInformation("Попытка регистрации пользователя с email: {Email}", 
                 LoggingExtensions.MaskEmail(registryRequest.User.Email));
             
-            string baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-            
-            string confirmEmailEndpoint = $"{baseUrl}/Account/ConfirmEmailPage";
+            string? confirmEmailEndpoint = Url.Action(
+                _emailOptions.Action,
+                _emailOptions.Controller,
+                null,
+                Request.Scheme,
+                Request.Host.ToString()
+            );
+
+            if (string.IsNullOrWhiteSpace(confirmEmailEndpoint))
+            {
+                _logger.LogError("Ссылка на контроллер с подтверждением email не была сформирована");
+                return new ObjectResult(null) {StatusCode = StatusCodes.Status500InternalServerError};
+            }
             
             var result = await _userAccountService.TryRegistry(registryRequest, confirmEmailEndpoint, cancellationToken);
             
