@@ -35,6 +35,7 @@ public class EmailVerificationWorker : BackgroundService
 
                 if (!result.IsSuccess)
                 {
+                    await service.RollBackUser(job.UserId, stoppingToken);
                     _logger.LogWarning("Не удалось отправить письмо для UserId={UserId}", job.UserId);
                 }
             }

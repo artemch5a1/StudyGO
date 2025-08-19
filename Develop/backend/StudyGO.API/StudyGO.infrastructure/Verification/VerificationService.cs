@@ -58,7 +58,6 @@ public class VerificationService : IVerificationService
 
         if (!resultInsertToken.IsSuccess)
         {
-            await RollBackUser(userId, cancellationToken);
             return Result<string>.Failure("Ошибка регистрации", ErrorTypeEnum.ServerError);
         }
 
@@ -96,9 +95,8 @@ public class VerificationService : IVerificationService
     {
         var resultFailure = sendResult.ToResultFailure<string>();
         _logger.LogError("Сообщение с подтверждением не было отправлено: {Error}", resultFailure.ErrorMessage);
-
-        await RollBackUser(userId, cancellationToken);
-
+        
+        await Task.CompletedTask;
         return resultFailure;
     }
     
@@ -107,7 +105,7 @@ public class VerificationService : IVerificationService
         return _userRepository.InsertVerifiedToken(userId, token, cancellationToken);
     }
 
-    private async Task RollBackUser(Guid userId, CancellationToken cancellationToken = default)
+    public async Task RollBackUser(Guid userId, CancellationToken cancellationToken = default)
     {
         var deleteResult = await _userRepository.Delete(userId, cancellationToken);
         if (!deleteResult.IsSuccess)
