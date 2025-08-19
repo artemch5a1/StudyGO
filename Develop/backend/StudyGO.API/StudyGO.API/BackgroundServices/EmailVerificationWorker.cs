@@ -1,17 +1,16 @@
-using System.Threading.Channels;
-using StudyGO.Contracts.Contracts;
+using StudyGO.Core.Abstractions.Contracts;
 using StudyGO.Core.Abstractions.Verification;
 
 namespace StudyGO.API.BackgroundServices;
 
 public class EmailVerificationWorker : BackgroundService
 {
-    private readonly Channel<VerificationJob> _queue;
+    private readonly IVerificationJobQueue _queue;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<EmailVerificationWorker> _logger;
 
     public EmailVerificationWorker(
-        Channel<VerificationJob> queue, 
+        IVerificationJobQueue queue, 
         IServiceProvider serviceProvider,
         ILogger<EmailVerificationWorker> logger)
     {
@@ -22,7 +21,7 @@ public class EmailVerificationWorker : BackgroundService
     
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await foreach (var job in _queue.Reader.ReadAllAsync(stoppingToken))
+        await foreach (var job in _queue.DequeueAllAsync(stoppingToken))
         {
             try
             {

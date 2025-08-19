@@ -8,6 +8,7 @@ using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.PaginationContract;
 using StudyGO.Contracts.Result;
+using StudyGO.Core.Abstractions.Contracts;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Abstractions.Utils;
@@ -31,7 +32,7 @@ namespace StudyGO.Application.Services.Account
 
         private readonly UserProfileServiceOptions _options;
         
-        private readonly Channel<VerificationJob> _verificationQueue;
+        private readonly IVerificationJobQueue _verificationQueue;
         
         public UserProfileService(
             IUserProfileRepository userRepository,
@@ -40,7 +41,7 @@ namespace StudyGO.Application.Services.Account
             IPasswordHasher passwordHasher,
             IValidationService validationService, 
             IOptionsSnapshot<UserProfileServiceOptions> options, 
-            Channel<VerificationJob> verificationQueue)
+            IVerificationJobQueue verificationQueue)
         {
             _userRepository = userRepository;
             _mapper = mapper;
@@ -130,7 +131,7 @@ namespace StudyGO.Application.Services.Account
             if (_options.RequireEmailVerification)
             {
                 var job = new VerificationJob(resultCreate.Value, profile.User.Email, confirmEmailEndpoint);
-                await _verificationQueue.Writer.WriteAsync(job, cancellationToken);
+                await _verificationQueue.EnqueueAsync(job, cancellationToken);
                 return resultCreate;
             }
 
