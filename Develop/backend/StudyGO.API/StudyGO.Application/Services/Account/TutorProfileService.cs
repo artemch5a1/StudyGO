@@ -1,8 +1,10 @@
-﻿using AutoMapper;
+﻿using System.Threading.Channels;
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StudyGO.Application.Extensions;
 using StudyGO.Application.Options;
+using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.TutorProfiles;
 using StudyGO.Contracts.PaginationContract;
 using StudyGO.Contracts.Result;
@@ -10,8 +12,6 @@ using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Abstractions.Utils;
 using StudyGO.Core.Abstractions.ValidationService;
-using StudyGO.Core.Abstractions.Verification;
-using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
 
@@ -29,9 +29,9 @@ namespace StudyGO.Application.Services.Account
 
         private readonly IValidationService _validationService;
         
-        private readonly IVerificationService _verificationService;
-        
         private readonly TutorProfileServiceOptions _options;
+        
+        private readonly Channel<VerificationJob> _verificationQueue;
         
         public TutorProfileService(
             ITutorProfileRepository userRepository,
@@ -40,14 +40,14 @@ namespace StudyGO.Application.Services.Account
             IPasswordHasher passwordHasher,
             IValidationService validationService,
             IOptions<TutorProfileServiceOptions> options, 
-            IVerificationService verificationService)
+            Channel<VerificationJob> verificationQueue)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
             _passwordHasher = passwordHasher;
             _validationService = validationService;
-            _verificationService = verificationService;
+            _verificationQueue = verificationQueue;
             _options = options.Value;
         }
 
@@ -122,13 +122,18 @@ namespace StudyGO.Application.Services.Account
         )
         {
             var resultCreate = await RegistryLogic(profile, cancellationToken);
+            
+            if (!resultCreate.IsSuccess)
+                return resultCreate;
 
-            return await VerificationLogic(
-                resultCreate,
-                confirmEmailEndpoint,
-                profile.User.Email,
-                cancellationToken
-            );
+            if (_options.RequireEmailVerification)
+            {
+                var job = new VerificationJob(resultCreate.Value, profile.User.Email, confirmEmailEndpoint);
+                await _verificationQueue.Writer.WriteAsync(job, cancellationToken);
+                return resultCreate;
+            }
+
+            return await DefaultConfirm(resultCreate.Value, cancellationToken);
         }
 
         public async Task<Result<Guid>> TryUpdateUserProfile(
@@ -190,52 +195,6 @@ namespace StudyGO.Application.Services.Account
             _logger.LogDebug("Отправлен запрос в репозиторий");
             
             return await _userRepository.Create(profileModel, cancellationToken);
-        }
-        
-        private async Task<Result<Guid>> VerificationLogic(
-            Result<Guid> resultCreate, 
-            string confirmEmailEndpoint,
-            string email,
-            CancellationToken cancellationToken = default
-        )
-        {
-            if (!resultCreate.IsSuccess)
-            {
-                return resultCreate;
-            }
-
-            if(_options.RequireEmailVerification)
-            {
-                return await SmtpConfirm(
-                    resultCreate, 
-                    confirmEmailEndpoint,
-                    email,
-                    cancellationToken
-                );
-            }
-
-            return await DefaultConfirm(resultCreate.Value, cancellationToken);
-        }
-        
-        private async Task<Result<Guid>> SmtpConfirm(
-            Result<Guid> resultCreate, 
-            string confirmEmailEndpoint,
-            string email,
-            CancellationToken cancellationToken = default
-        )
-        {
-            var resultToken = await _verificationService.CreateTokenAndSendMessage(
-                resultCreate.Value, 
-                email,
-                confirmEmailEndpoint, 
-                cancellationToken);
-            
-            if(!resultToken.IsSuccess)
-            {
-                return Result<Guid>.Failure(resultToken.ErrorMessage ?? "", resultToken.ErrorType);
-            }
-
-            return resultCreate;
         }
         
         private async Task<Result<Guid>> DefaultConfirm(Guid userId, CancellationToken cancellationToken = default)

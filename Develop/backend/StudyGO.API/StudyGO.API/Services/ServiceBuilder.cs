@@ -25,6 +25,7 @@
             ConfigureEmailService();
             ConfigureEmailTokenProvider();
             ConfigureVerificationService();
+            ConfigureBackgroundServices();
         }
     }
 }
