@@ -248,6 +248,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         }
 
         [HttpPut("update-user-credentials")]
+        [Obsolete("В данный момент этот адрес является недоступным")]
         [Authorize]
         public async Task<ActionResult<Guid>> UpdateCredentials(
             [FromBody] UserUpdateСredentialsDto updateDto,
