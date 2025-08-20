@@ -238,7 +238,10 @@ namespace StudyGO.infrastructure.Repositories
             var result = await _context.UsersEntity
                 .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
 
-            if(result != null && result.VerifiedToken == userToken)
+            if (result == null || result.Verified)
+                return Result<Guid>.Failure("Неактуальный запрос");
+
+            if(result.VerifiedToken == userToken)
             {
                 try
                 {
