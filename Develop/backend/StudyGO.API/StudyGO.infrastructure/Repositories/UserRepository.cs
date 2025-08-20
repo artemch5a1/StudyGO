@@ -264,5 +264,26 @@ namespace StudyGO.infrastructure.Repositories
             
             return Result<Guid>.Failure("Верификация email провалена", ErrorTypeEnum.ValidationError);
         }
+
+        public async Task<Result<int>> RemoveAllUnverifiedUserByTimeout(
+            TimeSpan timeout, 
+            CancellationToken cancellationToken = default
+            )
+        {
+            try
+            {
+                var result = await _context.UsersEntity
+                    .Where(x => !x.Verified &&  DateTime.UtcNow - x.DateRegistry > timeout)
+                    .ExecuteDeleteAsync(cancellationToken);
+
+                return Result<int>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+
+                return ex.HandleException<int>();
+            }
+        }
     }
 }

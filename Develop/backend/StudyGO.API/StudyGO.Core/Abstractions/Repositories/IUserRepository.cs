@@ -19,5 +19,10 @@ namespace StudyGO.Core.Abstractions.Repositories
 
         public Task<Result<Guid>> InsertVerifiedToken(Guid userId, string verifiedToken,
             CancellationToken cancellationToken = default);
+
+        public Task<Result<int>> RemoveAllUnverifiedUserByTimeout(
+            TimeSpan timeout,
+            CancellationToken cancellationToken = default
+        );
     }
 }
