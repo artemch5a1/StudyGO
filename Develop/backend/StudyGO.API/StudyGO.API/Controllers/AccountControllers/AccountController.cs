@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
+using StudyGO.API.Options;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -19,14 +21,18 @@ namespace StudyGO.API.Controllers.AccountControllers
         
         private readonly IWebHostEnvironment _env;
         
+        private readonly EmailConfirmationOptions _emailOptions;
+        
         public AccountController(
             ILogger<AccountController> logger,
             IUserAccountService userAccountService, 
-            IWebHostEnvironment env)
+            IWebHostEnvironment env,
+            IOptions<EmailConfirmationOptions> emailOptions)
         {
             _logger = logger;
             _userAccountService = userAccountService;
             _env = env;
+            _emailOptions = emailOptions.Value;
         }
 
         [HttpPost("login")]
@@ -68,17 +74,25 @@ namespace StudyGO.API.Controllers.AccountControllers
         public async Task<IActionResult> ConfirmEmailPage([FromQuery] Guid userId, [FromQuery] string token)
         {
             var filePath = Path.Combine(_env.WebRootPath, "html", "confirm-email.html");
-
+            
             if (!System.IO.File.Exists(filePath))
             {
                 _logger.LogError("Файл confirm-email.html не найден по пути {Path}", filePath);
                 return NotFound("Страница подтверждения не найдена");
             }
-
+            
+            string? confirmEmailEndpoint = Url.Action(
+                _emailOptions.ConfirmAction,
+                _emailOptions.Controller,
+                null,
+                Request.Scheme,
+                Request.Host.ToString()
+            );
+            
             var html = await System.IO.File.ReadAllTextAsync(filePath);
             
             html = html.Replace("{USER_ID}", userId.ToString())
-                .Replace("{TOKEN}", token);
+                .Replace("{TOKEN}", token).Replace("{ENDPOINT}", confirmEmailEndpoint);
 
             return Content(html, "text/html");
         }

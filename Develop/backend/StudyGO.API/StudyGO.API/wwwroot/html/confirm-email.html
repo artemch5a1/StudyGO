@@ -19,7 +19,7 @@
 
     document.getElementById('confirmBtn').addEventListener('click', async () => {
         try {
-            const response = await fetch('/Account/ConfirmEmail', {
+            const response = await fetch('{ENDPOINT}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
