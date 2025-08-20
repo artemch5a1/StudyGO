@@ -1,4 +1,5 @@
-﻿using StudyGO.Contracts.Dtos.UserProfiles;
+﻿using StudyGO.Contracts.Contracts;
+using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.PaginationContract;
 using StudyGO.Contracts.Result;
 
@@ -6,7 +7,7 @@ namespace StudyGO.Core.Abstractions.Services.Account
 {
     public interface IUserProfileService
     {
-        public Task<Result<Guid>> TryRegistry(UserProfileRegistrDto profile, string confirmEmailEndpoint, CancellationToken cancellationToken = default);
+        public Task<Result<UserRegistryResponse>> TryRegistry(UserProfileRegistrDto profile, string confirmEmailEndpoint, CancellationToken cancellationToken = default);
 
         public Task<Result<Guid>> TryUpdateUserProfile(UserProfileUpdateDto newProfile, CancellationToken cancellationToken = default);
 

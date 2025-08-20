@@ -117,7 +117,7 @@ namespace StudyGO.Application.Services.Account
             return result.MapDataTo(_mapper.Map<UserProfileDto?>);
         }
         
-        public async Task<Result<Guid>> TryRegistry(
+        public async Task<Result<UserRegistryResponse>> TryRegistry(
             UserProfileRegistrDto profile,
             string confirmEmailEndpoint,
             CancellationToken cancellationToken = default
@@ -126,16 +126,18 @@ namespace StudyGO.Application.Services.Account
             var resultCreate = await RegistryLogic(profile, cancellationToken);
 
             if (!resultCreate.IsSuccess)
-                return resultCreate;
+                return resultCreate.MapDataTo(UserRegistryResponse.WithoutVerified);
 
             if (_options.RequireEmailVerification)
             {
                 var job = new VerificationJob(resultCreate.Value, profile.User.Email, confirmEmailEndpoint);
                 await _verificationQueue.EnqueueAsync(job, cancellationToken);
-                return resultCreate;
+                return resultCreate.MapDataTo(UserRegistryResponse.VerifiedByLink);
             }
 
-            return await DefaultConfirm(resultCreate.Value, cancellationToken);
+            var defaultConfirm = await DefaultConfirm(resultCreate.Value, cancellationToken);
+
+            return defaultConfirm.MapDataTo(UserRegistryResponse.WithoutVerified);
         }
 
         public async Task<Result<Guid>> TryUpdateUserProfile(

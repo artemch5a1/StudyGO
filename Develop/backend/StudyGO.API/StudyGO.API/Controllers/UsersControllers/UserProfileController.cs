@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
+using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.PaginationContract;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -34,7 +35,7 @@ namespace StudyGO.API.Controllers.UsersControllers
         }
 
         [HttpPost("registry")]
-        public async Task<ActionResult<Guid>> RegistryUser(
+        public async Task<ActionResult<UserRegistryResponse>> RegistryUser(
             [FromBody] UserProfileRegistrDto registryRequest,
             CancellationToken cancellationToken
         )
