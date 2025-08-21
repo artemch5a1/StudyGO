@@ -5,6 +5,9 @@ using StudyGO.infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration
+    .AddJsonFile("seedData.json", optional: false, reloadOnChange: true);
+
 // Add services to the container.
 
 builder.Services.AddControllers();

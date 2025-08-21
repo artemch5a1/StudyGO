@@ -19,4 +19,9 @@
     <ProjectReference Include="..\StudyGO.Core\StudyGO.Core.csproj" />
     <ProjectReference Include="..\StudyGO.infrastructure\StudyGO.infrastructure.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Update="seedData.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
