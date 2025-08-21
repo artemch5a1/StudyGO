@@ -12,8 +12,8 @@ public partial class ServiceBuilder
     private void ConfigureSeederAndServices()
     {
         _services.AddScoped<ISeedProvider, Seeder>();
-
-        _services.Configure<SubjectSeedOptions>(_configuration.GetSection("SeedData").GetSection("Subjects"));
+        
+        _services.Configure<SubjectSeedOptions>(_configuration.GetSection("SeedData"));
         
         AddSeedService<SubjectsSeeder>();
     }

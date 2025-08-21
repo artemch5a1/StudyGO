@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using StudyGO.API.Services;
+using StudyGO.Core.Abstractions.DatabaseSeed;
 using StudyGO.infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -85,5 +86,11 @@ app.UseCors(x =>
 });
 
 app.MapGet("/", () => Results.Redirect("/swagger/index.html")).ExcludeFromDescription();
+
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<ISeedProvider>();
+    await seeder.SeedDataBaseAsync();
+}
 
 app.Run();
