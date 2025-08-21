@@ -1,0 +1,15 @@
+{
+  "SeedData": {
+    "Subjects": [
+      { "Title": "Математика", "Description": "Алгебра, геометрия, тригонометрия" },
+      { "Title": "Физика", "Description": "Механика, оптика, электричество" },
+      { "Title": "Химия", "Description": "Органическая и неорганическая химия" },
+      { "Title": "Информатика", "Description": "Программирование и алгоритмы" }
+    ],
+    "Formats": [
+      { "Name": "Online" },
+      { "Name": "Offline" },
+      { "Name": "Hybrid" }
+    ]
+  }
+}
