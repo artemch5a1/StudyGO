@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using StudyGO.API.Extensions;
 using StudyGO.API.Services;
 using StudyGO.Core.Abstractions.DatabaseSeed;
 using StudyGO.infrastructure.Data;
@@ -62,6 +63,8 @@ var app = builder.Build();
 
 app.MapFallback("/error", () => Results.Problem());
 app.UseExceptionHandler("/error");
+
+app.UseDisabledEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
