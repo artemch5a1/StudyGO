@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using StudyGO.API.CustomAttributes;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
@@ -249,6 +250,7 @@ namespace StudyGO.API.Controllers.AccountControllers
 
         [HttpPut("update-user-credentials")]
         [Obsolete("В данный момент этот адрес является недоступным")]
+        [Disabled("Смена пароля и почты недоступна")]
         [Authorize]
         public async Task<ActionResult<Guid>> UpdateCredentials(
             [FromBody] UserUpdateСredentialsDto updateDto,
