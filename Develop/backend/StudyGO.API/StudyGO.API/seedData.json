@@ -4,12 +4,13 @@
       { "Title": "Математика", "Description": "Алгебра, геометрия, тригонометрия" },
       { "Title": "Физика", "Description": "Механика, оптика, электричество" },
       { "Title": "Химия", "Description": "Органическая и неорганическая химия" },
-      { "Title": "Информатика", "Description": "Программирование и алгоритмы" }
+      { "Title": "Информатика", "Description": "Программирование и алгоритмы" },
+      { "Title": "Биология", "Description": "Ботаника, зоология, анатомия" }
     ],
     "Formats": [
-      { "Name": "Online" },
-      { "Name": "Offline" },
-      { "Name": "Hybrid" }
+      { "Id": 1, "Name": "Online" },
+      { "Id": 2, "Name": "Offline" },
+      { "Id": 3, "Name": "Hybrid" }
     ]
   }
 }

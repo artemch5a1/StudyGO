@@ -16,6 +16,10 @@ public partial class ServiceBuilder
         _services.Configure<SubjectSeedOptions>(_configuration.GetSection("SeedData"));
         
         AddSeedService<SubjectsSeeder>();
+
+        _services.Configure<FormatSeedOptions>(_configuration.GetSection("SeedData"));
+        
+        AddSeedService<FormatsSeeder>();
     }
     
     private void AddSeedService<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TSeedService>()

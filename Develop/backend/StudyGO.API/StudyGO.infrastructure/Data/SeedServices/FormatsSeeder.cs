@@ -8,18 +8,18 @@ using StudyGO.infrastructure.Entities;
 
 namespace StudyGO.infrastructure.Data.SeedServices;
 
-public class SubjectsSeeder : ISeedService
+public class FormatsSeeder : ISeedService
 {
     private readonly ApplicationDbContext _context;
 
-    private readonly SubjectSeedOptions _options;
+    private readonly FormatSeedOptions _options;
     
-    private readonly ILogger<SubjectsSeeder> _logger;
+    private readonly ILogger<FormatsSeeder> _logger;
     
-    public SubjectsSeeder(
+    public FormatsSeeder(
         ApplicationDbContext context, 
-        IOptions<SubjectSeedOptions> options, 
-        ILogger<SubjectsSeeder> logger)
+        IOptions<FormatSeedOptions> options, 
+        ILogger<FormatsSeeder> logger)
     {
         _context = context;
         _logger = logger;
@@ -30,35 +30,34 @@ public class SubjectsSeeder : ISeedService
     {
         try
         {
-            var subjects = _options.Subjects;
+            var formats = _options.Formats;
 
-            if (!subjects.Any())
+            if (!formats.Any())
                 return Result<int>.Success(0);
             
-            var existingTitles = await _context.SubjectsEntity
-                .Select(s => s.Title)
+            var existingid = await _context.FormatsEntity
+                .Select(f => f.FormatId)
                 .ToListAsync();
             
-            var newSubjects = subjects
-                .Where(s => !existingTitles.Contains(s.Title))
-                .Select(s => new SubjectEntity
+            var newFormats = formats
+                .Where(f => !existingid.Contains(f.Id))
+                .Select(f => new FormatEntity
                 {
-                    SubjectId = Guid.NewGuid(),
-                    Title = s.Title,
-                    Description = s.Description
+                    FormatId = f.Id,
+                    Title = f.Name
                 })
                 .ToList();
 
-            if (!newSubjects.Any())
+            if (!newFormats.Any())
                 return Result<int>.Success(0);
 
-            await _context.SubjectsEntity.AddRangeAsync(newSubjects);
+            await _context.FormatsEntity.AddRangeAsync(newFormats);
 
             int affectedRows = await _context.SaveChangesAsync();
 
             return Result<int>.Success(affectedRows);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, "Сидирование данных завершилось ошибкой");
             throw;
