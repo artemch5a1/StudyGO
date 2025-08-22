@@ -23,12 +23,10 @@ public class EmailVerificationWorker : BackgroundService
     {
         await foreach (var job in _queue.DequeueAllAsync(stoppingToken))
         {
+            using var scope = _serviceProvider.CreateScope();
+            var service = scope.ServiceProvider.GetRequiredService<IVerificationService>();
             try
             {
-                using var scope = _serviceProvider.CreateScope();
-
-                var service = scope.ServiceProvider.GetRequiredService<IVerificationService>();
-
                 var result = await 
                     service.CreateTokenAndSendMessage(job.UserId, job.Email, job.ConfirmEmailEndpoint, stoppingToken);
 
@@ -40,6 +38,7 @@ public class EmailVerificationWorker : BackgroundService
             }
             catch (Exception ex)
             {
+                await service.RollBackUser(job.UserId, stoppingToken);
                 _logger.LogError(ex, "Ошибка при обработке задания на отправку письма");
             }
         }

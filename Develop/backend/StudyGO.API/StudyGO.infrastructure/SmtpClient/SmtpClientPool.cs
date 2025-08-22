@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
@@ -39,12 +40,40 @@ public class SmtpClientPool : IDisposable, ISmtpSender
         var client = GetClient();
         
         _logger.LogDebug("Проверка и повторное прохождение подключения и аутентификации при необходимости");
-        
-        if (!client.IsConnected)
-            await client.ConnectAsync(_options.SmtpServer, _options.Port, true, ct);
 
-        if (!client.IsAuthenticated)
-            await client.AuthenticateAsync(_options.Username, _options.Password, ct);
+        try
+        {
+            if (!client.IsConnected)
+                await client.ConnectAsync(_options.SmtpServer, _options.Port, true, ct);
+
+            if (!client.IsAuthenticated)
+                await client.AuthenticateAsync(_options.Username, _options.Password, ct);
+        }
+        catch (SmtpProtocolException ex)
+        {
+            _logger.LogError(ex, "Ошибка протокола SMTP: {Message}", ex.Message);
+            throw;
+        }
+        catch (AuthenticationException ex)
+        {
+            _logger.LogError(ex, "Ошибка TLS/SSL при подключении к SMTP: {Message}", ex.Message);
+            throw;
+        }
+        catch (IOException ex)
+        {
+            _logger.LogError(ex, "Сетевая ошибка при подключении к SMTP: {Message}", ex.Message);
+            throw;
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogWarning("Операция подключения/аутентификации SMTP отменена");
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCritical(ex, "Непредвиденная ошибка SMTP клиента: {Message}", ex.Message);
+            throw;
+        }
         
         _logger.LogDebug("Отправка сообщения...");
         
