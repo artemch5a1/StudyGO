@@ -1,23 +1,27 @@
 using System.Diagnostics;
-using System.Net.Sockets;
-using System.Security.Authentication;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using StudyGO.Core.Abstractions.EmailServices;
 using StudyGO.Core.Enums;
+using StudyGO.infrastructure.SmtpClient;
 
 namespace StudyGO.infrastructure.EmailServices;
 
 public class EmailService : IEmailService
 {
     private readonly ILogger<EmailService> _logger;
+    private readonly ISmtpSender _sender;
     private readonly EmailServiceOptions _options;
 
-    public EmailService(IOptions<EmailServiceOptions> options, ILogger<EmailService> logger)
+    public EmailService(
+        IOptions<EmailServiceOptions> options, 
+        ILogger<EmailService> logger,
+        ISmtpSender sender)
     {
         _logger = logger;
+        _sender = sender;
         _options = options.Value;
     }
 
@@ -35,18 +39,14 @@ public class EmailService : IEmailService
                 return Failure(sw, ErrorSendEmailType.InvalidEmailFormat);
 
             using var emailMessage = BuildMessage(email, subject, message);
-            using var client = new SmtpClient();
 
-            var connectResult = await TryConnectAsync(client, cancellationToken);
-            if (connectResult is not null) return Failure(sw, connectResult.Value);
+            var result = await TrySendAsync(emailMessage, cancellationToken);
 
-            var authResult = await TryAuthenticateAsync(client, cancellationToken);
-            if (authResult is not null) return Failure(sw, authResult.Value);
+            if (result != null)
+            {
+                return Failure(sw, result ?? ErrorSendEmailType.ServerError);
+            }
 
-            var sendResult = await TrySendAsync(client, emailMessage, cancellationToken);
-            if (sendResult is not null) return Failure(sw, sendResult.Value);
-
-            await client.DisconnectAsync(true, cancellationToken);
             return Success(sw);
         }
         catch (Exception ex)
@@ -69,44 +69,11 @@ public class EmailService : IEmailService
         return message;
     }
     
-    private async Task<ErrorSendEmailType?> TryConnectAsync(SmtpClient client, CancellationToken token)
+    private async Task<ErrorSendEmailType?> TrySendAsync(MimeMessage message, CancellationToken token)
     {
         try
         {
-            await client.ConnectAsync(_options.SmtpServer, _options.Port, true, token);
-            return null;
-        }
-        catch (SmtpCommandException ex) when (ex.StatusCode == SmtpStatusCode.ServiceNotAvailable)
-        {
-            _logger.LogError("SMTP сервер недоступен: {Error}", ex.Message);
-            return ErrorSendEmailType.SmtpServerUnavailable;
-        }
-        catch (SocketException ex)
-        {
-            _logger.LogError("Ошибка сети: {Error}", ex.Message);
-            return ErrorSendEmailType.NetworkError;
-        }
-    }
-    
-    private async Task<ErrorSendEmailType?> TryAuthenticateAsync(SmtpClient client, CancellationToken token)
-    {
-        try
-        {
-            await client.AuthenticateAsync(_options.Username, _options.Password, token);
-            return null;
-        }
-        catch (AuthenticationException ex)
-        {
-            _logger.LogError("Ошибка аутентификации: {Error}", ex.Message);
-            return ErrorSendEmailType.SmtpAuthenticationFailed;
-        }
-    }
-    
-    private async Task<ErrorSendEmailType?> TrySendAsync(SmtpClient client, MimeMessage message, CancellationToken token)
-    {
-        try
-        {
-            await client.SendAsync(message, token);
+            await _sender.SendAsync(message, token);
             return null;
         }
         catch (SmtpCommandException ex) when (ex.StatusCode == SmtpStatusCode.MailboxUnavailable)
@@ -118,6 +85,26 @@ public class EmailService : IEmailService
         {
             _logger.LogError("Ящик переполнен: {Error}", ex.Message);
             return ErrorSendEmailType.MailboxFull;
+        }
+        catch (SmtpCommandException ex)
+        {
+            _logger.LogError(ex, "Ошибка SMTP команды");
+            return ErrorSendEmailType.SmtpServerUnavailable;
+        }
+        catch (SmtpProtocolException ex)
+        {
+            _logger.LogError(ex, "Ошибка протокола SMTP");
+            return ErrorSendEmailType.SslHandshakeFailed;
+        }
+        catch (IOException ex)
+        {
+            _logger.LogError(ex, "Ошибка ввода/вывода при отправке письма");
+            return ErrorSendEmailType.SmtpServerUnavailable;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogCritical(ex, "Непредвиденная ошибка при отправке письма");
+            throw;
         }
     }
 
