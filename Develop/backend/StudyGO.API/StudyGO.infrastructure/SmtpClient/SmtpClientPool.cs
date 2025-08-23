@@ -37,31 +37,25 @@ public class SmtpClientPool : IDisposable, ISmtpSender
         _logger.LogDebug("получение клиента из пула");
         
         var client = GetClient();
-
+        
         try
         {
             _logger.LogDebug("Проверка и повторное прохождение подключения и аутентификации при необходимости");
 
-            if (!client.IsConnected)
-                await client.ConnectAsync(_options.SmtpServer, _options.Port, true, ct);
-
-            if (!client.IsAuthenticated)
-                await client.AuthenticateAsync(_options.Username, _options.Password, ct);
+            client = await EnsureConnectedAndAuthenticatedAsync(client, ct);
 
             _logger.LogDebug("Отправка сообщения...");
 
             await client.SendAsync(message, ct);
 
             _logger.LogDebug("Возврат клиента в пул");
+            
+            ReturnClient(client);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка при отправке сообщения");
             throw;
-        }
-        finally
-        {
-            ReturnClient(client);
         }
     }
 
@@ -97,7 +91,52 @@ public class SmtpClientPool : IDisposable, ISmtpSender
         
         return _factory.CreateClient();
     }
+    
+    private async Task<ISmtpClient> EnsureConnectedAndAuthenticatedAsync(ISmtpClient client, CancellationToken ct)
+    {
+        try
+        {
+            if (client.IsConnected)
+            {
+                try
+                {
+                    await client.NoOpAsync(ct);
+                }
+                catch
+                {
+                    await client.DisconnectAsync(true, ct);
+                }
+            }
 
+            if (!client.IsConnected)
+            {
+                await client.ConnectAsync(_options.SmtpServer, _options.Port, true, ct);
+            }
+
+            if (!client.IsAuthenticated)
+            {
+                await client.AuthenticateAsync(_options.Username, _options.Password, ct);
+            }
+
+            return client;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Smtp клиент оказался в невалидном состоянии, пересоздание...");
+            
+            try { await client.DisconnectAsync(true, ct); } catch {}
+            client.Dispose();
+            
+            var newClient = _factory.CreateClient();
+            
+            await newClient.ConnectAsync(_options.SmtpServer, _options.Port, true, ct);
+            
+            await newClient.AuthenticateAsync(_options.Username, _options.Password, ct);
+
+            return newClient;
+        }
+    }
+    
     public void Dispose()
     {
         while (_clientsPool.TryTake(out var client))
