@@ -120,8 +120,7 @@ public class SmtpClientPool : IDisposable, ISmtpSender
         lock (_reloadLock)
         {
             ClearPool();
-
-            // перечитать текущие опции
+            
             _options = _optionsMonitor.CurrentValue;
 
             _logger.LogInformation("Конфигурация SMTP перезагружена");
