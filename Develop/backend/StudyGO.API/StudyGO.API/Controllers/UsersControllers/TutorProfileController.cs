@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
+using StudyGO.API.Options;
+using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.TutorProfiles;
 using StudyGO.Contracts.PaginationContract;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -16,18 +19,21 @@ namespace StudyGO.API.Controllers.UsersControllers
         private readonly ILogger<TutorProfileController> _logger;
 
         private readonly ITutorProfileService _tutorAccountService;
+        
+        private readonly EmailConfirmationOptions _emailOptions;
 
         public TutorProfileController(
             ILogger<TutorProfileController> logger,
-            ITutorProfileService userAccountService
-        )
+            ITutorProfileService userAccountService,
+            IOptions<EmailConfirmationOptions> emailOptions)
         {
             _logger = logger;
             _tutorAccountService = userAccountService;
+            _emailOptions = emailOptions.Value;
         }
 
         [HttpPost("registry")]
-        public async Task<ActionResult<Guid>> RegistryUser(
+        public async Task<ActionResult<UserRegistryResponse>> RegistryUser(
             [FromBody] TutorProfileRegistrDto registryRequest,
             CancellationToken cancellationToken
         )
@@ -35,7 +41,21 @@ namespace StudyGO.API.Controllers.UsersControllers
             _logger.LogInformation("Попытка регистрации учителя с email: {Email}", 
                 LoggingExtensions.MaskEmail(registryRequest.User.Email));
             
-            var result = await _tutorAccountService.TryRegistry(registryRequest, cancellationToken);
+            string? confirmEmailEndpoint = Url.Action(
+                _emailOptions.Action,
+                _emailOptions.Controller,
+                null,
+                Request.Scheme,
+                Request.Host.ToString()
+            );
+
+            if (string.IsNullOrWhiteSpace(confirmEmailEndpoint))
+            {
+                _logger.LogError("Ссылка на контроллер с подтверждением email не была сформирована");
+                return new ObjectResult(null) {StatusCode = StatusCodes.Status500InternalServerError};
+            }
+            
+            var result = await _tutorAccountService.TryRegistry(registryRequest, confirmEmailEndpoint, cancellationToken);
             
             _logger.LogResult(result, 
                 "Успешная регистрация учителя", 
@@ -44,9 +64,30 @@ namespace StudyGO.API.Controllers.UsersControllers
             
             return result.ToActionResult();
         }
-
-        [HttpGet("get-all-profiles")]
+        
+        [HttpGet("get-all-verified-profiles")]
         [Authorize]
+        public async Task<ActionResult<List<TutorProfileDto>>> GetAllProfilesVerified(
+            [FromQuery] Pagination paginationParams,
+            CancellationToken cancellationToken
+        )
+        {
+            _logger.LogInformation("Запрос всех учителей");
+            
+            var result = await _tutorAccountService.GetAllUserVerifiedProfiles(cancellationToken, paginationParams);
+            
+            _logger.LogResult(
+                result,
+                "Учителя успешно получены",
+                "Ошибка при получении списка учителей",
+                new { CountTeacher = result.Value?.Count }
+            );
+            
+            return result.ToActionResult();
+        }
+        
+        [HttpGet("get-all-profiles")]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
         public async Task<ActionResult<List<TutorProfileDto>>> GetAllProfiles(
             [FromQuery] Pagination paginationParams,
             CancellationToken cancellationToken
@@ -67,7 +108,7 @@ namespace StudyGO.API.Controllers.UsersControllers
         }
 
         [HttpGet("get-profile-by-id/{userId:guid}")]
-        [Authorize(Policy = PolicyNames.UserOrAdmin)]
+        [Authorize(Policy = PolicyNames.AdminOnly)]
         public async Task<ActionResult<TutorProfileDto?>> GetProfileById(
             Guid userId,
             CancellationToken cancellationToken
@@ -89,7 +130,31 @@ namespace StudyGO.API.Controllers.UsersControllers
             
             return result.ToActionResult();
         }
-
+        
+        [HttpGet("get-verified-profile-by-id/{userId:guid}")]
+        [Authorize(Policy = PolicyNames.UserOrAdmin)]
+        public async Task<ActionResult<TutorProfileDto?>> GetProfileByIdVerified(
+            Guid userId,
+            CancellationToken cancellationToken
+        )
+        {
+            _logger.LogInformation("Запрос учителя по ID: {userId}", userId);
+            
+            var result = await _tutorAccountService.TryGetVerifiedUserProfileById(
+                userId,
+                cancellationToken
+            );
+            
+            _logger.LogResult(
+                result,
+                "Учитель найден",
+                "Учитель не найден",
+                new { UserId = userId }
+            );
+            
+            return result.ToActionResult();
+        }
+        
         [HttpGet("get-current-profile")]
         [Authorize]
         public async Task<ActionResult<TutorProfileDto?>> GetCurrentUser(

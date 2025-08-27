@@ -107,6 +107,9 @@ namespace StudyGO.infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<DateTime>("DateRegistry")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
@@ -132,6 +135,15 @@ namespace StudyGO.infrastructure.Migrations
 
                     b.Property<string>("Surname")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("Verified")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("VerifiedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("VerifiedToken")
                         .HasColumnType("text");
 
                     b.HasKey("UserId");

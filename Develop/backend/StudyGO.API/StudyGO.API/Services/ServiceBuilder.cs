@@ -1,4 +1,4 @@
-﻿namespace StudyGO.API.Services
+namespace StudyGO.API.Services
 {
     public partial class ServiceBuilder
     {
@@ -22,6 +22,10 @@
             ConfigureServicesApp();
             ConfigureValidators();
             ConfigureJwtAuthentication();
+            ConfigureEmailService();
+            ConfigureEmailTokenProvider();
+            ConfigureVerificationService();
+            ConfigureBackgroundServices();
             ConfigureSeederAndServices();
         }
     }

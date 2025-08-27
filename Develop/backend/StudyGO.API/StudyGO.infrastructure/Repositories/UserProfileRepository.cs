@@ -119,6 +119,28 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
+        public async Task<Result<List<UserProfile>>> GetAllVerified(
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                List<UserProfileEntity> user = await _context
+                    .UserProfilesEntity.Include(x => x.User)
+                    .Include(x => x.FavoriteSubject)
+                    .Where(x => x.User != null && x.User.Verified)
+                    .ToListAsync(cancellationToken);
+
+                return Result<List<UserProfile>>.Success(_mapper.Map<List<UserProfile>>(user));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
+
+                return ex.HandleException<List<UserProfile>>();
+            }
+        }
+
         public async Task<Result<List<UserProfile>>> GetPages(int skip, int take, CancellationToken cancellationToken = default)
         {
             try
@@ -140,7 +162,31 @@ namespace StudyGO.infrastructure.Repositories
                 return ex.HandleException<List<UserProfile>>();
             }
         }
-        
+
+        public async Task<Result<List<UserProfile>>> GetPagesVerified(int skip, int take,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                List<UserProfileEntity> user = await _context
+                    .UserProfilesEntity.Include(x => x.User)
+                    .Include(x => x.FavoriteSubject)
+                    .OrderBy(x => x.UserId)
+                    .Skip(skip)
+                    .Take(take)
+                    .Where(x => x.User != null && x.User.Verified)
+                    .ToListAsync(cancellationToken);
+
+                return Result<List<UserProfile>>.Success(_mapper.Map<List<UserProfile>>(user));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
+
+                return ex.HandleException<List<UserProfile>>();
+            }
+        }
+
         public async Task<Result<UserProfile?>> GetById(
             Guid id,
             CancellationToken cancellationToken = default
@@ -152,6 +198,34 @@ namespace StudyGO.infrastructure.Repositories
                     .UserProfilesEntity.Include(x => x.User)
                     .Include(x => x.FavoriteSubject)
                     .FirstOrDefaultAsync(x => x.UserId == id, cancellationToken);
+
+                if (user == null)
+                    return Result<UserProfile?>.Failure(
+                        "Пользователь не найден",
+                        ErrorTypeEnum.NotFound
+                    );
+
+                return Result<UserProfile?>.Success(_mapper.Map<UserProfile?>(user));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Возникла ошибка при получении данных из БД: {ex.Message}");
+
+                return ex.HandleException<UserProfile?>();
+            }
+        }
+
+        public async Task<Result<UserProfile?>> GetByIdVerified(
+            Guid id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                UserProfileEntity? user = await _context
+                    .UserProfilesEntity.Include(x => x.User)
+                    .Include(x => x.FavoriteSubject)
+                    .FirstOrDefaultAsync(x => x.UserId == id && x.User != null && x.User.Verified, cancellationToken);
 
                 if (user == null)
                     return Result<UserProfile?>.Failure(
@@ -191,6 +265,42 @@ namespace StudyGO.infrastructure.Repositories
                 return affectedRows > 0
                     ? Result<Guid>.Success(model.UserId)
                     : Result<Guid>.Failure("Строка не была обновлена", ErrorTypeEnum.NotFound);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+
+                return ex.HandleException<Guid>();
+            }
+        }
+
+        public async Task<Result<Guid>> DefaultVerification(
+            Guid userId, 
+            CancellationToken cancellationToken = default
+            )
+        {
+            try
+            {
+                var user = await _context.UserProfilesEntity
+                    .Select(x => x.User)
+                    .FirstOrDefaultAsync(x => x != null && x.UserId == userId, cancellationToken);
+
+                if(user == null)
+                {
+                    _logger.LogError($"Произошла ошибка при попытке подтверждения пользователя: пользователь не найден");
+                    return Result<Guid>.Failure("Ошибка сервера", ErrorTypeEnum.DbError);
+                }
+
+                user.Verified = true;
+                user.VerifiedToken = null;
+                user.VerifiedDate = DateTime.UtcNow;
+
+                int affectedRows = await _context.SaveChangesAsync(cancellationToken);
+
+                if(affectedRows > 0)
+                    return Result<Guid>.Success(userId);
+                
+                return Result<Guid>.Failure("Ошибка сервера", ErrorTypeEnum.DbError);
             }
             catch (Exception ex)
             {

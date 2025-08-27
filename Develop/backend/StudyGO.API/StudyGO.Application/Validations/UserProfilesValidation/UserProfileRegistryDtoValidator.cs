@@ -15,7 +15,9 @@ namespace StudyGO.Application.Validations.UserProfilesValidation
 
             RuleFor(x => x.DateBirth)
                 .NotEmpty()
-                .WithMessage("Дата рождения обязательна");
+                .WithMessage("Дата рождения обязательна")
+                .Must(x => (DateOnly.FromDateTime(DateTime.UtcNow).Year - x.Year) > 14)
+                .WithMessage("Возраст должен быть больше 14 лет");
 
             RuleFor(x => x.Description)
                 .NotEmpty()

@@ -24,5 +24,13 @@ namespace StudyGO.infrastructure.Entities
         public virtual TutorProfileEntity? TutorProfile { get; set; }
 
         public virtual UserProfileEntity? UserProfile { get; set; }
+
+        public DateTime DateRegistry { get; set; }
+
+        public bool Verified { get; set; }
+
+        public string? VerifiedToken { get; set; } = null;
+        
+        public DateTime? VerifiedDate { get; set; } = null;
     }
 }

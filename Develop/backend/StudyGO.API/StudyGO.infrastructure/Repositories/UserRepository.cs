@@ -113,7 +113,7 @@ namespace StudyGO.infrastructure.Repositories
             {
                 UserLoginResponse response =
                     await _context
-                        .UsersEntity.Where(u => u.Email == email)
+                        .UsersEntity.Where(u => u.Email == email && u.Verified)
                         .Select(u => new UserLoginResponse
                         {
                             Email = u.Email,
@@ -207,6 +207,85 @@ namespace StudyGO.infrastructure.Repositories
                 _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
 
                 return ex.HandleException<Guid>();
+            }
+        }
+
+        public async Task<Result<Guid>> InsertVerifiedToken(Guid userId, string verifiedToken, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                int result = await _context.UsersEntity.Where(e => e.UserId == userId).ExecuteUpdateAsync(
+                    s =>
+                        s.SetProperty(i => i.VerifiedToken, i => verifiedToken),
+                    cancellationToken
+                );
+
+                if (result > 0)
+                    return Result<Guid>.Success(userId);
+
+                return Result<Guid>.Failure("Пользователь не найден", ErrorTypeEnum.NotFound);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+
+                return ex.HandleException<Guid>();
+            }
+        }
+
+        public async Task<Result<Guid>> ConfirmEmailAsync(Guid userId, string userToken, CancellationToken cancellationToken = default)
+        {
+            var result = await _context.UsersEntity
+                .FirstOrDefaultAsync(x => x.UserId == userId, cancellationToken);
+
+            if (result == null || result.Verified)
+                return Result<Guid>.Failure("Неактуальный запрос");
+
+            if(result.VerifiedToken == userToken)
+            {
+                try
+                {
+                    result.Verified = true;
+                    result.VerifiedToken = null;
+                    result.VerifiedDate = DateTime.UtcNow;
+                    int affectedRows = await _context.SaveChangesAsync(cancellationToken);
+
+                    if(affectedRows > 0)
+                    {
+                        return Result<Guid>.Success(result.UserId);
+                    }
+
+                    return Result<Guid>.Failure("Ошибка обновления данных", ErrorTypeEnum.DbError);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+
+                    return ex.HandleException<Guid>();
+                }
+            }
+            
+            return Result<Guid>.Failure("Верификация email провалена", ErrorTypeEnum.ValidationError);
+        }
+
+        public async Task<Result<int>> RemoveAllUnverifiedUserByTimeout(
+            TimeSpan timeout, 
+            CancellationToken cancellationToken = default
+            )
+        {
+            try
+            {
+                var result = await _context.UsersEntity
+                    .Where(x => !x.Verified &&  DateTime.UtcNow - x.DateRegistry > timeout)
+                    .ExecuteDeleteAsync(cancellationToken);
+
+                return Result<int>.Success(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
+
+                return ex.HandleException<int>();
             }
         }
     }

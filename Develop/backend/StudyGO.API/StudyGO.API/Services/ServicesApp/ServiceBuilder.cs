@@ -1,4 +1,5 @@
-﻿using StudyGO.Application.Services;
+﻿using StudyGO.Application.Options;
+using StudyGO.Application.Services;
 using StudyGO.Application.Services.Account;
 using StudyGO.Core.Abstractions.Services;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -7,8 +8,11 @@ namespace StudyGO.API.Services
 {
     public partial class ServiceBuilder
     {
-        public void ConfigureServicesApp()
+        private void ConfigureServicesApp()
         {
+            _services.Configure<UserProfileServiceOptions>(_configuration.GetSection("UserAccount"));
+            _services.Configure<TutorProfileServiceOptions>(_configuration.GetSection("TutorAccount"));
+            
             _services.AddScoped<IUserAccountService, UserAccountService>();
             _services.AddScoped<IUserProfileService, UserProfileService>();
             _services.AddScoped<ITutorProfileService, TutorProfileService>();
