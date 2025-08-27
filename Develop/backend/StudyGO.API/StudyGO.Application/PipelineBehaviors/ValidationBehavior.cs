@@ -1,13 +1,13 @@
 using MediatR;
 using StudyGO.Contracts.Result;
+using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Contracts.ValidatableMarker;
 using StudyGO.Core.Abstractions.ValidationService;
 
 namespace StudyGO.Application.PipelineBehaviors;
 
-public class ValidationBehavior<TRequest, TResponse, TData> : IPipelineBehavior<TRequest, TResponse> 
+public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> 
     where TRequest : IRequest<TResponse>
-    where TResponse : Result<TData>
 {
     private readonly IValidationService _validationService;
 
@@ -27,15 +27,27 @@ public class ValidationBehavior<TRequest, TResponse, TData> : IPipelineBehavior<
 
         foreach (var dtoProperty in dtoProperties)
         {
-            var dto = dtoProperty.GetValue(request);
+            var  dtoObject = dtoProperty.GetValue(request)!;
+            
+            if (dtoObject is null) continue;
+
+            dynamic dto = dtoObject;
+            
             var validationResult = await _validationService.ValidateAsync(dto, cancellationToken);
 
             if (!validationResult.IsSuccess)
             {
-                return (TResponse)Result<TData>.Failure(
-                    validationResult.ErrorMessage ?? string.Empty,
-                    validationResult.ErrorType
-                );
+                var resultType = typeof(TResponse);
+                var failureMethod = resultType.GetMethod("Failure", new[] { typeof(string), typeof(ErrorTypeEnum) });
+
+                if (failureMethod != null)
+                {
+                    return (TResponse)failureMethod.Invoke(null, new object[]
+                    {
+                        validationResult.ErrorMessage ?? "",
+                        validationResult.ErrorType
+                    })!;
+                }
             }
         }
 

@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -5,6 +6,7 @@ using StudyGO.API.CustomAttributes;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
+using StudyGO.Application.Commands;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -24,15 +26,18 @@ namespace StudyGO.API.Controllers.AccountControllers
         
         private readonly EmailConfirmationOptions _emailOptions;
         
+        private readonly IMediator _mediator;
+        
         public AccountController(
             ILogger<AccountController> logger,
             IUserAccountService userAccountService, 
             IWebHostEnvironment env,
-            IOptions<EmailConfirmationOptions> emailOptions)
+            IOptions<EmailConfirmationOptions> emailOptions, IMediator mediator)
         {
             _logger = logger;
             _userAccountService = userAccountService;
             _env = env;
+            _mediator = mediator;
             _emailOptions = emailOptions.Value;
         }
 
@@ -236,7 +241,7 @@ namespace StudyGO.API.Controllers.AccountControllers
 
             _logger.LogInformation("Обновление пользователя {UserId}", updateDto.UserId);
 
-            var result = await _userAccountService.TryUpdateAccount(updateDto, cancellationToken);
+            var result = await _mediator.Send(new UpdateUserCommand(updateDto), cancellationToken);
 
             _logger.LogResult(
                 result,
