@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Result;
 using StudyGO.Contracts.Result.ErrorTypes;
@@ -19,15 +20,20 @@ public class VerificationService : IVerificationService
 
     private readonly ILogger<VerificationService> _logger;
     
+    private readonly IWebHostEnvironment _env;
+    
     public VerificationService(
         IEmailService emailService,
         IEmailVerifyTokenProvider emailTokenProvider,
-        IUserRepository userRepository, ILogger<VerificationService> logger)
+        IUserRepository userRepository, 
+        ILogger<VerificationService> logger, 
+        IWebHostEnvironment env)
     {
         _emailService = emailService;
         _emailTokenProvider = emailTokenProvider;
         _userRepository = userRepository;
         _logger = logger;
+        _env = env;
     }
 
     public async Task<Result<string>> CreateTokenAndSendMessage(Guid userId, 
@@ -41,7 +47,7 @@ public class VerificationService : IVerificationService
         
         _logger.LogDebug("Создание ссылки...");
 
-        string htmlBody = BuildVerificationEmailBody(userId, token, endPoint);
+        string htmlBody = await BuildVerificationEmailBody(userId, token, endPoint);
         
         
         var result = await SendVerificationEmail(email, htmlBody, cancellationToken);
@@ -64,13 +70,19 @@ public class VerificationService : IVerificationService
         return Result<string>.Success(token);
     }
     
-    private string BuildVerificationEmailBody(Guid userId, string token, string endPoint)
+    private async Task<string> BuildVerificationEmailBody(Guid userId, string token, string endPoint)
     {
         _logger.LogDebug("Создание ссылки...");
-        string linkText = "сюда";
         string verificationLink = $"{endPoint}?userId={userId}&token={token}";
-        return $"<html><body><p>Чтобы подтвердить свой email, пожалуйста, перейдите " +
-               $"<a href=\"{verificationLink}\">{linkText}</a>.</p></body></html>";
+        
+        
+        var filePath = Path.Combine(_env.WebRootPath, "html", "confirm-email-template-message.html");
+        
+        var html = await System.IO.File.ReadAllTextAsync(filePath);
+
+        html = html.Replace("{Link}", verificationLink);
+        
+        return html;
     }
     
     private async Task<SmtpSendRequest> SendVerificationEmail(string email, string body, CancellationToken cancellationToken)
