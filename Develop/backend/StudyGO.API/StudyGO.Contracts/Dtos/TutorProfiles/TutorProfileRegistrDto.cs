@@ -1,9 +1,10 @@
 ﻿using StudyGO.Contracts.Dtos.Formats;
 using StudyGO.Contracts.Dtos.Users;
+using StudyGO.Contracts.ValidatableMarker;
 
 namespace StudyGO.Contracts.Dtos.TutorProfiles
 {
-    public class TutorProfileRegistrDto 
+    public class TutorProfileRegistrDto : IValidatable
     {
         public UserCreateDto User { get; set; } = null!;
 

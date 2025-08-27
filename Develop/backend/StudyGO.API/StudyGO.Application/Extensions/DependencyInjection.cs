@@ -12,6 +12,8 @@ public static class DependencyInjection
             cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<, ,>));
         
         return services;
     }

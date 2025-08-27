@@ -1,6 +1,8 @@
-﻿namespace StudyGO.Contracts.Dtos.Users
+﻿using StudyGO.Contracts.ValidatableMarker;
+
+namespace StudyGO.Contracts.Dtos.Users
 {
-    public class UserUpdateСredentialsDto
+    public class UserUpdateСredentialsDto : IValidatable
     {
         public Guid UserId { get; set; }
 

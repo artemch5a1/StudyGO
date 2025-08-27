@@ -1,9 +1,9 @@
-﻿using StudyGO.Contracts.Dtos.Subjects;
-using StudyGO.Contracts.Dtos.Users;
+﻿using StudyGO.Contracts.Dtos.Users;
+using StudyGO.Contracts.ValidatableMarker;
 
 namespace StudyGO.Contracts.Dtos.UserProfiles
 {
-    public class UserProfileRegistrDto
+    public class UserProfileRegistrDto : IValidatable
     {
         public UserCreateDto User { get; set; } = null!;
 
