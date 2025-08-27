@@ -1,6 +1,4 @@
 using MediatR;
-using StudyGO.Contracts.Result;
-using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Contracts.ValidatableMarker;
 using StudyGO.Core.Abstractions.ValidationService;
 
@@ -37,17 +35,8 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
 
             if (!validationResult.IsSuccess)
             {
-                var resultType = typeof(TResponse);
-                var failureMethod = resultType.GetMethod("Failure", new[] { typeof(string), typeof(ErrorTypeEnum) });
-
-                if (failureMethod != null)
-                {
-                    return (TResponse)failureMethod.Invoke(null, new object[]
-                    {
-                        validationResult.ErrorMessage ?? "",
-                        validationResult.ErrorType
-                    })!;
-                }
+                return Helper<TResponse>
+                    .BuildFailure(validationResult.ErrorMessage, validationResult.ErrorType);
             }
         }
 
