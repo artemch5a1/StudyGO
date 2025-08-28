@@ -211,10 +211,7 @@ namespace StudyGO.API.Controllers.AccountControllers
 
             _logger.LogDebug("«апрос данных текущего пользовател€ {userId}", userId.Value);
 
-            var result = await _userAccountService.TryGetAccountById(
-                userId.Value,
-                cancellationToken
-            );
+            var result = await _mediator.Send( new GetAccountByIdQuery(userId.Value), cancellationToken);
 
             _logger.LogResult(
                 result,
