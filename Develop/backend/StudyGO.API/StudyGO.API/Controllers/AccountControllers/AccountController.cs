@@ -6,6 +6,7 @@ using StudyGO.API.CustomAttributes;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
+using StudyGO.Application.UseCases.Commands.DeleteCommands;
 using StudyGO.Application.UseCases.Commands.UpdateCommands.UpdateUser;
 using StudyGO.Application.UseCases.Queries.GetAll.GetAllAccount;
 using StudyGO.Application.UseCases.Queries.GetById.GetAccountById;
@@ -115,7 +116,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             _logger.LogInformation("Админ запросил удаление пользователя {UserId}", userId);
 
-            var result = await _userAccountService.TryDeleteAccount(userId, cancellationToken);
+            var result = await _mediator.Send(new DeleteAccountCommand(userId), cancellationToken);
 
             _logger.LogResult(
                 result,
@@ -139,12 +140,9 @@ namespace StudyGO.API.Controllers.AccountControllers
                 return BadRequest(userId.ErrorMessage);
             }
 
-            _logger.LogInformation("Пользователь {userId} запросил удаление своего аккаунта", userId);
+            _logger.LogInformation("Пользователь {userId} запросил удаление своего аккаунта", userId.Value);
 
-            var result = await _userAccountService.TryDeleteAccount(
-                userId.Value,
-                cancellationToken
-            );
+            var result = await _mediator.Send(new DeleteAccountCommand(userId.Value), cancellationToken);
 
             _logger.LogResult(
                 result,
