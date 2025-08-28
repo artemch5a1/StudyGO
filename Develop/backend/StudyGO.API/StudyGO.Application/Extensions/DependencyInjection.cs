@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using StudyGO.Application.PipelineBehaviors;
+using StudyGO.Application.UseCases.PipelineBehaviors;
 
 namespace StudyGO.Application.Extensions;
 

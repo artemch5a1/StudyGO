@@ -2,7 +2,7 @@ using MediatR;
 using StudyGO.Contracts.ValidatableMarker;
 using StudyGO.Core.Abstractions.ValidationService;
 
-namespace StudyGO.Application.PipelineBehaviors;
+namespace StudyGO.Application.UseCases.PipelineBehaviors;
 
 public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> 
     where TRequest : IRequest<TResponse>

@@ -1,7 +1,7 @@
 using StudyGO.Contracts.Result;
 using StudyGO.Contracts.Result.ErrorTypes;
 
-namespace StudyGO.Application.PipelineBehaviors;
+namespace StudyGO.Application.UseCases.PipelineBehaviors;
 
 public static class Helper<TResponse>
 {
