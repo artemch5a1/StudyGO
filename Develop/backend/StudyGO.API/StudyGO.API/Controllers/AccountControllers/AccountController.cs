@@ -7,6 +7,7 @@ using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
 using StudyGO.Application.UseCases.Commands.UpdateCommands.UpdateUser;
+using StudyGO.Application.UseCases.Queries.GetById.GetAccountById;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -183,7 +184,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             _logger.LogInformation("Запрос пользователя по ID: {userId}", userId);
 
-            var result = await _userAccountService.TryGetAccountById(userId, cancellationToken);
+            var result = await _mediator.Send( new GetAccountByIdQuery(userId), cancellationToken);
 
             _logger.LogResult(
                 result,
