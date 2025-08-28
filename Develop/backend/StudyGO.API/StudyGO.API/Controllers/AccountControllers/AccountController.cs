@@ -7,6 +7,7 @@ using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
 using StudyGO.Application.UseCases.Commands.UpdateCommands.UpdateUser;
+using StudyGO.Application.UseCases.Queries.GetAll.GetAllAccount;
 using StudyGO.Application.UseCases.Queries.GetById.GetAccountById;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
@@ -163,7 +164,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             _logger.LogInformation("Запрос всех пользователей");
 
-            var result = await _userAccountService.TryGetAllAccount(cancellationToken);
+            var result = await _mediator.Send(new GetAllAccountQuery(), cancellationToken);
 
             _logger.LogResult(
                 result,

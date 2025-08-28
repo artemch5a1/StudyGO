@@ -16,7 +16,6 @@
     <Folder Include="UseCases\Commands\CreateCommands\" />
     <Folder Include="UseCases\Commands\DeleteCommands\" />
     <Folder Include="UseCases\Commands\SpecificCommands\" />
-    <Folder Include="UseCases\Queries\GetAll\" />
     <Folder Include="UseCases\Queries\Pagination\" />
   </ItemGroup>
 </Project>
