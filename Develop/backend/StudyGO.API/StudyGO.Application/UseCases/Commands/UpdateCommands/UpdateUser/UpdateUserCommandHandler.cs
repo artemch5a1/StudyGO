@@ -1,12 +1,11 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using StudyGO.Application.UseCases.Commands;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 
-namespace StudyGO.Application.UseCases.Handlers;
+namespace StudyGO.Application.UseCases.Commands.UpdateCommands.UpdateUser;
 
 public class UpdateUserCommandHandler
     : IRequestHandler<UpdateUserCommand, Result<Guid>>

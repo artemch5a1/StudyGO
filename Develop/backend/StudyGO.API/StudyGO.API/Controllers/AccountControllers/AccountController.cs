@@ -6,7 +6,7 @@ using StudyGO.API.CustomAttributes;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
-using StudyGO.Application.Commands;
+using StudyGO.Application.UseCases.Commands.UpdateCommands.UpdateUser;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Core.Abstractions.Services.Account;
