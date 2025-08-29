@@ -10,6 +10,7 @@ using StudyGO.Application.UseCases.UserUseCases.Commands.DeleteCommands.DeleteAc
 using StudyGO.Application.UseCases.UserUseCases.Commands.SpecificCommands.ConfirmEmail;
 using StudyGO.Application.UseCases.UserUseCases.Commands.SpecificCommands.LogInUser;
 using StudyGO.Application.UseCases.UserUseCases.Commands.UpdateCommands.UpdateUser;
+using StudyGO.Application.UseCases.UserUseCases.Commands.UpdateCommands.UpdateUserÑredentials;
 using StudyGO.Application.UseCases.UserUseCases.Queries.GetAll.GetAllAccount;
 using StudyGO.Application.UseCases.UserUseCases.Queries.GetById.GetAccountById;
 using StudyGO.Contracts.Contracts;
@@ -272,7 +273,8 @@ namespace StudyGO.API.Controllers.AccountControllers
 
             _logger.LogInformation("Îáíîâëåíèå ó÷¸òíûõ äàííûõ ïîëüçîâàòåëÿ {UserId}", updateDto.UserId);
 
-            var result = await _userAccountService.TryUpdateAccount(updateDto, cancellationToken);
+            var result = 
+                await _mediator.Send(new UpdateUserÑredentialsCommand(updateDto), cancellationToken);
 
             _logger.LogResult(
                 result,
