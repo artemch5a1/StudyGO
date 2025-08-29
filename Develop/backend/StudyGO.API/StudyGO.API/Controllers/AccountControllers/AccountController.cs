@@ -7,6 +7,7 @@ using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
 using StudyGO.Application.UseCases.Commands.DeleteCommands;
+using StudyGO.Application.UseCases.Commands.SpecificCommands.LogInUser;
 using StudyGO.Application.UseCases.Commands.UpdateCommands.UpdateUser;
 using StudyGO.Application.UseCases.Queries.GetAll.GetAllAccount;
 using StudyGO.Application.UseCases.Queries.GetById.GetAccountById;
@@ -55,7 +56,8 @@ namespace StudyGO.API.Controllers.AccountControllers
                 LoggingExtensions.MaskEmail(loginRequest.Email)
             );
 
-            var result = await _userAccountService.TryLogIn(loginRequest, cancellationToken);
+            var result = 
+                await _mediator.Send(new LogInUserCommand(loginRequest), cancellationToken);
 
             _logger.LogResult(
                 result,
