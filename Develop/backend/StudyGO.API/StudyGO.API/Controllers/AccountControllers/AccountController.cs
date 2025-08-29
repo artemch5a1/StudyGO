@@ -7,6 +7,7 @@ using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
 using StudyGO.Application.UseCases.Commands.DeleteCommands;
+using StudyGO.Application.UseCases.Commands.SpecificCommands.ConfirmEmail;
 using StudyGO.Application.UseCases.Commands.SpecificCommands.LogInUser;
 using StudyGO.Application.UseCases.Commands.UpdateCommands.UpdateUser;
 using StudyGO.Application.UseCases.Queries.GetAll.GetAllAccount;
@@ -74,9 +75,11 @@ namespace StudyGO.API.Controllers.AccountControllers
         }
 
         [HttpPost("ConfirmEmail")]
-        public async Task<ActionResult<Guid>> ConfirmEmail([FromBody] ConfirmEmailRequest request)
+        public async Task<ActionResult<Guid>> ConfirmEmail(
+            [FromBody] ConfirmEmailRequest request, 
+            CancellationToken cancellationToken)
         {
-            var result = await _userAccountService.ConfirmEmailAsync(request.UserId, request.Token);
+            var result = await _mediator.Send(new ConfirmEmailCommand(request), cancellationToken);
 
             return result.ToActionResult();
         }
