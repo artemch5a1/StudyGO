@@ -5,7 +5,7 @@ using StudyGO.Application.UseCases.Commands.UpdateCommands.UpdateUser;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 
-namespace StudyGO.Application.UseCases.Commands.DeleteCommands;
+namespace StudyGO.Application.UseCases.Commands.DeleteCommands.DeleteAccount;
 
 public class DeleteAccountHandler : IRequestHandler<DeleteAccountCommand, Result<Guid>>
 {

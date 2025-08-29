@@ -6,7 +6,7 @@ using StudyGO.API.CustomAttributes;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
-using StudyGO.Application.UseCases.Commands.DeleteCommands;
+using StudyGO.Application.UseCases.Commands.DeleteCommands.DeleteAccount;
 using StudyGO.Application.UseCases.Commands.SpecificCommands.ConfirmEmail;
 using StudyGO.Application.UseCases.Commands.SpecificCommands.LogInUser;
 using StudyGO.Application.UseCases.Commands.UpdateCommands.UpdateUser;
