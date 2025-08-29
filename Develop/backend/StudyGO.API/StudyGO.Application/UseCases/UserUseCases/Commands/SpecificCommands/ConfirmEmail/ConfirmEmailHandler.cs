@@ -2,7 +2,7 @@ using MediatR;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 
-namespace StudyGO.Application.UseCases.Commands.SpecificCommands.ConfirmEmail;
+namespace StudyGO.Application.UseCases.UserUseCases.Commands.SpecificCommands.ConfirmEmail;
 
 public class ConfirmEmailHandler : IRequestHandler<ConfirmEmailCommand, Result<Guid>>
 {

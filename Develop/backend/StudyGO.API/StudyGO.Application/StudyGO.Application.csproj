@@ -13,7 +13,6 @@
     <ProjectReference Include="..\StudyGO.Core\StudyGO.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="UseCases\Commands\CreateCommands\" />
-    <Folder Include="UseCases\Queries\Pagination\" />
+    <Folder Include="UseCases\UserUseCases\" />
   </ItemGroup>
 </Project>

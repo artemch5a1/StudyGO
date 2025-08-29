@@ -1,20 +1,18 @@
-using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using StudyGO.Application.UseCases.Commands.UpdateCommands.UpdateUser;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 
-namespace StudyGO.Application.UseCases.Commands.DeleteCommands.DeleteAccount;
+namespace StudyGO.Application.UseCases.UserUseCases.Commands.DeleteCommands.DeleteAccount;
 
 public class DeleteAccountHandler : IRequestHandler<DeleteAccountCommand, Result<Guid>>
 {
     private readonly IUserRepository _userRepository;
-    private readonly ILogger<UpdateUserCommandHandler> _logger;
+    private readonly ILogger<DeleteAccountHandler> _logger;
     
     public DeleteAccountHandler(
         IUserRepository userRepository,
-        ILogger<UpdateUserCommandHandler> logger)
+        ILogger<DeleteAccountHandler> logger)
     {
         _userRepository = userRepository;
         _logger = logger;

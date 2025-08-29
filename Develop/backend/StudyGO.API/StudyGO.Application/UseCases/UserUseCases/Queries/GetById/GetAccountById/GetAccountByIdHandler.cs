@@ -8,7 +8,7 @@ using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
 
-namespace StudyGO.Application.UseCases.Queries.GetById.GetAccountById;
+namespace StudyGO.Application.UseCases.UserUseCases.Queries.GetById.GetAccountById;
 
 public class GetAccountByIdHandler : IRequestHandler<GetAccountByIdQuery, Result<UserDto?>>
 {
@@ -16,12 +16,12 @@ public class GetAccountByIdHandler : IRequestHandler<GetAccountByIdQuery, Result
 
     private readonly IMapper _mapper;
 
-    private readonly ILogger<UserAccountService> _logger;
+    private readonly ILogger<GetAccountByIdHandler> _logger;
 
     public GetAccountByIdHandler(
         IUserRepository userRepository, 
         IMapper mapper, 
-        ILogger<UserAccountService> logger)
+        ILogger<GetAccountByIdHandler> logger)
     {
         _userRepository = userRepository;
         _mapper = mapper;

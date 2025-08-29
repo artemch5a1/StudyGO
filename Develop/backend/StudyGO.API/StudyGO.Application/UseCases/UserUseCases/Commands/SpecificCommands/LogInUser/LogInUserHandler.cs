@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using StudyGO.Application.Extensions;
-using StudyGO.Application.Services.Account;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Contracts.Result;
@@ -11,7 +10,7 @@ using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Utils;
 using StudyGO.Core.Extensions;
 
-namespace StudyGO.Application.UseCases.Commands.SpecificCommands.LogInUser;
+namespace StudyGO.Application.UseCases.UserUseCases.Commands.SpecificCommands.LogInUser;
 
 public class LogInUserHandler : IRequestHandler<LogInUserCommand, Result<UserLoginResponseDto>>
 {
@@ -21,13 +20,13 @@ public class LogInUserHandler : IRequestHandler<LogInUserCommand, Result<UserLog
     
     private readonly IJwtTokenProvider _jwtTokenProvider;
     
-    private readonly ILogger<UserAccountService> _logger;
+    private readonly ILogger<LogInUserHandler> _logger;
 
     public LogInUserHandler(
         IUserRepository userRepository, 
         IPasswordHasher passwordHasher, 
         IJwtTokenProvider jwtTokenProvider, 
-        ILogger<UserAccountService> logger)
+        ILogger<LogInUserHandler> logger)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;

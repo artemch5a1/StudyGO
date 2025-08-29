@@ -3,6 +3,6 @@ using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Contracts.Result;
 
-namespace StudyGO.Application.UseCases.Commands.SpecificCommands.LogInUser;
+namespace StudyGO.Application.UseCases.UserUseCases.Commands.SpecificCommands.LogInUser;
 
 public record LogInUserCommand(UserLoginRequest UserLogin) : IRequest<Result<UserLoginResponseDto>>;

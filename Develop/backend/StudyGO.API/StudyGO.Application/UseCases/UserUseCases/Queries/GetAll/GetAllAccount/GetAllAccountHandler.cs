@@ -1,13 +1,12 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using StudyGO.Application.Services.Account;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Models;
 
-namespace StudyGO.Application.UseCases.Queries.GetAll.GetAllAccount;
+namespace StudyGO.Application.UseCases.UserUseCases.Queries.GetAll.GetAllAccount;
 
 public class GetAllAccountHandler : IRequestHandler<GetAllAccountQuery, Result<List<UserDto>>>
 {
@@ -15,12 +14,12 @@ public class GetAllAccountHandler : IRequestHandler<GetAllAccountQuery, Result<L
 
     private readonly IMapper _mapper;
 
-    private readonly ILogger<UserAccountService> _logger;
+    private readonly ILogger<GetAllAccountHandler> _logger;
 
     public GetAllAccountHandler(
         IUserRepository userRepository, 
         IMapper mapper, 
-        ILogger<UserAccountService> logger)
+        ILogger<GetAllAccountHandler> logger)
     {
         _userRepository = userRepository;
         _mapper = mapper;
