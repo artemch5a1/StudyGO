@@ -14,7 +14,6 @@ namespace StudyGO.API.Services
             _services.Configure<UserProfileServiceOptions>(_configuration.GetSection("UserAccount"));
             _services.Configure<TutorProfileServiceOptions>(_configuration.GetSection("TutorAccount"));
             
-            _services.AddScoped<IUserAccountService, UserAccountService>();
             _services.AddScoped<IUserProfileService, UserProfileService>();
             _services.AddScoped<ITutorProfileService, TutorProfileService>();
             _services.AddScoped<IFormatService, FormatService>();
