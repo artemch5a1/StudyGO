@@ -24,9 +24,7 @@ namespace StudyGO.API.Controllers.AccountControllers
     [Route("[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly ILogger<AccountController> _logger;
-
-        private readonly IUserAccountService _userAccountService;
+        private readonly ILogger<AccountController> _logger;  
         
         private readonly IWebHostEnvironment _env;
         
@@ -36,12 +34,10 @@ namespace StudyGO.API.Controllers.AccountControllers
         
         public AccountController(
             ILogger<AccountController> logger,
-            IUserAccountService userAccountService, 
             IWebHostEnvironment env,
             IOptions<EmailConfirmationOptions> emailOptions, IMediator mediator)
         {
             _logger = logger;
-            _userAccountService = userAccountService;
             _env = env;
             _mediator = mediator;
             _emailOptions = emailOptions.Value;
