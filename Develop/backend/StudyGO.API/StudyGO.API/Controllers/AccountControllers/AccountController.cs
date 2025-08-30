@@ -10,7 +10,7 @@ using StudyGO.Application.UseCases.UserUseCases.Commands.DeleteCommands.DeleteAc
 using StudyGO.Application.UseCases.UserUseCases.Commands.SpecificCommands.ConfirmEmail;
 using StudyGO.Application.UseCases.UserUseCases.Commands.SpecificCommands.LogInUser;
 using StudyGO.Application.UseCases.UserUseCases.Commands.UpdateCommands.UpdateUser;
-using StudyGO.Application.UseCases.UserUseCases.Commands.UpdateCommands.UpdateUserСredentials;
+using StudyGO.Application.UseCases.UserUseCases.Commands.UpdateCommands.UpdateUserPassword;
 using StudyGO.Application.UseCases.UserUseCases.Queries.GetAll.GetAllAccount;
 using StudyGO.Application.UseCases.UserUseCases.Queries.GetById.GetAccountById;
 using StudyGO.Contracts.Contracts;
@@ -256,12 +256,10 @@ namespace StudyGO.API.Controllers.AccountControllers
             return result.ToActionResult();
         }
 
-        [HttpPut("update-user-credentials")]
-        [Obsolete("В данный момент этот адрес является недоступным")]
-        [Disabled("Смена пароля и почты недоступна")]
+        [HttpPut("update-user-password")]
         [Authorize]
-        public async Task<ActionResult<Guid>> UpdateCredentials(
-            [FromBody] UserUpdateСredentialsDto updateDto,
+        public async Task<ActionResult<Guid>> UpdatePassword(
+            [FromBody] UserUpdatePasswordDto updateDto,
             CancellationToken cancellationToken
         )
         {
@@ -274,7 +272,7 @@ namespace StudyGO.API.Controllers.AccountControllers
             _logger.LogInformation("Обновление учётных данных пользователя {UserId}", updateDto.UserId);
 
             var result = 
-                await _mediator.Send(new UpdateUserСredentialsCommand(updateDto), cancellationToken);
+                await _mediator.Send(new UpdateUserPasswordCommand(updateDto), cancellationToken);
 
             _logger.LogResult(
                 result,

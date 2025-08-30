@@ -4,13 +4,11 @@ using StudyGO.Contracts.Dtos.Users;
 
 namespace StudyGO.Application.Validations.UsersValidation
 {
-    public class UserUpdateСredentialsDtoValidator : BaseUserValidator<UserUpdateСredentialsDto>
+    public class UserUpdatePasswordDtoValidator : BaseUserValidator<UserUpdatePasswordDto>
     {
-        public UserUpdateСredentialsDtoValidator()
+        public UserUpdatePasswordDtoValidator()
         {
             RuleFor(x => x.UserId).NotEmpty().WithMessage("ID не должен быть пустым");
-
-            AddEmailRule(x => x.Email);
 
             AddPasswordRule(x => x.Password);
         }

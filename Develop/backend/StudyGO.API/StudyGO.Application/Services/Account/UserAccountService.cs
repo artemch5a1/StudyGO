@@ -157,53 +157,6 @@ namespace StudyGO.Application.Services.Account
             
             return await _userRepository.Update(userModel, cancellationToken);
         }
-
-        public async Task<Result<Guid>> TryUpdateAccount(
-            UserUpdateСredentialsDto user,
-            CancellationToken cancellationToken = default
-        )
-        {
-            _logger.LogInformation("Обновление учетных данных аккаунта: {UserId}", user.UserId);
-            
-            var validationResult = await _validationService.ValidateAsync(user, cancellationToken);
-
-            if (!validationResult.IsSuccess)
-            {
-                _logger.LogWarning("Ошибка валидации при учетных данных аккаунта: {Error}", validationResult.ErrorMessage);
-                return Result<Guid>.Failure(
-                    validationResult.ErrorMessage ?? string.Empty,
-                    validationResult.ErrorType
-                );
-            }
-
-            var result = await _userRepository.GetById(user.UserId, cancellationToken);
-
-            if (!result.IsSuccess)
-                return Result<Guid>.Failure("Неверный ID", ErrorTypeEnum.NotFound);
-            
-            _logger.LogDebug("Проверка пароля");
-            
-            var check = user.OldPassword.VerifyPassword(
-                result.Value!.PasswordHash,
-                _passwordHasher
-            );
-            
-            if (!check)
-            {
-                _logger.LogInformation("Неверный пароль для подтверждения обновления");
-                return Result<Guid>.Failure("Неверный пароль", ErrorTypeEnum.AuthenticationError);
-            }
-            
-            _logger.LogDebug("Успешное подтверждение, хеширование пароля...");
-            
-            user.Password = user.Password.HashedPassword(_passwordHasher);
-
-            User userModel = _mapper.Map<User>(user);
-            
-            _logger.LogDebug("Отправлен запрос в репозиторий");
-            
-            return await _userRepository.UpdateСredentials(userModel, cancellationToken);
-        }
         
         public async Task<Result<Guid>> ConfirmEmailAsync(Guid userId, string userToken,
             CancellationToken cancellationToken = default)

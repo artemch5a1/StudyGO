@@ -25,8 +25,8 @@ public partial class ServiceBuilder
         _services.AddScoped<IValidator<UserUpdateDto>, UserUpdateDtoValidator>();
 
         _services.AddScoped<
-            IValidator<UserUpdateСredentialsDto>,
-            UserUpdateСredentialsDtoValidator
+            IValidator<UserUpdatePasswordDto>,
+            UserUpdatePasswordDtoValidator
         >();
 
         _services.AddScoped<IValidator<TutorProfileRegistrDto>, TutorProfileRegistryDtoValidation>();

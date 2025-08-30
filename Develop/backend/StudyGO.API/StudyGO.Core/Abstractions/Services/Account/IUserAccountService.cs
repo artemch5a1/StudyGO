@@ -12,8 +12,6 @@ namespace StudyGO.Core.Abstractions.Services.Account
 
         public Task<Result<Guid>> TryUpdateAccount(UserUpdateDto user, CancellationToken cancellationToken = default);
 
-        public Task<Result<Guid>> TryUpdateAccount(UserUpdateСredentialsDto user, CancellationToken cancellationToken = default);
-
         public Task<Result<List<UserDto>>> TryGetAllAccount(CancellationToken cancellationToken = default);
 
         public Task<Result<UserDto?>> TryGetAccountById(Guid id, CancellationToken cancellationToken = default);
