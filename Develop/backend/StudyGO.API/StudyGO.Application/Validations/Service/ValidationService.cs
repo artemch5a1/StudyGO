@@ -84,6 +84,24 @@ namespace StudyGO.Application.Validations.Service
             return ResultError<T, List<ValidationErrorDto>>.SuccessWithoutValue();
         }
 
+        public async Task<ResultError<object, List<ValidationErrorDto>>> 
+            ValidateDynamicAsync(object model, CancellationToken cancellationToken = default)
+        {
+            dynamic dynModel = model;
+            dynamic result = await ValidateAsync(dynModel, cancellationToken);
+
+            if (result.IsSuccess)
+                return ResultError<object, List<ValidationErrorDto>>.SuccessWithoutValue();
+            
+            return ResultError<object, List<ValidationErrorDto>>.Failure(
+                result.ErrorMessage,
+                result.ErrorValue,
+                result.ErrorType
+            );
+        }
+        
+        
+        
         private List<ValidationErrorDto> MapToErrorDto(List<ValidationFailure> failures)
         {
             return failures

@@ -27,16 +27,13 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         {
             var  dtoObject = dtoProperty.GetValue(request)!;
             
-            if (dtoObject is null) continue;
-
-            dynamic dto = dtoObject;
-            
-            var validationResult = await _validationService.ValidateAsync(dto, cancellationToken);
+            var validationResult = await _validationService.ValidateDynamicAsync(dtoObject, cancellationToken);
 
             if (!validationResult.IsSuccess)
             {
                 return Helper<TResponse>
-                    .BuildFailure(validationResult.ErrorMessage, validationResult.ErrorType);
+                    .BuildFailure(validationResult.ErrorMessage ?? string.Empty, 
+                        validationResult.ErrorType);
             }
         }
 
