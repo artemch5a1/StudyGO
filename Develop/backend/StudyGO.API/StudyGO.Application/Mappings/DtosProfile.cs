@@ -30,12 +30,6 @@ namespace StudyGO.Application.Mappings
                 x.Patronymic,
                 x.Number
                 ));
-
-            CreateMap<UserUpdateСredentialsDto, User>().ConvertUsing(x => User.UpdateUserCredentials(
-                x.UserId,
-                x.Email,
-                x.Password
-            ));
         }
 
         private void ConfigureSubjectsDto()

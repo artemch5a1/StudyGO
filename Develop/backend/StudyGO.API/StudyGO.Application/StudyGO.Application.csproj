@@ -7,8 +7,12 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="15.0.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+    <PackageReference Include="MediatR" Version="13.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StudyGO.Core\StudyGO.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UseCases\UserUseCases\" />
   </ItemGroup>
 </Project>

@@ -25,31 +25,24 @@ namespace StudyGO.Application.Validations.Service
 
         public ResultError<T, List<ValidationErrorDto>> Validate<T>(T model)
         {
-            var validator = _serviceProvider.GetService<IValidator<T>>();
-
-            if (validator == null)
+            try
             {
-                return ResultError<T, List<ValidationErrorDto>>.Failure(
-                    $"Validator for type {typeof(T).Name} not found",
-                    new(),
-                    ErrorTypeEnum.ServerError
-                );
+                var validator = _serviceProvider.GetRequiredService<IValidator<T>>();
+
+                var validationResult = validator.Validate(model);
+
+                return ValidateProccessing<T>(validationResult);
             }
-
-            var validationResult = validator.Validate(model);
-
-            if (!validationResult.IsValid)
+            catch (InvalidOperationException e)
             {
-                var firstError = validationResult.Errors.FirstOrDefault();
-
-                return ResultError<T, List<ValidationErrorDto>>.Failure(
-                    $"Validation failed: {firstError}",
-                    MapToErrorDto(validationResult.Errors),
-                    ErrorTypeEnum.ValidationError
-                );
+                _logger.LogError(e, "Использование валидации для модели, для которой она не была определена");
+                throw;
             }
-
-            return ResultError<T, List<ValidationErrorDto>>.SuccessWithoutValue();
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Неизвестная ошибка валидации");
+                throw;
+            }
         }
 
         public async Task<ResultError<T, List<ValidationErrorDto>>> ValidateAsync<T>(
@@ -57,26 +50,69 @@ namespace StudyGO.Application.Validations.Service
             CancellationToken cancellationToken = default
         )
         {
-            var validator = _serviceProvider.GetService<IValidator<T>>();
-
-            if (validator == null)
+            try
             {
-                return ResultError<T, List<ValidationErrorDto>>.Failure(
-                    $"Validator for type {typeof(T).Name} not found",
-                    new(),
-                    ErrorTypeEnum.ServerError
+                var validator = _serviceProvider.GetRequiredService<IValidator<T>>();
+
+                var validationResult = await validator.ValidateAsync(model, cancellationToken);
+
+                return ValidateProccessing<T>(validationResult);
+            }
+            catch (InvalidOperationException e)
+            {
+                _logger.LogError(e, "Использование валидации для модели, для которой она не была определена");
+                throw;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Неизвестная ошибка валидации");
+                throw;
+            }
+        }
+
+        public async Task<ResultError<object, List<ValidationErrorDto>>> 
+            ValidateDynamicAsync(object model, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                dynamic dynModel = model;
+                dynamic result = await ValidateAsync(dynModel, cancellationToken);
+
+                if (result.IsSuccess)
+                    return ResultError<object, List<ValidationErrorDto>>.SuccessWithoutValue();
+            
+                return ResultError<object, List<ValidationErrorDto>>.Failure(
+                    result.ErrorMessage,
+                    result.ErrorValue,
+                    result.ErrorType
                 );
             }
-
-            var validationResult = await validator.ValidateAsync(model, cancellationToken);
-
-            if (!validationResult.IsValid)
+            catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException e)
             {
-                var firstError = validationResult.Errors.FirstOrDefault();
+                _logger.LogError(e, "Dynamic binder failed. Возможно, не найден валидатор для типа {Type}", model.GetType().Name);
+                throw;
+            }
+            catch (InvalidCastException e)
+            {
+                _logger.LogError(e, "Dynamic cast failed при приведении результата валидации");
+                throw;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Неизвестная ошибка динамической валидации");
+                throw;
+            }
+        }
+
+        private ResultError<T, List<ValidationErrorDto>> ValidateProccessing<T>(ValidationResult result)
+        {
+            if (!result.IsValid)
+            {
+                var firstError = result.Errors.FirstOrDefault();
 
                 return ResultError<T, List<ValidationErrorDto>>.Failure(
                     $"Validation failed: {firstError}",
-                    MapToErrorDto(validationResult.Errors),
+                    MapToErrorDto(result.Errors),
                     ErrorTypeEnum.ValidationError
                 );
             }

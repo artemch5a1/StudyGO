@@ -1,6 +1,8 @@
-﻿namespace StudyGO.Contracts.Dtos.TutorProfiles
+﻿using StudyGO.Contracts.ValidatableMarker;
+
+namespace StudyGO.Contracts.Dtos.TutorProfiles
 {
-    public class TutorProfileUpdateDto
+    public class TutorProfileUpdateDto : IValidatable
     {
         public Guid UserId { get; set; }
 

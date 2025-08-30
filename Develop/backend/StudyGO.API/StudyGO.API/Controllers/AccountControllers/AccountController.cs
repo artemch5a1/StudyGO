@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -5,6 +6,13 @@ using StudyGO.API.CustomAttributes;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
+using StudyGO.Application.UseCases.UserUseCases.Commands.DeleteCommands.DeleteAccount;
+using StudyGO.Application.UseCases.UserUseCases.Commands.SpecificCommands.ConfirmEmail;
+using StudyGO.Application.UseCases.UserUseCases.Commands.SpecificCommands.LogInUser;
+using StudyGO.Application.UseCases.UserUseCases.Commands.UpdateCommands.UpdateUser;
+using StudyGO.Application.UseCases.UserUseCases.Commands.UpdateCommands.UpdateUserPassword;
+using StudyGO.Application.UseCases.UserUseCases.Queries.GetAll.GetAllAccount;
+using StudyGO.Application.UseCases.UserUseCases.Queries.GetById.GetAccountById;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Core.Abstractions.Services.Account;
@@ -16,23 +24,22 @@ namespace StudyGO.API.Controllers.AccountControllers
     [Route("[controller]")]
     public class AccountController : ControllerBase
     {
-        private readonly ILogger<AccountController> _logger;
-
-        private readonly IUserAccountService _userAccountService;
+        private readonly ILogger<AccountController> _logger;  
         
         private readonly IWebHostEnvironment _env;
         
         private readonly EmailConfirmationOptions _emailOptions;
         
+        private readonly IMediator _mediator;
+        
         public AccountController(
             ILogger<AccountController> logger,
-            IUserAccountService userAccountService, 
             IWebHostEnvironment env,
-            IOptions<EmailConfirmationOptions> emailOptions)
+            IOptions<EmailConfirmationOptions> emailOptions, IMediator mediator)
         {
             _logger = logger;
-            _userAccountService = userAccountService;
             _env = env;
+            _mediator = mediator;
             _emailOptions = emailOptions.Value;
         }
 
@@ -47,7 +54,8 @@ namespace StudyGO.API.Controllers.AccountControllers
                 LoggingExtensions.MaskEmail(loginRequest.Email)
             );
 
-            var result = await _userAccountService.TryLogIn(loginRequest, cancellationToken);
+            var result = 
+                await _mediator.Send(new LogInUserCommand(loginRequest), cancellationToken);
 
             _logger.LogResult(
                 result,
@@ -64,9 +72,11 @@ namespace StudyGO.API.Controllers.AccountControllers
         }
 
         [HttpPost("ConfirmEmail")]
-        public async Task<ActionResult<Guid>> ConfirmEmail([FromBody] ConfirmEmailRequest request)
+        public async Task<ActionResult<Guid>> ConfirmEmail(
+            [FromBody] ConfirmEmailRequest request, 
+            CancellationToken cancellationToken)
         {
-            var result = await _userAccountService.ConfirmEmailAsync(request.UserId, request.Token);
+            var result = await _mediator.Send(new ConfirmEmailCommand(request), cancellationToken);
 
             return result.ToActionResult();
         }
@@ -108,7 +118,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             _logger.LogInformation("Админ запросил удаление пользователя {UserId}", userId);
 
-            var result = await _userAccountService.TryDeleteAccount(userId, cancellationToken);
+            var result = await _mediator.Send(new DeleteAccountCommand(userId), cancellationToken);
 
             _logger.LogResult(
                 result,
@@ -132,12 +142,9 @@ namespace StudyGO.API.Controllers.AccountControllers
                 return BadRequest(userId.ErrorMessage);
             }
 
-            _logger.LogInformation("Пользователь {userId} запросил удаление своего аккаунта", userId);
+            _logger.LogInformation("Пользователь {userId} запросил удаление своего аккаунта", userId.Value);
 
-            var result = await _userAccountService.TryDeleteAccount(
-                userId.Value,
-                cancellationToken
-            );
+            var result = await _mediator.Send(new DeleteAccountCommand(userId.Value), cancellationToken);
 
             _logger.LogResult(
                 result,
@@ -157,7 +164,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             _logger.LogInformation("Запрос всех пользователей");
 
-            var result = await _userAccountService.TryGetAllAccount(cancellationToken);
+            var result = await _mediator.Send(new GetAllAccountQuery(), cancellationToken);
 
             _logger.LogResult(
                 result,
@@ -178,7 +185,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             _logger.LogInformation("Запрос пользователя по ID: {userId}", userId);
 
-            var result = await _userAccountService.TryGetAccountById(userId, cancellationToken);
+            var result = await _mediator.Send( new GetAccountByIdQuery(userId), cancellationToken);
 
             _logger.LogResult(
                 result,
@@ -206,10 +213,7 @@ namespace StudyGO.API.Controllers.AccountControllers
 
             _logger.LogDebug("Запрос данных текущего пользователя {userId}", userId.Value);
 
-            var result = await _userAccountService.TryGetAccountById(
-                userId.Value,
-                cancellationToken
-            );
+            var result = await _mediator.Send( new GetAccountByIdQuery(userId.Value), cancellationToken);
 
             _logger.LogResult(
                 result,
@@ -236,7 +240,7 @@ namespace StudyGO.API.Controllers.AccountControllers
 
             _logger.LogInformation("Обновление пользователя {UserId}", updateDto.UserId);
 
-            var result = await _userAccountService.TryUpdateAccount(updateDto, cancellationToken);
+            var result = await _mediator.Send(new UpdateUserCommand(updateDto), cancellationToken);
 
             _logger.LogResult(
                 result,
@@ -248,12 +252,10 @@ namespace StudyGO.API.Controllers.AccountControllers
             return result.ToActionResult();
         }
 
-        [HttpPut("update-user-credentials")]
-        [Obsolete("В данный момент этот адрес является недоступным")]
-        [Disabled("Смена пароля и почты недоступна")]
+        [HttpPut("update-user-password")]
         [Authorize]
-        public async Task<ActionResult<Guid>> UpdateCredentials(
-            [FromBody] UserUpdateСredentialsDto updateDto,
+        public async Task<ActionResult<Guid>> UpdatePassword(
+            [FromBody] UserUpdatePasswordDto updateDto,
             CancellationToken cancellationToken
         )
         {
@@ -265,7 +267,8 @@ namespace StudyGO.API.Controllers.AccountControllers
 
             _logger.LogInformation("Обновление учётных данных пользователя {UserId}", updateDto.UserId);
 
-            var result = await _userAccountService.TryUpdateAccount(updateDto, cancellationToken);
+            var result = 
+                await _mediator.Send(new UpdateUserPasswordCommand(updateDto), cancellationToken);
 
             _logger.LogResult(
                 result,

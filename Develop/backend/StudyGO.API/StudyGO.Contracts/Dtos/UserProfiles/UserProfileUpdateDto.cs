@@ -1,8 +1,8 @@
-﻿using StudyGO.Contracts.Dtos.Subjects;
+﻿using StudyGO.Contracts.ValidatableMarker;
 
 namespace StudyGO.Contracts.Dtos.UserProfiles
 {
-    public class UserProfileUpdateDto
+    public class UserProfileUpdateDto : IValidatable
     {
         public Guid UserId { get; set; }
 

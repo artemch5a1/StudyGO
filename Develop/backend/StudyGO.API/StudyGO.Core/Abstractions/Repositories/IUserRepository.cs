@@ -7,7 +7,7 @@ namespace StudyGO.Core.Abstractions.Repositories
 {
     public interface IUserRepository : IReadable<User, Guid>
     {
-        public Task<Result<Guid>> UpdateСredentials(User user, CancellationToken cancellationToken = default);
+        public Task<Result<Guid>> UpdatePassword(Guid userId, string newPasswordHash, CancellationToken cancellationToken = default);
 
         public Task<Result<Guid>> Update(User user, CancellationToken cancellationToken = default);
 

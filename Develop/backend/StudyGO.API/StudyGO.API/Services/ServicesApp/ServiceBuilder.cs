@@ -1,4 +1,5 @@
-﻿using StudyGO.Application.Options;
+﻿using StudyGO.Application.Extensions;
+using StudyGO.Application.Options;
 using StudyGO.Application.Services;
 using StudyGO.Application.Services.Account;
 using StudyGO.Core.Abstractions.Services;
@@ -13,11 +14,17 @@ namespace StudyGO.API.Services
             _services.Configure<UserProfileServiceOptions>(_configuration.GetSection("UserAccount"));
             _services.Configure<TutorProfileServiceOptions>(_configuration.GetSection("TutorAccount"));
             
-            _services.AddScoped<IUserAccountService, UserAccountService>();
             _services.AddScoped<IUserProfileService, UserProfileService>();
             _services.AddScoped<ITutorProfileService, TutorProfileService>();
             _services.AddScoped<IFormatService, FormatService>();
             _services.AddScoped<ISubjectService, SubjectService>();
+
+            ConfigureMediatr();
+        }
+
+        private void ConfigureMediatr()
+        {
+            _services.AddApplication();
         }
     }
 }

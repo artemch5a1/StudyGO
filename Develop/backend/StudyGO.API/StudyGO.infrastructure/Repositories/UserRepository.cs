@@ -135,39 +135,25 @@ namespace StudyGO.infrastructure.Repositories
             }
         }
 
-        public async Task<Result<Guid>> UpdateСredentials(
-            User user,
+        public async Task<Result<Guid>> UpdatePassword(
+            Guid userId, string newPasswordHash,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                bool isExistEmail = await _context.UsersEntity.AnyAsync(
-                    x => x.Email == user.Email && x.UserId != user.UserId,
-                    cancellationToken
-                );
-
-                if (isExistEmail)
-                    return Result<Guid>.Failure(
-                        $"Пользователь с таким email уже существует",
-                        ErrorTypeEnum.Duplicate
-                    );
-
-                UserEntity entity = _mapper.Map<UserEntity>(user);
-
                 int result = await _context
-                    .UsersEntity.Where(e => e.UserId == entity.UserId)
+                    .UsersEntity.Where(e => e.UserId == userId)
                     .ExecuteUpdateAsync(
                         s =>
-                            s.SetProperty(i => i.PasswordHash, i => user.PasswordHash)
-                                .SetProperty(i => i.Email, i => user.Email),
+                            s.SetProperty(i => i.PasswordHash, i => newPasswordHash),
                         cancellationToken
                     );
 
                 if (result < 1)
                     return Result<Guid>.Failure("Данные не были обновлены", ErrorTypeEnum.NotFound);
 
-                return Result<Guid>.Success(user.UserId);
+                return Result<Guid>.Success(userId);
             }
             catch (Exception ex)
             {

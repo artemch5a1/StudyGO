@@ -10,5 +10,11 @@ namespace StudyGO.Core.Abstractions.ValidationService
             T model,
             CancellationToken cancellationToken = default
         );
+
+        Task<ResultError<object, List<ValidationErrorDto>>> ValidateDynamicAsync
+            (
+                object model,
+                CancellationToken cancellationToken = default
+                );
     }
 }
