@@ -52,36 +52,6 @@ namespace StudyGO.Application.Services.Account
             _options = options.Value;
         }
 
-        public async Task<Result<List<TutorProfileDto>>> GetAllUserProfiles(
-            CancellationToken cancellationToken = default,
-            Pagination? value = null
-        )
-        {
-            _logger.LogInformation("Получение всех профилей учителей");
-            
-            var result = value == null ? await _userRepository.GetAll(cancellationToken) : 
-                await _userRepository.GetPages(value.Skip, value.Take, cancellationToken);
-            
-            _logger.LogDebug("Получено {Count} профилей учителей", result.Value?.Count ?? 0);
-            
-            return result.MapDataTo(_mapper.Map<List<TutorProfileDto>>);
-        }
-
-        public async Task<Result<List<TutorProfileDto>>> GetAllUserVerifiedProfiles(
-            CancellationToken cancellationToken = default,
-            Pagination? value = null
-        )
-        {
-            _logger.LogInformation("Получение всех подтвержденных профилей учителей");
-            
-            var result = value == null ? await _userRepository.GetAllVerified(cancellationToken) : 
-                await _userRepository.GetPages(value.Skip, value.Take, cancellationToken);
-            
-            _logger.LogDebug("Получено {Count} профилей учителей", result.Value?.Count ?? 0);
-            
-            return result.MapDataTo(_mapper.Map<List<TutorProfileDto>>);
-        }
-
         public async Task<Result<TutorProfileDto?>> TryGetUserProfileById(
             Guid userId,
             CancellationToken cancellationToken = default
