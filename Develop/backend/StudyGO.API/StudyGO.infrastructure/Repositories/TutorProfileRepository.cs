@@ -158,7 +158,6 @@ namespace StudyGO.infrastructure.Repositories
                     .OrderBy(x => x.UserId)
                     .Skip(skip)
                     .Take(take)
-                    .Where(x => x.User != null && x.User.Verified)
                     .ToListAsync(cancellationToken);
 
                 return Result<List<TutorProfile>>.Success(_mapper.Map<List<TutorProfile>>(user));
@@ -184,6 +183,7 @@ namespace StudyGO.infrastructure.Repositories
                     .OrderBy(x => x.UserId)
                     .Skip(skip)
                     .Take(take)
+                    .Where(x => x.User != null && x.User.Verified)
                     .ToListAsync(cancellationToken);
 
                 return Result<List<TutorProfile>>.Success(_mapper.Map<List<TutorProfile>>(user));

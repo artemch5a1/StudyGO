@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
+using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetAll.GetAllTutors;
+using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetAll.GetAllVerifiedTutors;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.TutorProfiles;
 using StudyGO.Contracts.PaginationContract;
@@ -22,13 +25,17 @@ namespace StudyGO.API.Controllers.UsersControllers
         
         private readonly EmailConfirmationOptions _emailOptions;
 
+        private readonly IMediator _mediator;
+        
         public TutorProfileController(
             ILogger<TutorProfileController> logger,
             ITutorProfileService userAccountService,
-            IOptions<EmailConfirmationOptions> emailOptions)
+            IOptions<EmailConfirmationOptions> emailOptions, 
+            IMediator mediator)
         {
             _logger = logger;
             _tutorAccountService = userAccountService;
+            _mediator = mediator;
             _emailOptions = emailOptions.Value;
         }
 
@@ -74,7 +81,8 @@ namespace StudyGO.API.Controllers.UsersControllers
         {
             _logger.LogInformation("Запрос всех учителей");
             
-            var result = await _tutorAccountService.GetAllUserVerifiedProfiles(cancellationToken, paginationParams);
+            var result = await 
+                _mediator.Send(new GetAllVerifiedTutorQuery(paginationParams), cancellationToken);
             
             _logger.LogResult(
                 result,
@@ -95,7 +103,8 @@ namespace StudyGO.API.Controllers.UsersControllers
         {
             _logger.LogInformation("Запрос всех учителей");
             
-            var result = await _tutorAccountService.GetAllUserProfiles(cancellationToken, paginationParams);
+            var result = await 
+                _mediator.Send(new GetAllTutorQuery(paginationParams), cancellationToken);
             
             _logger.LogResult(
                 result,
