@@ -10,6 +10,6 @@ public partial class ServiceBuilder
     {
         _services.Configure<EmailConfirmationOptions>(_configuration.GetSection("EmailConfirmation"));
         
-        _services.AddScoped<IVerificationService, VerificationService>();
+        _services.AddScoped<IVerificationByLinkService, VerificationByLinkService>();
     }
 }
