@@ -1,12 +1,10 @@
-﻿using System.Threading.Channels;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StudyGO.Application.Extensions;
 using StudyGO.Application.Options;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.TutorProfiles;
-using StudyGO.Contracts.PaginationContract;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Contracts;
 using StudyGO.Core.Abstractions.Repositories;
@@ -50,40 +48,6 @@ namespace StudyGO.Application.Services.Account
             _validationService = validationService;
             _verificationQueue = verificationQueue;
             _options = options.Value;
-        }
-
-        public async Task<Result<TutorProfileDto?>> TryGetUserProfileById(
-            Guid userId,
-            CancellationToken cancellationToken = default
-        )
-        {
-            _logger.LogInformation("Поиск профиля учителя по ID: {UserId}", userId);
-            
-            var result = await _userRepository.GetById(userId, cancellationToken);
-            
-            _logger.LogResult(result, 
-                "Профиль учителя найден", 
-                "Профиль учителя не найден", 
-                new { UserId = userId });
-            
-            return result.MapDataTo(_mapper.Map<TutorProfileDto?>);
-        }
-
-        public async Task<Result<TutorProfileDto?>> TryGetVerifiedUserProfileById(
-            Guid userId,
-            CancellationToken cancellationToken = default
-        )
-        {
-            _logger.LogInformation("Поиск профиля подтвержденного учителя по ID: {UserId}", userId);
-            
-            var result = await _userRepository.GetByIdVerified(userId, cancellationToken);
-            
-            _logger.LogResult(result, 
-                "Профиль учителя найден", 
-                "Профиль учителя не найден", 
-                new { UserId = userId });
-            
-            return result.MapDataTo(_mapper.Map<TutorProfileDto?>);
         }
 
         public async Task<Result<UserRegistryResponse>> TryRegistry(

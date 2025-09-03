@@ -7,6 +7,8 @@ using StudyGO.API.Extensions;
 using StudyGO.API.Options;
 using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetAll.GetAllTutors;
 using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetAll.GetAllVerifiedTutors;
+using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetById.GetTutorById;
+using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetById.GetVerifiedTutorById;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.TutorProfiles;
 using StudyGO.Contracts.PaginationContract;
@@ -124,11 +126,9 @@ namespace StudyGO.API.Controllers.UsersControllers
         )
         {
             _logger.LogInformation("Запрос учителя по ID: {userId}", userId);
-            
-            var result = await _tutorAccountService.TryGetUserProfileById(
-                userId,
-                cancellationToken
-            );
+
+            var result = 
+                await _mediator.Send(new GetTutorByIdQuery(userId), cancellationToken);
             
             _logger.LogResult(
                 result,
@@ -148,11 +148,9 @@ namespace StudyGO.API.Controllers.UsersControllers
         )
         {
             _logger.LogInformation("Запрос учителя по ID: {userId}", userId);
-            
-            var result = await _tutorAccountService.TryGetVerifiedUserProfileById(
-                userId,
-                cancellationToken
-            );
+
+            var result = 
+                await _mediator.Send(new GetVerifiedTutorByIdQuery(userId), cancellationToken);
             
             _logger.LogResult(
                 result,
@@ -179,11 +177,9 @@ namespace StudyGO.API.Controllers.UsersControllers
             }
             
             _logger.LogDebug("Запрос данных текущего учителя {userId}", userId.Value);
-            
-            var result = await _tutorAccountService.TryGetUserProfileById(
-                userId.Value,
-                cancellationToken
-            );
+
+            var result = 
+                await _mediator.Send(new GetTutorByIdQuery(userId.Value), cancellationToken);
             
             _logger.LogResult(
                 result,
