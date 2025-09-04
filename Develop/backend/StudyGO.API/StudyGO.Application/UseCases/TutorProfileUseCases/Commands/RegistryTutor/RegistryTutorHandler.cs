@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StudyGO.Application.Extensions;
 using StudyGO.Application.Options;
-using StudyGO.Application.Services.Account;
 using StudyGO.Application.UseCases.Subscribers.RegisteredEvent;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.TutorProfiles;
@@ -23,7 +22,7 @@ public class RegistryTutorHandler : IRequestHandler<RegistryTutorCommand, Result
 
     private readonly IMapper _mapper;
 
-    private readonly ILogger<TutorProfileService> _logger;
+    private readonly ILogger<RegistryTutorHandler> _logger;
 
     private readonly IPasswordHasher _passwordHasher;
     
@@ -33,7 +32,8 @@ public class RegistryTutorHandler : IRequestHandler<RegistryTutorCommand, Result
     
     public RegistryTutorHandler(
         ITutorProfileRepository userRepository,
-        IMapper mapper, ILogger<TutorProfileService> logger, 
+        IMapper mapper, 
+        ILogger<RegistryTutorHandler> logger, 
         IPasswordHasher passwordHasher, 
         IOptionsSnapshot<TutorProfileServiceOptions> options, 
         IMediator mediator)

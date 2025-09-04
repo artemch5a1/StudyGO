@@ -15,12 +15,12 @@ public class GetVerifiedTutorByIdHandler : IRequestHandler<GetVerifiedTutorByIdQ
 
     private readonly IMapper _mapper;
 
-    private readonly ILogger<TutorProfileService> _logger;
+    private readonly ILogger<GetVerifiedTutorByIdHandler> _logger;
 
     public GetVerifiedTutorByIdHandler(
         ITutorProfileRepository userRepository, 
         IMapper mapper, 
-        ILogger<TutorProfileService> logger)
+        ILogger<GetVerifiedTutorByIdHandler> logger)
     {
         _userRepository = userRepository;
         _mapper = mapper;

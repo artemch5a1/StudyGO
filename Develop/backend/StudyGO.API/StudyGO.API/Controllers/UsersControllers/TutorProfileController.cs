@@ -6,6 +6,7 @@ using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
 using StudyGO.Application.UseCases.TutorProfileUseCases.Commands.RegistryTutor;
+using StudyGO.Application.UseCases.TutorProfileUseCases.Commands.UpdateTutor;
 using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetAll.GetAllTutors;
 using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetAll.GetAllVerifiedTutors;
 using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetById.GetTutorById;
@@ -13,7 +14,6 @@ using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetById.GetVerif
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.TutorProfiles;
 using StudyGO.Contracts.PaginationContract;
-using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Extensions;
 
 namespace StudyGO.API.Controllers.UsersControllers
@@ -23,8 +23,6 @@ namespace StudyGO.API.Controllers.UsersControllers
     public class TutorProfileController : ControllerBase
     {
         private readonly ILogger<TutorProfileController> _logger;
-
-        private readonly ITutorProfileService _tutorAccountService;
         
         private readonly EmailConfirmationOptions _emailOptions;
 
@@ -32,12 +30,10 @@ namespace StudyGO.API.Controllers.UsersControllers
         
         public TutorProfileController(
             ILogger<TutorProfileController> logger,
-            ITutorProfileService userAccountService,
             IOptions<EmailConfirmationOptions> emailOptions, 
             IMediator mediator)
         {
             _logger = logger;
-            _tutorAccountService = userAccountService;
             _mediator = mediator;
             _emailOptions = emailOptions.Value;
         }
@@ -210,11 +206,9 @@ namespace StudyGO.API.Controllers.UsersControllers
             }
             
             _logger.LogInformation("Обновление учителя {UserId}", userProfile.UserId);
-            
-            var result = await _tutorAccountService.TryUpdateUserProfile(
-                userProfile,
-                cancellationToken
-            );
+
+            var result = 
+                await _mediator.Send(new UpdateTutorCommand(userProfile), cancellationToken);
             
             _logger.LogResult(
                 result,

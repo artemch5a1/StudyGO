@@ -14,12 +14,12 @@ public class GetAllVerifiedTutorHandler : IRequestHandler<GetAllVerifiedTutorQue
 
     private readonly IMapper _mapper;
 
-    private readonly ILogger<TutorProfileService> _logger;
+    private readonly ILogger<GetAllVerifiedTutorHandler> _logger;
 
     public GetAllVerifiedTutorHandler(
         ITutorProfileRepository userRepository, 
         IMapper mapper, 
-        ILogger<TutorProfileService> logger)
+        ILogger<GetAllVerifiedTutorHandler> logger)
     {
         _userRepository = userRepository;
         _mapper = mapper;

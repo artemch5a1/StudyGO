@@ -25,6 +25,8 @@ namespace StudyGO.Application.Validations.TutorProfileValidation
                 .WithMessage("Необходимо указать цену за час обучения");
 
             RuleFor(x => x.FormatId).NotEmpty().WithMessage("Необходимо указать формат обучения");
+            
+            RuleFor(x => x.SubjectsId).NotEmpty().WithMessage("Нужно указать хотя бы один предмет");
         }
     }
 }
