@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
+using StudyGO.Application.UseCases.TutorProfileUseCases.Commands.RegistryTutor;
 using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetAll.GetAllTutors;
 using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetAll.GetAllVerifiedTutors;
 using StudyGO.Application.UseCases.TutorProfileUseCases.Queries.GetById.GetTutorById;
@@ -64,7 +65,11 @@ namespace StudyGO.API.Controllers.UsersControllers
                 return new ObjectResult(null) {StatusCode = StatusCodes.Status500InternalServerError};
             }
             
-            var result = await _tutorAccountService.TryRegistry(registryRequest, confirmEmailEndpoint, cancellationToken);
+            var result = 
+                await _mediator.Send(
+                    new RegistryTutorCommand(registryRequest, confirmEmailEndpoint),
+                cancellationToken
+                    );
             
             _logger.LogResult(result, 
                 "Успешная регистрация учителя", 

@@ -35,7 +35,7 @@ public class RegistryTutorHandler : IRequestHandler<RegistryTutorCommand, Result
         ITutorProfileRepository userRepository,
         IMapper mapper, ILogger<TutorProfileService> logger, 
         IPasswordHasher passwordHasher, 
-        IOptions<TutorProfileServiceOptions> options, 
+        IOptionsSnapshot<TutorProfileServiceOptions> options, 
         IMediator mediator)
     {
         _userRepository = userRepository;
