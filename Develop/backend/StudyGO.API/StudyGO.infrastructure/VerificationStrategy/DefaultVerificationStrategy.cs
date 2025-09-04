@@ -1,5 +1,6 @@
 using StudyGO.Contracts;
 using StudyGO.Contracts.Contracts;
+using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.VerificationStrategy;
 using StudyGO.infrastructure.Extensions;
 using StudyGO.infrastructure.Repositories;
@@ -8,9 +9,9 @@ namespace StudyGO.infrastructure.VerificationStrategy;
 
 public class DefaultVerificationStrategy : IVerificationStrategy
 {
-    private readonly UserRepository _userRepository;
+    private readonly IUserRepository _userRepository;
 
-    public DefaultVerificationStrategy(UserRepository userRepository)
+    public DefaultVerificationStrategy(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }

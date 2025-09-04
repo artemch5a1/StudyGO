@@ -4,6 +4,10 @@ using StudyGO.Application.Services;
 using StudyGO.Application.Services.Account;
 using StudyGO.Core.Abstractions.Services;
 using StudyGO.Core.Abstractions.Services.Account;
+using StudyGO.Core.Abstractions.VerificationStrategy;
+using StudyGO.infrastructure.Extensions;
+using StudyGO.infrastructure.VerificationStrategy;
+using StudyGO.infrastructure.VerificationStrategy.Resolver;
 
 namespace StudyGO.API.Services
 {
@@ -19,12 +23,23 @@ namespace StudyGO.API.Services
             _services.AddScoped<IFormatService, FormatService>();
             _services.AddScoped<ISubjectService, SubjectService>();
 
+            ConfigureVerification();
+            
             ConfigureMediatr();
         }
 
         private void ConfigureMediatr()
         {
             _services.AddApplication();
+        }
+
+        private void ConfigureVerification()
+        {
+            _services.AddScoped<IVerificationStrategyResolver, VerificationStrategyResolver>();
+
+            _services.AddScoped<IVerificationStrategy, EmailVerificationStrategy>();
+
+            _services.AddScoped<IVerificationStrategy, DefaultVerificationStrategy>();
         }
     }
 }

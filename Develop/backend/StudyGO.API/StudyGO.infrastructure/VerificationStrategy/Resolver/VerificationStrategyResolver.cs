@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using StudyGO.Contracts;
 using StudyGO.Core.Abstractions.VerificationStrategy;
 
@@ -5,16 +6,18 @@ namespace StudyGO.infrastructure.VerificationStrategy.Resolver;
 
 public class VerificationStrategyResolver : IVerificationStrategyResolver
 {
-    private readonly IEnumerable<IVerificationStrategy> _strategies;
+    private readonly IServiceProvider _provider;
 
-    public VerificationStrategyResolver(IEnumerable<IVerificationStrategy> strategies)
+    public VerificationStrategyResolver(IServiceProvider provider)
     {
-        _strategies = strategies;
+        _provider = provider;
     }
 
     public IVerificationStrategy Resolve(RegistryScheme scheme)
     {
-        var strategy = _strategies.FirstOrDefault(s => s.Scheme == scheme);
+        var strategies = _provider.GetServices<IVerificationStrategy>();
+        
+        var strategy = strategies.FirstOrDefault(s => s.Scheme == scheme);
         if (strategy is null)
             throw new InvalidOperationException($"Нет стратегии для схемы {scheme}");
 

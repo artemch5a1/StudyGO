@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using StudyGO.Application.Extensions;
 using StudyGO.Application.Options;
 using StudyGO.Application.Services.Account;
@@ -33,13 +34,15 @@ public class RegistryTutorHandler : IRequestHandler<RegistryTutorCommand, Result
     public RegistryTutorHandler(
         ITutorProfileRepository userRepository,
         IMapper mapper, ILogger<TutorProfileService> logger, 
-        IPasswordHasher passwordHasher, TutorProfileServiceOptions options, IMediator mediator)
+        IPasswordHasher passwordHasher, 
+        IOptions<TutorProfileServiceOptions> options, 
+        IMediator mediator)
     {
         _userRepository = userRepository;
         _mapper = mapper;
         _logger = logger;
         _passwordHasher = passwordHasher;
-        _options = options;
+        _options = options.Value;
         _mediator = mediator;
     }
 
