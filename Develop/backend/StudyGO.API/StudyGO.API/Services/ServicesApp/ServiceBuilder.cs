@@ -16,7 +16,6 @@ namespace StudyGO.API.Services
             
             _services.AddScoped<IUserProfileService, UserProfileService>();
             _services.AddScoped<ITutorProfileService, TutorProfileService>();
-            _services.AddScoped<IFormatService, FormatService>();
             _services.AddScoped<ISubjectService, SubjectService>();
 
             ConfigureMediatr();
