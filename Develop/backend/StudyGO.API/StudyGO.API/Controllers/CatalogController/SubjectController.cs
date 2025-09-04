@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using StudyGO.API.Extensions;
+using StudyGO.Application.UseCases.CatalogUseCases.SubjectUseCases.GetAllSubjects;
+using StudyGO.Application.UseCases.CatalogUseCases.SubjectUseCases.GetSubjectById;
 using StudyGO.Contracts.Dtos.Subjects;
-using StudyGO.Core.Abstractions.Services;
 using StudyGO.Core.Extensions;
 
 namespace StudyGO.API.Controllers.CatalogController
@@ -10,14 +12,13 @@ namespace StudyGO.API.Controllers.CatalogController
     [Route("[controller]")]
     public class SubjectController : ControllerBase
     {
-        private readonly ISubjectService _subjectService;
-
         private readonly ILogger<SubjectController> _logger;
+        private readonly IMediator _mediator;
 
-        public SubjectController(ISubjectService subjectService, ILogger<SubjectController> logger)
+        public SubjectController(ILogger<SubjectController> logger, IMediator mediator)
         {
-            _subjectService = subjectService;
             _logger = logger;
+            _mediator = mediator;
         }
 
         [HttpGet("get-all-subjects")]
@@ -25,7 +26,8 @@ namespace StudyGO.API.Controllers.CatalogController
             CancellationToken cancellationToken
         )
         {
-            var result = await _subjectService.GetAllSubjects(cancellationToken);
+            var result = 
+                await _mediator.Send(new GetAllSubjectsQuery(), cancellationToken);
             
             _logger.LogResult(result, 
                 "Успешно получены предметы", 
@@ -40,7 +42,8 @@ namespace StudyGO.API.Controllers.CatalogController
             CancellationToken cancellationToken
         )
         {
-            var result = await _subjectService.GetSubjectById(subjectId, cancellationToken);
+            var result = 
+                await _mediator.Send(new GetSubjectByIdQuery(subjectId), cancellationToken);
             
             _logger.LogResult(result, 
                 "Успешно получен предмет по id", 

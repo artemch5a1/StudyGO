@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using StudyGO.API.Extensions;
+using StudyGO.Application.UseCases.CatalogUseCases.FormatUseCases.GetAllFormats;
+using StudyGO.Application.UseCases.CatalogUseCases.FormatUseCases.GetFormatById;
 using StudyGO.Contracts.Dtos.Formats;
-using StudyGO.Core.Abstractions.Services;
 using StudyGO.Core.Extensions;
 
 namespace StudyGO.API.Controllers.CatalogController
@@ -10,14 +12,14 @@ namespace StudyGO.API.Controllers.CatalogController
     [Route("[controller]")]
     public class FormatController : ControllerBase
     {
-        private readonly IFormatService _formatService;
-
         private readonly ILogger<FormatController> _logger;
 
-        public FormatController(IFormatService formatService, ILogger<FormatController> logger)
+        private readonly IMediator _mediator;
+        
+        public FormatController(ILogger<FormatController> logger, IMediator mediator)
         {
-            _formatService = formatService;
             _logger = logger;
+            _mediator = mediator;
         }
 
         [HttpGet("get-all-formats")]
@@ -25,7 +27,8 @@ namespace StudyGO.API.Controllers.CatalogController
             CancellationToken cancellationToken
         )
         {
-            var result = await _formatService.GetAllFormats(cancellationToken);
+            var result = 
+                await _mediator.Send(new GetAllFormatsQuery(), cancellationToken);
             
             _logger.LogResult(result, 
                 "Успешно получены форматы", 
@@ -40,7 +43,8 @@ namespace StudyGO.API.Controllers.CatalogController
             CancellationToken cancellationToken
         )
         {
-            var result = await _formatService.GetFormatById(formatId, cancellationToken);
+            var result = 
+                await _mediator.Send(new GetFormatByIdQuery(formatId), cancellationToken);
             
             _logger.LogResult(result, 
                 "Успешно получен формат по id", 
