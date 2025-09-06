@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using FluentValidation;
 
 namespace StudyGO.Application.Validations.Base;

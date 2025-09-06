@@ -1,4 +1,4 @@
-﻿namespace StudyGO.Contracts.Dtos.Subjects
+namespace StudyGO.Contracts.Dtos.Subjects
 {
     public class SubjectCreateDto 
     {

@@ -1,4 +1,4 @@
-﻿namespace StudyGO.Core.Abstractions.Auth;
+namespace StudyGO.Core.Abstractions.Auth;
 
 public interface IEmailVerifyTokenProvider
 {

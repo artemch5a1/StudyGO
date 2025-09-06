@@ -28,11 +28,11 @@ public class UpdateUserCommandHandler
     {
         var userDto = request.User;
 
-        _logger.LogInformation("Обновление данных аккаунта: {UserId}", userDto.UserId);
+        _logger.LogInformation("РћР±РЅРѕРІР»РµРЅРёРµ РґР°РЅРЅС‹С… Р°РєРєР°СѓРЅС‚Р°: {UserId}", userDto.UserId);
         
         var userModel = _mapper.Map<User>(userDto);
 
-        _logger.LogDebug("Отправлен запрос в репозиторий");
+        _logger.LogDebug("РћС‚РїСЂР°РІР»РµРЅ Р·Р°РїСЂРѕСЃ РІ СЂРµРїРѕР·РёС‚РѕСЂРёР№");
 
         return await _userRepository.Update(userModel, cancellationToken);
     }

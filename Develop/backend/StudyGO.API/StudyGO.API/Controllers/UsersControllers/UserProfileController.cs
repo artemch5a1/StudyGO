@@ -40,7 +40,7 @@ namespace StudyGO.API.Controllers.UsersControllers
             CancellationToken cancellationToken
         )
         {
-            _logger.LogInformation("Попытка регистрации пользователя с email: {Email}", 
+            _logger.LogInformation("РџРѕРїС‹С‚РєР° СЂРµРіРёСЃС‚СЂР°С†РёРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ СЃ email: {Email}", 
                 LoggingExtensions.MaskEmail(registryRequest.User.Email));
             
             string? confirmEmailEndpoint = Url.Action(
@@ -53,15 +53,15 @@ namespace StudyGO.API.Controllers.UsersControllers
 
             if (string.IsNullOrWhiteSpace(confirmEmailEndpoint))
             {
-                _logger.LogError("Ссылка на контроллер с подтверждением email не была сформирована");
+                _logger.LogError("РЎСЃС‹Р»РєР° РЅР° РєРѕРЅС‚СЂРѕР»Р»РµСЂ СЃ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµРј email РЅРµ Р±С‹Р»Р° СЃС„РѕСЂРјРёСЂРѕРІР°РЅР°");
                 return new ObjectResult(null) {StatusCode = StatusCodes.Status500InternalServerError};
             }
             
             var result = await _userAccountService.TryRegistry(registryRequest, confirmEmailEndpoint, cancellationToken);
             
             _logger.LogResult(result, 
-                "Успешная регистрация пользователя", 
-                "Ошибка регистрации пользователя",
+                "РЈСЃРїРµС€РЅР°СЏ СЂРµРіРёСЃС‚СЂР°С†РёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ", 
+                "РћС€РёР±РєР° СЂРµРіРёСЃС‚СЂР°С†РёРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ",
                 new { UserId = result.Value });
             
             return result.ToActionResult();
@@ -74,14 +74,14 @@ namespace StudyGO.API.Controllers.UsersControllers
             CancellationToken cancellationToken
         )
         {
-            _logger.LogInformation("Запрос всех подтвержденных профилей пользователей");
+            _logger.LogInformation("Р—Р°РїСЂРѕСЃ РІСЃРµС… РїРѕРґС‚РІРµСЂР¶РґРµРЅРЅС‹С… РїСЂРѕС„РёР»РµР№ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№");
             
             var result = await _userAccountService.GetAllUserVerifiedProfiles(cancellationToken, paginationParams);
             
             _logger.LogResult(
                 result,
-                "Профили успешно получены",
-                "Ошибка при получении списка подтвержденных профилей",
+                "РџСЂРѕС„РёР»Рё СѓСЃРїРµС€РЅРѕ РїРѕР»СѓС‡РµРЅС‹",
+                "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЃРїРёСЃРєР° РїРѕРґС‚РІРµСЂР¶РґРµРЅРЅС‹С… РїСЂРѕС„РёР»РµР№",
                 new { CountTeacher = result.Value?.Count }
             );
             
@@ -95,14 +95,14 @@ namespace StudyGO.API.Controllers.UsersControllers
             CancellationToken cancellationToken
         )
         {
-            _logger.LogInformation("Запрос всех профилей пользователей");
+            _logger.LogInformation("Р—Р°РїСЂРѕСЃ РІСЃРµС… РїСЂРѕС„РёР»РµР№ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№");
             
             var result = await _userAccountService.GetAllUserProfiles(cancellationToken, paginationParams);
             
             _logger.LogResult(
                 result,
-                "Профили успешно получены",
-                "Ошибка при получении списка профилей",
+                "РџСЂРѕС„РёР»Рё СѓСЃРїРµС€РЅРѕ РїРѕР»СѓС‡РµРЅС‹",
+                "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЃРїРёСЃРєР° РїСЂРѕС„РёР»РµР№",
                 new { CountTeacher = result.Value?.Count }
             );
             
@@ -116,14 +116,14 @@ namespace StudyGO.API.Controllers.UsersControllers
             CancellationToken cancellationToken
         )
         {
-            _logger.LogInformation("Запрос профиля пользователя по ID: {userId}", userId);
+            _logger.LogInformation("Р—Р°РїСЂРѕСЃ РїСЂРѕС„РёР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРѕ ID: {userId}", userId);
             
             var result = await _userAccountService.TryGetUserProfileById(userId, cancellationToken);
             
             _logger.LogResult(
                 result,
-                "Профиль найден",
-                "Профиль не найден",
+                "РџСЂРѕС„РёР»СЊ РЅР°Р№РґРµРЅ",
+                "РџСЂРѕС„РёР»СЊ РЅРµ РЅР°Р№РґРµРЅ",
                 new { UserId = userId }
             );
             
@@ -137,14 +137,14 @@ namespace StudyGO.API.Controllers.UsersControllers
             CancellationToken cancellationToken
         )
         {
-            _logger.LogInformation("Запрос профиля пользователя по ID: {userId}", userId);
+            _logger.LogInformation("Р—Р°РїСЂРѕСЃ РїСЂРѕС„РёР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРѕ ID: {userId}", userId);
             
             var result = await _userAccountService.TryGetVerifiedUserProfileById(userId, cancellationToken);
             
             _logger.LogResult(
                 result,
-                "Профиль найден",
-                "Профиль не найден среди подтвержденных",
+                "РџСЂРѕС„РёР»СЊ РЅР°Р№РґРµРЅ",
+                "РџСЂРѕС„РёР»СЊ РЅРµ РЅР°Р№РґРµРЅ СЃСЂРµРґРё РїРѕРґС‚РІРµСЂР¶РґРµРЅРЅС‹С…",
                 new { UserId = userId }
             );
             
@@ -161,11 +161,11 @@ namespace StudyGO.API.Controllers.UsersControllers
             
             if (!userId.IsSuccess)
             {
-                _logger.LogWarning("Невалидный ID пользователя в токене");
+                _logger.LogWarning("РќРµРІР°Р»РёРґРЅС‹Р№ ID РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ С‚РѕРєРµРЅРµ");
                 return BadRequest(userId.ErrorMessage);
             }
             
-            _logger.LogDebug("Запрос данных текущего профиля пользователя {UserId}", userId.Value);
+            _logger.LogDebug("Р—Р°РїСЂРѕСЃ РґР°РЅРЅС‹С… С‚РµРєСѓС‰РµРіРѕ РїСЂРѕС„РёР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ {UserId}", userId.Value);
             
             var result = await _userAccountService.TryGetUserProfileById(
                 userId.Value,
@@ -174,8 +174,8 @@ namespace StudyGO.API.Controllers.UsersControllers
             
             _logger.LogResult(
                 result,
-                "Данные профиля успешно получены",
-                "Профиль не найден",
+                "Р”Р°РЅРЅС‹Рµ РїСЂРѕС„РёР»СЏ СѓСЃРїРµС€РЅРѕ РїРѕР»СѓС‡РµРЅС‹",
+                "РџСЂРѕС„РёР»СЊ РЅРµ РЅР°Р№РґРµРЅ",
                 new { UserId = userId }
             );
             
@@ -191,7 +191,7 @@ namespace StudyGO.API.Controllers.UsersControllers
         {
             if (!User.VerifyGuid(userProfile.UserId))
             {
-                _logger.LogWarning("Попытка обновления не своего профиля: {UserId}", userProfile.UserId);
+                _logger.LogWarning("РџРѕРїС‹С‚РєР° РѕР±РЅРѕРІР»РµРЅРёСЏ РЅРµ СЃРІРѕРµРіРѕ РїСЂРѕС„РёР»СЏ: {UserId}", userProfile.UserId);
                 return Forbid();
             }
 
@@ -202,8 +202,8 @@ namespace StudyGO.API.Controllers.UsersControllers
             
             _logger.LogResult(
                 result,
-                "Профиль успешно обновлён",
-                "Ошибка обновления профиля",
+                "РџСЂРѕС„РёР»СЊ СѓСЃРїРµС€РЅРѕ РѕР±РЅРѕРІР»С‘РЅ",
+                "РћС€РёР±РєР° РѕР±РЅРѕРІР»РµРЅРёСЏ РїСЂРѕС„РёР»СЏ",
                 new { userProfile.UserId }
             );
             

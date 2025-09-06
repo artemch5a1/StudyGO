@@ -1,4 +1,4 @@
-﻿using StudyGO.Contracts.Contracts;
+using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.PaginationContract;
 using StudyGO.Contracts.Result;

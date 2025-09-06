@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using StudyGO.Application.Validations.Service;
 using StudyGO.Application.Validations.TutorProfileValidation;
 using StudyGO.Application.Validations.UserProfilesValidation;

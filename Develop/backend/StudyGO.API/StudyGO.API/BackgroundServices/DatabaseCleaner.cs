@@ -16,7 +16,7 @@ public class DatabaseCleaner : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Сервис очистки запущен");
+        _logger.LogInformation("РЎРµСЂРІРёСЃ РѕС‡РёСЃС‚РєРё Р·Р°РїСѓС‰РµРЅ");
         
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -34,7 +34,7 @@ public class DatabaseCleaner : BackgroundService
                     totalClean += await service.CleanupAsync(stoppingToken);
                 }
                 
-                _logger.LogInformation("Было удалено {count} записей из БД", totalClean);
+                _logger.LogInformation("Р‘С‹Р»Рѕ СѓРґР°Р»РµРЅРѕ {count} Р·Р°РїРёСЃРµР№ РёР· Р‘Р”", totalClean);
                 
                 await Task.Delay(TimeSpan.FromMinutes(15), stoppingToken);
             }
@@ -44,7 +44,7 @@ public class DatabaseCleaner : BackgroundService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Произошла ошибка при очистке базы данных");
+                _logger.LogError(ex, "РџСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР° РїСЂРё РѕС‡РёСЃС‚РєРµ Р±Р°Р·С‹ РґР°РЅРЅС‹С…");
             }
         }
     }

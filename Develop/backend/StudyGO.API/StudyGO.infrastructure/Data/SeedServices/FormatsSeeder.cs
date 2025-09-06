@@ -59,7 +59,7 @@ public class FormatsSeeder : ISeedService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Сидирование данных завершилось ошибкой");
+            _logger.LogError(ex, "РЎРёРґРёСЂРѕРІР°РЅРёРµ РґР°РЅРЅС‹С… Р·Р°РІРµСЂС€РёР»РѕСЃСЊ РѕС€РёР±РєРѕР№");
             throw;
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace StudyGO.Application.Options;
+namespace StudyGO.Application.Options;
 
 public class UserProfileServiceOptions
 {

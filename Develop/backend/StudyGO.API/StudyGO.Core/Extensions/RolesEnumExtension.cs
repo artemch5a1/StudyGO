@@ -1,4 +1,4 @@
-﻿using StudyGO.Core.Enums;
+using StudyGO.Core.Enums;
 using System.Reflection;
 
 namespace StudyGO.Core.Extensions

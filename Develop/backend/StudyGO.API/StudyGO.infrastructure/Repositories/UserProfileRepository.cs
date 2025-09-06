@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

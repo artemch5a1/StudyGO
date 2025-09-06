@@ -1,4 +1,4 @@
-﻿namespace StudyGO.infrastructure.Auth
+namespace StudyGO.infrastructure.Auth
 {
     public class JwtOptions
     {

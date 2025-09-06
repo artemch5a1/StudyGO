@@ -41,11 +41,11 @@ public class VerificationByLinkService : IVerificationByLinkService
         string endPoint, 
         CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Генерация токена...");
+        _logger.LogDebug("Р“РµРЅРµСЂР°С†РёСЏ С‚РѕРєРµРЅР°...");
         
         string token = _emailTokenProvider.GenerateToken(userId);
         
-        _logger.LogDebug("Создание ссылки...");
+        _logger.LogDebug("РЎРѕР·РґР°РЅРёРµ СЃСЃС‹Р»РєРё...");
 
         string htmlBody = await BuildVerificationEmailBody(userId, token, endPoint);
         
@@ -57,14 +57,14 @@ public class VerificationByLinkService : IVerificationByLinkService
             return await HandleEmailFailure(userId, result, cancellationToken);
         }
         
-        _logger.LogInformation("Сообщение с подтверждением пользователя {userId}, была отправлена на {email}", userId,
+        _logger.LogInformation("РЎРѕРѕР±С‰РµРЅРёРµ СЃ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµРј РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ {userId}, Р±С‹Р»Р° РѕС‚РїСЂР°РІР»РµРЅР° РЅР° {email}", userId,
             LoggingExtensions.MaskEmail(email));
 
         var resultInsertToken = await SaveToken(userId, token, cancellationToken);
 
         if (!resultInsertToken.IsSuccess)
         {
-            return Result<string>.Failure("Ошибка регистрации", ErrorTypeEnum.ServerError);
+            return Result<string>.Failure("РћС€РёР±РєР° СЂРµРіРёСЃС‚СЂР°С†РёРё", ErrorTypeEnum.ServerError);
         }
 
         return Result<string>.Success(token);
@@ -72,7 +72,7 @@ public class VerificationByLinkService : IVerificationByLinkService
     
     private async Task<string> BuildVerificationEmailBody(Guid userId, string token, string endPoint)
     {
-        _logger.LogDebug("Создание ссылки...");
+        _logger.LogDebug("РЎРѕР·РґР°РЅРёРµ СЃСЃС‹Р»РєРё...");
         string verificationLink = $"{endPoint}?userId={userId}&token={token}";
         
         
@@ -90,13 +90,13 @@ public class VerificationByLinkService : IVerificationByLinkService
         var result = await _emailService.SendEmailAsync(
             email, 
             body, 
-            "Подтверждение аккаунта в StudyGO", 
+            "РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ Р°РєРєР°СѓРЅС‚Р° РІ StudyGO", 
             cancellationToken);
 
         if (result.Success)
         {
             _logger.LogInformation(
-                "Сообщение с подтверждением отправлено на {email}", 
+                "РЎРѕРѕР±С‰РµРЅРёРµ СЃ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµРј РѕС‚РїСЂР°РІР»РµРЅРѕ РЅР° {email}", 
                 LoggingExtensions.MaskEmail(email));
         }
 
@@ -106,7 +106,7 @@ public class VerificationByLinkService : IVerificationByLinkService
     private async Task<Result<string>> HandleEmailFailure(Guid userId, SmtpSendRequest sendResult, CancellationToken cancellationToken)
     {
         var resultFailure = sendResult.ToResultFailure<string>();
-        _logger.LogError("Сообщение с подтверждением не было отправлено: {Error}", resultFailure.ErrorMessage);
+        _logger.LogError("РЎРѕРѕР±С‰РµРЅРёРµ СЃ РїРѕРґС‚РІРµСЂР¶РґРµРЅРёРµРј РЅРµ Р±С‹Р»Рѕ РѕС‚РїСЂР°РІР»РµРЅРѕ: {Error}", resultFailure.ErrorMessage);
         
         await Task.CompletedTask;
         return resultFailure;
@@ -122,7 +122,7 @@ public class VerificationByLinkService : IVerificationByLinkService
         var deleteResult = await _userRepository.Delete(userId, cancellationToken);
         if (!deleteResult.IsSuccess)
         {
-            _logger.LogError("Запись о неподтвержденном пользователе с id {userId} не была удалена: {Error}", 
+            _logger.LogError("Р—Р°РїРёСЃСЊ Рѕ РЅРµРїРѕРґС‚РІРµСЂР¶РґРµРЅРЅРѕРј РїРѕР»СЊР·РѕРІР°С‚РµР»Рµ СЃ id {userId} РЅРµ Р±С‹Р»Р° СѓРґР°Р»РµРЅР°: {Error}", 
                 userId, deleteResult.ErrorMessage);
         }
     }

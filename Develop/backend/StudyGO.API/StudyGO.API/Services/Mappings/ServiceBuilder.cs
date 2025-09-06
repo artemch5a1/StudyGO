@@ -1,4 +1,4 @@
-﻿using StudyGO.Application.Mappings;
+using StudyGO.Application.Mappings;
 using StudyGO.infrastructure.Mappings;
 
 namespace StudyGO.API.Services;

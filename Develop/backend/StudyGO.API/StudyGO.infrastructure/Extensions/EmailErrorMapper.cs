@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Reflection;
 using StudyGO.Contracts.Result;
 using StudyGO.Contracts.Result.ErrorTypes;

@@ -1,4 +1,4 @@
-﻿namespace StudyGO.Contracts.Dtos.Formats
+namespace StudyGO.Contracts.Dtos.Formats
 {
     public class CreateFormatDto 
     {

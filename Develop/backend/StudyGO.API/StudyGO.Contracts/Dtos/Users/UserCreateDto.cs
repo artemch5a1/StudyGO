@@ -1,4 +1,4 @@
-﻿namespace StudyGO.Contracts.Dtos.Users
+namespace StudyGO.Contracts.Dtos.Users
 {
     public class UserCreateDto 
     {

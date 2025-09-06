@@ -1,4 +1,4 @@
-﻿using StudyGO.Core.Abstractions.Utils;
+using StudyGO.Core.Abstractions.Utils;
 
 namespace StudyGO.Application.Extensions
 {

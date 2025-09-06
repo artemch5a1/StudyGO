@@ -1,4 +1,4 @@
-﻿using StudyGO.Contracts.Dtos.Formats;
+using StudyGO.Contracts.Dtos.Formats;
 using StudyGO.Contracts.Dtos.Subjects;
 using StudyGO.Contracts.Dtos.Users;
 
