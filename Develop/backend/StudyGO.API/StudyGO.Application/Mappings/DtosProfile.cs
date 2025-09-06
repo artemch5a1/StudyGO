@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using StudyGO.Contracts.Dtos.Formats;
 using StudyGO.Contracts.Dtos.Subjects;
 using StudyGO.Contracts.Dtos.TutorProfiles;

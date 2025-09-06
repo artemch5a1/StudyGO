@@ -78,32 +78,32 @@ public class EmailService : IEmailService
         }
         catch (SmtpCommandException ex) when (ex.StatusCode == SmtpStatusCode.MailboxUnavailable)
         {
-            _logger.LogInformation("Ящик не существует: {Error}", ex.Message);
+            _logger.LogInformation("РЇС‰РёРє РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚: {Error}", ex.Message);
             return ErrorSendEmailType.MailboxDoesNotExist;
         }
         catch (SmtpCommandException ex) when (ex.StatusCode == SmtpStatusCode.ExceededStorageAllocation)
         {
-            _logger.LogError("Ящик переполнен: {Error}", ex.Message);
+            _logger.LogError("РЇС‰РёРє РїРµСЂРµРїРѕР»РЅРµРЅ: {Error}", ex.Message);
             return ErrorSendEmailType.MailboxFull;
         }
         catch (SmtpCommandException ex)
         {
-            _logger.LogError(ex, "Ошибка SMTP команды");
+            _logger.LogError(ex, "РћС€РёР±РєР° SMTP РєРѕРјР°РЅРґС‹");
             return ErrorSendEmailType.SmtpServerUnavailable;
         }
         catch (SmtpProtocolException ex)
         {
-            _logger.LogError(ex, "Ошибка протокола SMTP");
+            _logger.LogError(ex, "РћС€РёР±РєР° РїСЂРѕС‚РѕРєРѕР»Р° SMTP");
             return ErrorSendEmailType.SslHandshakeFailed;
         }
         catch (IOException ex)
         {
-            _logger.LogError(ex, "Ошибка ввода/вывода при отправке письма");
+            _logger.LogError(ex, "РћС€РёР±РєР° РІРІРѕРґР°/РІС‹РІРѕРґР° РїСЂРё РѕС‚РїСЂР°РІРєРµ РїРёСЃСЊРјР°");
             return ErrorSendEmailType.SmtpServerUnavailable;
         }
         catch (Exception ex)
         {
-            _logger.LogCritical(ex, "Непредвиденная ошибка при отправке письма");
+            _logger.LogCritical(ex, "РќРµРїСЂРµРґРІРёРґРµРЅРЅР°СЏ РѕС€РёР±РєР° РїСЂРё РѕС‚РїСЂР°РІРєРµ РїРёСЃСЊРјР°");
             throw;
         }
     }
@@ -126,7 +126,7 @@ public class EmailService : IEmailService
     
     private SmtpSendRequest LogAndReturnServerError(Stopwatch sw, Exception ex)
     {
-        _logger.LogError(ex, "Неизвестная ошибка при отправке email");
+        _logger.LogError(ex, "РќРµРёР·РІРµСЃС‚РЅР°СЏ РѕС€РёР±РєР° РїСЂРё РѕС‚РїСЂР°РІРєРµ email");
         return Failure(sw, ErrorSendEmailType.ServerError);
     }
 }

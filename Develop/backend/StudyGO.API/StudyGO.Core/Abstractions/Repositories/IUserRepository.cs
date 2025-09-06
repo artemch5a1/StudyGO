@@ -1,4 +1,4 @@
-﻿using StudyGO.Contracts.Contracts;
+using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Base.DataCrud;
 using StudyGO.Core.Models;

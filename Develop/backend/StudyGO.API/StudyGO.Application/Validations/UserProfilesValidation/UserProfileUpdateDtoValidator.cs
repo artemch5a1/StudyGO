@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using StudyGO.Contracts.Dtos.UserProfiles;
 
 namespace StudyGO.Application.Validations.UserProfilesValidation

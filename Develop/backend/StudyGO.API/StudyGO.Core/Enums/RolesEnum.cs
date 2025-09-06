@@ -1,4 +1,4 @@
-﻿namespace StudyGO.Core.Enums
+namespace StudyGO.Core.Enums
 {
     public enum RolesEnum
     {

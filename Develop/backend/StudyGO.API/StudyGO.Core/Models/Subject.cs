@@ -1,4 +1,4 @@
-﻿namespace StudyGO.Core.Models
+namespace StudyGO.Core.Models
 {
     public class Subject
     {

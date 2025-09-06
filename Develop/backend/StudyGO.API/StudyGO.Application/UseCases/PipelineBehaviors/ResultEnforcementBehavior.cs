@@ -11,8 +11,8 @@ public class ResultEnforcementBehavior<TRequest, TResponse> : IPipelineBehavior<
         if (!IsResultType(typeof(TResponse)))
         {
             throw new InvalidOperationException(
-                $"Команда {typeof(TRequest).Name} использует неподдерживаемый тип ответа {typeof(TResponse).Name}. " +
-                $"Только Result<T> или его наследники разрешены.");
+                $"РљРѕРјР°РЅРґР° {typeof(TRequest).Name} РёСЃРїРѕР»СЊР·СѓРµС‚ РЅРµРїРѕРґРґРµСЂР¶РёРІР°РµРјС‹Р№ С‚РёРї РѕС‚РІРµС‚Р° {typeof(TResponse).Name}. " +
+                $"РўРѕР»СЊРєРѕ Result<T> РёР»Рё РµРіРѕ РЅР°СЃР»РµРґРЅРёРєРё СЂР°Р·СЂРµС€РµРЅС‹.");
         }
 
         return next(cancellationToken);

@@ -39,7 +39,7 @@ public class SmtpClientPool : IDisposable, ISmtpSender
         
         _optionsMonitor.OnChange(o =>
         {
-            _logger.LogWarning("Конфигурация SMTP обновлена извне");
+            _logger.LogWarning("РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ SMTP РѕР±РЅРѕРІР»РµРЅР° РёР·РІРЅРµ");
             _options = o;
             ClearPool();
         });
@@ -47,27 +47,27 @@ public class SmtpClientPool : IDisposable, ISmtpSender
 
     public async Task SendAsync(MimeMessage message, CancellationToken ct = default)
     {
-        _logger.LogDebug("получение клиента из пула");
+        _logger.LogDebug("РїРѕР»СѓС‡РµРЅРёРµ РєР»РёРµРЅС‚Р° РёР· РїСѓР»Р°");
         
         var client = GetClient();
         
         try
         {
-            _logger.LogDebug("Проверка и повторное прохождение подключения и аутентификации при необходимости");
+            _logger.LogDebug("РџСЂРѕРІРµСЂРєР° Рё РїРѕРІС‚РѕСЂРЅРѕРµ РїСЂРѕС…РѕР¶РґРµРЅРёРµ РїРѕРґРєР»СЋС‡РµРЅРёСЏ Рё Р°СѓС‚РµРЅС‚РёС„РёРєР°С†РёРё РїСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё");
 
             client = await EnsureConnectedAndAuthenticatedAsync(client, ct);
 
-            _logger.LogDebug("Отправка сообщения...");
+            _logger.LogDebug("РћС‚РїСЂР°РІРєР° СЃРѕРѕР±С‰РµРЅРёСЏ...");
 
             await client.SendAsync(message, ct);
 
-            _logger.LogDebug("Возврат клиента в пул");
+            _logger.LogDebug("Р’РѕР·РІСЂР°С‚ РєР»РёРµРЅС‚Р° РІ РїСѓР»");
             
             ReturnClient(client);
         }
         catch (SmtpConfigurationException ex)
         {
-            _logger.LogError(ex, "Ошибка конфигурации SMTP. Попробуем перезагрузить конфиг и пересоздать клиентов");
+            _logger.LogError(ex, "РћС€РёР±РєР° РєРѕРЅС„РёРіСѓСЂР°С†РёРё SMTP. РџРѕРїСЂРѕР±СѓРµРј РїРµСЂРµР·Р°РіСЂСѓР·РёС‚СЊ РєРѕРЅС„РёРі Рё РїРµСЂРµСЃРѕР·РґР°С‚СЊ РєР»РёРµРЅС‚РѕРІ");
             
             ReloadConfiguration();
             
@@ -77,7 +77,7 @@ public class SmtpClientPool : IDisposable, ISmtpSender
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ошибка при отправке сообщения");
+            _logger.LogError(ex, "РћС€РёР±РєР° РїСЂРё РѕС‚РїСЂР°РІРєРµ СЃРѕРѕР±С‰РµРЅРёСЏ");
             throw;
         }
     }
@@ -86,7 +86,7 @@ public class SmtpClientPool : IDisposable, ISmtpSender
     {
         if (_clientsPool.TryTake(out var client))
         {
-            _logger.LogInformation("Получен smtp клиент из пула, количество свободных клиентов: {count}", _clientsPool.Count);
+            _logger.LogInformation("РџРѕР»СѓС‡РµРЅ smtp РєР»РёРµРЅС‚ РёР· РїСѓР»Р°, РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРІРѕР±РѕРґРЅС‹С… РєР»РёРµРЅС‚РѕРІ: {count}", _clientsPool.Count);
             return client;
         }
         
@@ -98,11 +98,11 @@ public class SmtpClientPool : IDisposable, ISmtpSender
         if (_clientsPool.Count < _poolOptions.PoolSize)
         {
             _clientsPool.Add(client);
-            _logger.LogInformation("Smtp клиент возвращен в пул");
+            _logger.LogInformation("Smtp РєР»РёРµРЅС‚ РІРѕР·РІСЂР°С‰РµРЅ РІ РїСѓР»");
         }
         else
         {
-            _logger.LogInformation("Превышен допустимый размер пула, уничтожение клиента");
+            _logger.LogInformation("РџСЂРµРІС‹С€РµРЅ РґРѕРїСѓСЃС‚РёРјС‹Р№ СЂР°Р·РјРµСЂ РїСѓР»Р°, СѓРЅРёС‡С‚РѕР¶РµРЅРёРµ РєР»РёРµРЅС‚Р°");
             client.Disconnect(true);
             client.Dispose();
         }
@@ -110,7 +110,7 @@ public class SmtpClientPool : IDisposable, ISmtpSender
 
     private ISmtpClient BasicImplementation()
     {
-        _logger.LogInformation("Создан новый smtp клиент");
+        _logger.LogInformation("РЎРѕР·РґР°РЅ РЅРѕРІС‹Р№ smtp РєР»РёРµРЅС‚");
         
         return _factory.CreateClient();
     }
@@ -123,7 +123,7 @@ public class SmtpClientPool : IDisposable, ISmtpSender
             
             _options = _optionsMonitor.CurrentValue;
 
-            _logger.LogInformation("Конфигурация SMTP перезагружена");
+            _logger.LogInformation("РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ SMTP РїРµСЂРµР·Р°РіСЂСѓР¶РµРЅР°");
         }
     }
 
@@ -139,7 +139,7 @@ public class SmtpClientPool : IDisposable, ISmtpSender
             catch { }
         }
 
-        _logger.LogInformation("Пул клиентов очищен");
+        _logger.LogInformation("РџСѓР» РєР»РёРµРЅС‚РѕРІ РѕС‡РёС‰РµРЅ");
     }
     
     private async Task<ISmtpClient> EnsureConnectedAndAuthenticatedAsync(ISmtpClient client, CancellationToken ct)
@@ -172,7 +172,7 @@ public class SmtpClientPool : IDisposable, ISmtpSender
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Smtp клиент оказался в невалидном состоянии, пересоздание...");
+            _logger.LogWarning(ex, "Smtp РєР»РёРµРЅС‚ РѕРєР°Р·Р°Р»СЃСЏ РІ РЅРµРІР°Р»РёРґРЅРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё, РїРµСЂРµСЃРѕР·РґР°РЅРёРµ...");
             
             try { await client.DisconnectAsync(true, ct); } catch {}
             client.Dispose();
@@ -188,7 +188,7 @@ public class SmtpClientPool : IDisposable, ISmtpSender
             }
             catch (Exception ex2)
             {
-                throw new SmtpConfigurationException("Ошибка конфигурации SMTP", ex2);
+                throw new SmtpConfigurationException("РћС€РёР±РєР° РєРѕРЅС„РёРіСѓСЂР°С†РёРё SMTP", ex2);
             }
         }
     }

@@ -48,7 +48,7 @@ namespace StudyGO.API.Controllers.AccountControllers
         )
         {
             _logger.LogInformation(
-                "Попытка входа. Email: {Email}",
+                "РџРѕРїС‹С‚РєР° РІС…РѕРґР°. Email: {Email}",
                 LoggingExtensions.MaskEmail(loginRequest.Email)
             );
 
@@ -57,8 +57,8 @@ namespace StudyGO.API.Controllers.AccountControllers
 
             _logger.LogResult(
                 result,
-                "Успешный вход",
-                "Ошибка входа",
+                "РЈСЃРїРµС€РЅС‹Р№ РІС…РѕРґ",
+                "РћС€РёР±РєР° РІС…РѕРґР°",
                 new
                 {
                     Email = LoggingExtensions.MaskEmail(loginRequest.Email),
@@ -86,8 +86,8 @@ namespace StudyGO.API.Controllers.AccountControllers
             
             if (!System.IO.File.Exists(filePath))
             {
-                _logger.LogError("Файл confirm-email.html не найден по пути {Path}", filePath);
-                return NotFound("Страница подтверждения не найдена");
+                _logger.LogError("Р¤Р°Р№Р» confirm-email.html РЅРµ РЅР°Р№РґРµРЅ РїРѕ РїСѓС‚Рё {Path}", filePath);
+                return NotFound("РЎС‚СЂР°РЅРёС†Р° РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ РЅРµ РЅР°Р№РґРµРЅР°");
             }
             
             string? confirmEmailEndpoint = Url.Action(
@@ -114,14 +114,14 @@ namespace StudyGO.API.Controllers.AccountControllers
             CancellationToken cancellationToken
         )
         {
-            _logger.LogInformation("Админ запросил удаление пользователя {UserId}", userId);
+            _logger.LogInformation("РђРґРјРёРЅ Р·Р°РїСЂРѕСЃРёР» СѓРґР°Р»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ {UserId}", userId);
 
             var result = await _mediator.Send(new DeleteAccountCommand(userId), cancellationToken);
 
             _logger.LogResult(
                 result,
-                "Пользователь успешно удалён",
-                "Ошибка удаления пользователя",
+                "РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ СѓСЃРїРµС€РЅРѕ СѓРґР°Р»С‘РЅ",
+                "РћС€РёР±РєР° СѓРґР°Р»РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ",
                 new { UserId = userId }
             );
 
@@ -136,18 +136,18 @@ namespace StudyGO.API.Controllers.AccountControllers
 
             if (!userId.IsSuccess)
             {
-                _logger.LogWarning("Не удалось получить ID текущего пользователя");
+                _logger.LogWarning("РќРµ СѓРґР°Р»РѕСЃСЊ РїРѕР»СѓС‡РёС‚СЊ ID С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ");
                 return BadRequest(userId.ErrorMessage);
             }
 
-            _logger.LogInformation("Пользователь {userId} запросил удаление своего аккаунта", userId.Value);
+            _logger.LogInformation("РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ {userId} Р·Р°РїСЂРѕСЃРёР» СѓРґР°Р»РµРЅРёРµ СЃРІРѕРµРіРѕ Р°РєРєР°СѓРЅС‚Р°", userId.Value);
 
             var result = await _mediator.Send(new DeleteAccountCommand(userId.Value), cancellationToken);
 
             _logger.LogResult(
                 result,
-                "Пользователь успешно удалён",
-                "Ошибка удаления пользователя",
+                "РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ СѓСЃРїРµС€РЅРѕ СѓРґР°Р»С‘РЅ",
+                "РћС€РёР±РєР° СѓРґР°Р»РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ",
                 new { UserId = userId }
             );
 
@@ -160,14 +160,14 @@ namespace StudyGO.API.Controllers.AccountControllers
             CancellationToken cancellationToken
         )
         {
-            _logger.LogInformation("Запрос всех пользователей");
+            _logger.LogInformation("Р—Р°РїСЂРѕСЃ РІСЃРµС… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№");
 
             var result = await _mediator.Send(new GetAllAccountQuery(), cancellationToken);
 
             _logger.LogResult(
                 result,
-                "Пользователи успешно получены",
-                "Ошибка при получении списка пользователей",
+                "РџРѕР»СЊР·РѕРІР°С‚РµР»Рё СѓСЃРїРµС€РЅРѕ РїРѕР»СѓС‡РµРЅС‹",
+                "РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё СЃРїРёСЃРєР° РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№",
                 new { CountUser = result.Value?.Count }
             );
 
@@ -181,14 +181,14 @@ namespace StudyGO.API.Controllers.AccountControllers
             CancellationToken cancellationToken
         )
         {
-            _logger.LogInformation("Запрос пользователя по ID: {userId}", userId);
+            _logger.LogInformation("Р—Р°РїСЂРѕСЃ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РїРѕ ID: {userId}", userId);
 
             var result = await _mediator.Send( new GetAccountByIdQuery(userId), cancellationToken);
 
             _logger.LogResult(
                 result,
-                "Пользователь найден",
-                "Пользователь не найден",
+                "РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅР°Р№РґРµРЅ",
+                "РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅРµ РЅР°Р№РґРµРЅ",
                 new { UserId = userId }
             );
 
@@ -205,18 +205,18 @@ namespace StudyGO.API.Controllers.AccountControllers
 
             if (!userId.IsSuccess)
             {
-                _logger.LogWarning("Невалидный ID пользователя в токене");
+                _logger.LogWarning("РќРµРІР°Р»РёРґРЅС‹Р№ ID РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ РІ С‚РѕРєРµРЅРµ");
                 return BadRequest(userId.ErrorMessage);
             }
 
-            _logger.LogDebug("Запрос данных текущего пользователя {userId}", userId.Value);
+            _logger.LogDebug("Р—Р°РїСЂРѕСЃ РґР°РЅРЅС‹С… С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ {userId}", userId.Value);
 
             var result = await _mediator.Send( new GetAccountByIdQuery(userId.Value), cancellationToken);
 
             _logger.LogResult(
                 result,
-                "Данные пользователя успешно получены",
-                "Пользователь не найден",
+                "Р”Р°РЅРЅС‹Рµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ СѓСЃРїРµС€РЅРѕ РїРѕР»СѓС‡РµРЅС‹",
+                "РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ РЅРµ РЅР°Р№РґРµРЅ",
                 new { UserId = userId }
             );
 
@@ -232,18 +232,18 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             if (!User.VerifyGuid(updateDto.UserId))
             {
-                _logger.LogWarning("Попытка обновления не своего аккаунта: {UserId}", updateDto.UserId);
+                _logger.LogWarning("РџРѕРїС‹С‚РєР° РѕР±РЅРѕРІР»РµРЅРёСЏ РЅРµ СЃРІРѕРµРіРѕ Р°РєРєР°СѓРЅС‚Р°: {UserId}", updateDto.UserId);
                 return Forbid();
             }
 
-            _logger.LogInformation("Обновление пользователя {UserId}", updateDto.UserId);
+            _logger.LogInformation("РћР±РЅРѕРІР»РµРЅРёРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ {UserId}", updateDto.UserId);
 
             var result = await _mediator.Send(new UpdateUserCommand(updateDto), cancellationToken);
 
             _logger.LogResult(
                 result,
-                "Пользователь успешно обновлён",
-                "Ошибка обновления пользователя",
+                "РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ СѓСЃРїРµС€РЅРѕ РѕР±РЅРѕРІР»С‘РЅ",
+                "РћС€РёР±РєР° РѕР±РЅРѕРІР»РµРЅРёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ",
                 new { updateDto.UserId }
             );
 
@@ -259,19 +259,19 @@ namespace StudyGO.API.Controllers.AccountControllers
         {
             if (!User.VerifyGuid(updateDto.UserId))
             {
-                _logger.LogWarning("Попытка обновления не своего аккаунта: {UserId}", updateDto.UserId);
+                _logger.LogWarning("РџРѕРїС‹С‚РєР° РѕР±РЅРѕРІР»РµРЅРёСЏ РЅРµ СЃРІРѕРµРіРѕ Р°РєРєР°СѓРЅС‚Р°: {UserId}", updateDto.UserId);
                 return Forbid();
             }
 
-            _logger.LogInformation("Обновление учётных данных пользователя {UserId}", updateDto.UserId);
+            _logger.LogInformation("РћР±РЅРѕРІР»РµРЅРёРµ СѓС‡С‘С‚РЅС‹С… РґР°РЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ {UserId}", updateDto.UserId);
 
             var result = 
                 await _mediator.Send(new UpdateUserPasswordCommand(updateDto), cancellationToken);
 
             _logger.LogResult(
                 result,
-                "Учётные данные пользователя успешно обновлены",
-                "Ошибка обновления учётных данных",
+                "РЈС‡С‘С‚РЅС‹Рµ РґР°РЅРЅС‹Рµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ СѓСЃРїРµС€РЅРѕ РѕР±РЅРѕРІР»РµРЅС‹",
+                "РћС€РёР±РєР° РѕР±РЅРѕРІР»РµРЅРёСЏ СѓС‡С‘С‚РЅС‹С… РґР°РЅРЅС‹С…",
                 new { updateDto.UserId }
             );
 

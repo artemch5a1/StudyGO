@@ -1,4 +1,4 @@
-﻿using StudyGO.Core.Abstractions.Auth;
+using StudyGO.Core.Abstractions.Auth;
 using StudyGO.infrastructure.Auth;
 
 namespace StudyGO.API.Services;

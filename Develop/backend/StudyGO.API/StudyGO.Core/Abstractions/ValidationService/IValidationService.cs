@@ -1,4 +1,4 @@
-﻿using StudyGO.Contracts.Dtos;
+using StudyGO.Contracts.Dtos;
 using StudyGO.Contracts.Result;
 
 namespace StudyGO.Core.Abstractions.ValidationService

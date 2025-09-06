@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;

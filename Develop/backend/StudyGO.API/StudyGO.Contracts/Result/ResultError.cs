@@ -1,4 +1,4 @@
-﻿using StudyGO.Contracts.Result.ErrorTypes;
+using StudyGO.Contracts.Result.ErrorTypes;
 
 namespace StudyGO.Contracts.Result
 {

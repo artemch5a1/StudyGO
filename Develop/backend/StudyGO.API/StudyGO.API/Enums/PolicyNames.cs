@@ -1,4 +1,4 @@
-﻿namespace StudyGO.API.Enums
+namespace StudyGO.API.Enums
 {
     public static class PolicyNames
     {

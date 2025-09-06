@@ -1,4 +1,4 @@
-﻿using StudyGO.Application.Extensions;
+using StudyGO.Application.Extensions;
 using StudyGO.Application.Options;
 using StudyGO.Application.Services.Account;
 using StudyGO.Core.Abstractions.Services.Account;

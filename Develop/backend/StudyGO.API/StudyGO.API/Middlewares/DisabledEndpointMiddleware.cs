@@ -20,7 +20,7 @@ public class DisabledEndpointMiddleware
         if (endpoint != null && metadata != null)
         {
             context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-            await context.Response.WriteAsync(metadata.Description ?? "Этот ресурс временно недоступен");
+            await context.Response.WriteAsync(metadata.Description ?? "Р­С‚РѕС‚ СЂРµСЃСѓСЂСЃ РІСЂРµРјРµРЅРЅРѕ РЅРµРґРѕСЃС‚СѓРїРµРЅ");
             return;
         }
 

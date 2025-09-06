@@ -36,7 +36,7 @@ public class Seeder : ISeedProvider
 
                 if (!result.IsSuccess)
                 {
-                    _logger.LogError("Не удалось сидировать данные {NameService}", nameof(seedService));
+                    _logger.LogError("РќРµ СѓРґР°Р»РѕСЃСЊ СЃРёРґРёСЂРѕРІР°С‚СЊ РґР°РЅРЅС‹Рµ {NameService}", nameof(seedService));
                 }
 
                 totalInsert += result.Value;
@@ -46,7 +46,7 @@ public class Seeder : ISeedProvider
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Сидирование данных завершилось ошибкой");
+            _logger.LogError(ex, "РЎРёРґРёСЂРѕРІР°РЅРёРµ РґР°РЅРЅС‹С… Р·Р°РІРµСЂС€РёР»РѕСЃСЊ РѕС€РёР±РєРѕР№");
             throw;
         }
     }

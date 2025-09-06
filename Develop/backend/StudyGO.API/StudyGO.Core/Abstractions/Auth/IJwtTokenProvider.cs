@@ -1,4 +1,4 @@
-﻿using StudyGO.Contracts.Contracts;
+using StudyGO.Contracts.Contracts;
 
 namespace StudyGO.Core.Abstractions.Auth
 {

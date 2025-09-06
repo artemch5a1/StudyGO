@@ -19,7 +19,7 @@ public class UserVerificationCleanup : IDatabaseCleanupService
     {
         var result = await _userRepository.RemoveAllUnverifiedUserByTimeout(TimeSpan.FromMinutes(30), cancellationToken);
         
-        _logger.LogInformation("Удалено неподтвержденных пользователей: {Count}", result.Value);
+        _logger.LogInformation("РЈРґР°Р»РµРЅРѕ РЅРµРїРѕРґС‚РІРµСЂР¶РґРµРЅРЅС‹С… РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№: {Count}", result.Value);
         
         return result.Value;
     }

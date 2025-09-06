@@ -1,4 +1,4 @@
-﻿using EntityFramework.Exceptions.Common;
+using EntityFramework.Exceptions.Common;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using StudyGO.Contracts.Result;

@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using StudyGO.API.Extensions;
 using StudyGO.Application.UseCases.CatalogUseCases.FormatUseCases.GetAllFormats;

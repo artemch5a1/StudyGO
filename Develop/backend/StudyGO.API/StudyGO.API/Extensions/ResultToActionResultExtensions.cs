@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using StudyGO.API.Data;
 using StudyGO.Contracts.Result;
 

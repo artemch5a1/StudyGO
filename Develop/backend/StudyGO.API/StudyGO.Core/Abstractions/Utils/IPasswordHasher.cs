@@ -1,4 +1,4 @@
-﻿namespace StudyGO.Core.Abstractions.Utils
+namespace StudyGO.Core.Abstractions.Utils
 {
     public interface IPasswordHasher
     {

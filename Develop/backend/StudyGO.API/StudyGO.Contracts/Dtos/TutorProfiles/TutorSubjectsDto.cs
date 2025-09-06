@@ -1,4 +1,4 @@
-﻿namespace StudyGO.Contracts.Dtos.TutorProfiles;
+namespace StudyGO.Contracts.Dtos.TutorProfiles;
 
 public class TutorSubjectsDto
 {

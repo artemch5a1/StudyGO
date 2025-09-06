@@ -4,54 +4,54 @@ namespace StudyGO.Core.Enums;
 
 public enum ErrorSendEmailType
 {
-    [Description("Неверный формат email")]
+    [Description("РќРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚ email")]
     InvalidEmailFormat,
     
-    [Description("Сервер почты недоступен")]
+    [Description("РЎРµСЂРІРµСЂ РїРѕС‡С‚С‹ РЅРµРґРѕСЃС‚СѓРїРµРЅ")]
     SmtpServerUnavailable,
     
-    [Description("Ошибка авторизации на почтовом сервере")]
+    [Description("РћС€РёР±РєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё РЅР° РїРѕС‡С‚РѕРІРѕРј СЃРµСЂРІРµСЂРµ")]
     SmtpAuthenticationFailed,
     
-    [Description("Почтовый ящик не существует")]
+    [Description("РџРѕС‡С‚РѕРІС‹Р№ СЏС‰РёРє РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚")]
     MailboxDoesNotExist,
     
-    [Description("Превышена квота отправки")]
+    [Description("РџСЂРµРІС‹С€РµРЅР° РєРІРѕС‚Р° РѕС‚РїСЂР°РІРєРё")]
     SendingQuotaExceeded,
     
-    [Description("Превышен максимальный размер сообщения")]
+    [Description("РџСЂРµРІС‹С€РµРЅ РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ СЃРѕРѕР±С‰РµРЅРёСЏ")]
     MessageSizeLimitExceeded,
     
-    [Description("Таймаут операции")]
+    [Description("РўР°Р№РјР°СѓС‚ РѕРїРµСЂР°С†РёРё")]
     OperationTimedOut,
     
-    [Description("Ошибка сети")]
+    [Description("РћС€РёР±РєР° СЃРµС‚Рё")]
     NetworkError,
     
-    [Description("Ошибка безопасного соединения")]
+    [Description("РћС€РёР±РєР° Р±РµР·РѕРїР°СЃРЅРѕРіРѕ СЃРѕРµРґРёРЅРµРЅРёСЏ")]
     SslHandshakeFailed,
     
-    [Description("Отказ в доступе")]
+    [Description("РћС‚РєР°Р· РІ РґРѕСЃС‚СѓРїРµ")]
     AccessDenied,
     
-    [Description("Внутренняя ошибка сервера")]
+    [Description("Р’РЅСѓС‚СЂРµРЅРЅСЏСЏ РѕС€РёР±РєР° СЃРµСЂРІРµСЂР°")]
     ServerError,
     
-    [Description("Ошибка обработки вложения")]
+    [Description("РћС€РёР±РєР° РѕР±СЂР°Р±РѕС‚РєРё РІР»РѕР¶РµРЅРёСЏ")]
     AttachmentError,
     
-    [Description("Ошибка DNS")]
+    [Description("РћС€РёР±РєР° DNS")]
     DnsResolutionFailed,
     
-    [Description("Почтовый ящик переполнен")]
+    [Description("РџРѕС‡С‚РѕРІС‹Р№ СЏС‰РёРє РїРµСЂРµРїРѕР»РЅРµРЅ")]
     MailboxFull,
     
-    [Description("Сообщение заблокировано как спам")]
+    [Description("РЎРѕРѕР±С‰РµРЅРёРµ Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅРѕ РєР°Рє СЃРїР°Рј")]
     BlockedAsSpam,
     
-    [Description("Недостаточно прав для отправки")]
+    [Description("РќРµРґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РїСЂР°РІ РґР»СЏ РѕС‚РїСЂР°РІРєРё")]
     InsufficientPermissions,
     
-    [Description("Недопустимые символы в теле письма")]
+    [Description("РќРµРґРѕРїСѓСЃС‚РёРјС‹Рµ СЃРёРјРІРѕР»С‹ РІ С‚РµР»Рµ РїРёСЃСЊРјР°")]
     InvalidMessageContent
 }

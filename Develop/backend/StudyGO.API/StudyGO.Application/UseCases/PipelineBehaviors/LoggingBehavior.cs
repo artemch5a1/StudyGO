@@ -22,13 +22,13 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         var requestName = typeof(TRequest).Name;
         var responseType = typeof(TResponse).Name;
         
-        _logger.LogInformation("Çàïðîñ {RequestName} ïîëó÷åí: {@Request}", requestName, request);
+        _logger.LogInformation("Ð—Ð°Ð¿Ñ€Ð¾Ñ {RequestName} Ð¿Ð¾Ð»ÑƒÑ‡ÐµÐ½: {@Request}", requestName, request);
 
         var stopwatch = Stopwatch.StartNew();
         try
         {
             var response = await next(cancellationToken);
-            _logger.LogInformation("Çàïðîñ {RequestName} îáðàáîòàí çà {Elapsed} ìñ, îòâåò: {ResponseType}",
+            _logger.LogInformation("Ð—Ð°Ð¿Ñ€Ð¾Ñ {RequestName} Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚Ð°Ð½ Ð·Ð° {Elapsed} Ð¼Ñ, Ð¾Ñ‚Ð²ÐµÑ‚: {ResponseType}",
                 requestName, stopwatch.ElapsedMilliseconds, responseType);
 
             return response;
@@ -37,7 +37,7 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         {
             stopwatch.Stop();
 
-            _logger.LogError(ex, "Îøèáêà ïðè îáðàáîòêå {RequestName} ÷åðåç {Elapsed} ìñ",
+            _logger.LogError(ex, "ÐžÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ Ð¾Ð±Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐµ {RequestName} Ñ‡ÐµÑ€ÐµÐ· {Elapsed} Ð¼Ñ",
                 requestName, stopwatch.ElapsedMilliseconds);
 
             throw;

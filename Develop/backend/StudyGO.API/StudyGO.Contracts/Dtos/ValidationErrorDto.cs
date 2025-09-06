@@ -1,4 +1,4 @@
-﻿namespace StudyGO.Contracts.Dtos
+namespace StudyGO.Contracts.Dtos
 {
     public class ValidationErrorDto
     {

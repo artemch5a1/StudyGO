@@ -1,4 +1,4 @@
-﻿using StudyGO.Contracts.Dtos.Users;
+using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Contracts.ValidatableMarker;
 
 namespace StudyGO.Contracts.Dtos.UserProfiles

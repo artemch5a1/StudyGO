@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using StudyGO.Application.Validations.Base;
 using StudyGO.Contracts.Dtos.Users;
 
