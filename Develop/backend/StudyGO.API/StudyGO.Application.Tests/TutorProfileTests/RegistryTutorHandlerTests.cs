@@ -22,11 +22,6 @@ public class RegistryTutorHandlerTests
     private readonly Mock<ILogger<RegistryTutorHandler>> _loggerMock = new();
     private readonly Mock<IPasswordHasher> _passwordHasherMock = new();
     private readonly Mock<IMediator> _mediatorMock = new();
-    private readonly TutorProfileServiceOptions _options = new() 
-    { 
-        RequireEmailVerification = false, 
-        SchemeRegistry = RegistryScheme.DefaultVerified 
-    };
     
     private Mock<IOptionsSnapshot<TutorProfileServiceOptions>> _mockOptions = new Mock<IOptionsSnapshot<TutorProfileServiceOptions>>();
     
@@ -79,5 +74,36 @@ public class RegistryTutorHandlerTests
         // Assert
         Assert.False(result.IsSuccess);
         _mediatorMock.Verify(m => m.Publish(It.IsAny<INotification>(), default), Times.Never);
+    }
+    
+    [Fact]
+    public async Task Handle_ShouldHashPassword_BeforeSaving()
+    {
+        // Arrange
+        var handler = CreateHandler();
+        var command = CreateCommand();
+
+        _passwordHasherMock.Setup(h => h.GeneratePasswordHash("12345")).Returns("hashed");
+
+        _mapperMock.Setup(m => m.Map<TutorProfile>(It.IsAny<TutorProfileRegistrDto>()))
+            .Returns<TutorProfileRegistrDto>(dto =>
+            {
+                Assert.Equal("hashed", dto.User.Password);
+               return It.IsAny<TutorProfile>();
+            });
+
+        _repoMock.Setup(
+                r => r.Create(
+                    It.IsAny<TutorProfile>(), 
+                    It.IsAny<CancellationToken>()
+                )
+                )
+            .ReturnsAsync(Result<Guid>.Success(Guid.NewGuid()));
+
+        // Act
+        await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        _passwordHasherMock.Verify(h => h.GeneratePasswordHash("12345"), Times.Once);
     }
 }
