@@ -60,7 +60,7 @@ public class RegistryTutorHandler : IRequestHandler<RegistryTutorCommand, Result
         var information = new RegisteredInformation(
             id, 
             request.ConfirmEmailEndpoint, 
-            RolesEnum.Tutor.GetString(), 
+            profile.User.Email, 
             _options.SchemeReqistry
             );
         

@@ -25,7 +25,7 @@ public class EmailVerificationStrategy : IVerificationStrategy
     public async Task VerifyAsync(RegisteredInformation @event, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Email-верификация для пользователя {UserId}", @event.UserId);
-        var job = new VerificationJob(@event.UserId, @event.ConfirmEndpoint, @event.Role.ToString());
+        var job = new VerificationJob(@event.UserId, @event.Email, @event.ConfirmEndpoint);
         await _queue.EnqueueAsync(job, cancellationToken);
     }
 }
