@@ -1,10 +1,11 @@
-using System.Diagnostics;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
+using StudyGO.Application.UseCases.UserProfileUseCases.Commands.RegistryUser;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.PaginationContract;
@@ -19,17 +20,20 @@ namespace StudyGO.API.Controllers.UsersControllers
     {
         private readonly ILogger<UserProfileController> _logger;
         
-        private readonly IUserProfileService _userAccountService;
-        
         private readonly EmailConfirmationOptions _emailOptions;
+
+        private readonly IMediator _mediator;
+
+        private readonly IUserProfileService _userAccountService;
         
         public UserProfileController(
             ILogger<UserProfileController> logger,
-            IUserProfileService userAccountService,
-            IOptions<EmailConfirmationOptions> emailOptions
-        )
+            IOptions<EmailConfirmationOptions> emailOptions, 
+            IMediator mediator, 
+            IUserProfileService userAccountService)
         {
             _logger = logger;
+            _mediator = mediator;
             _userAccountService = userAccountService;
             _emailOptions = emailOptions.Value;
         }
@@ -57,7 +61,10 @@ namespace StudyGO.API.Controllers.UsersControllers
                 return new ObjectResult(null) {StatusCode = StatusCodes.Status500InternalServerError};
             }
             
-            var result = await _userAccountService.TryRegistry(registryRequest, confirmEmailEndpoint, cancellationToken);
+            var result = 
+                await _mediator.Send(
+                new RegistryUserCommand(registryRequest, confirmEmailEndpoint), 
+                cancellationToken);
             
             _logger.LogResult(result, 
                 "Успешная регистрация пользователя", 

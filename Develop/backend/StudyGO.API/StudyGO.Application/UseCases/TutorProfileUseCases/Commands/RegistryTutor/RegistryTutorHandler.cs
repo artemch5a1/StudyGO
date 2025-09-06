@@ -60,8 +60,9 @@ public class RegistryTutorHandler : IRequestHandler<RegistryTutorCommand, Result
         var information = new RegisteredInformation(
             id, 
             request.ConfirmEmailEndpoint, 
-            profile.User.Email, 
-            _options.SchemeReqistry
+            profile.User.Email,
+            _options.RequireEmailVerification,
+            _options.SchemeRegistry
             );
         
         await _mediator.Publish(new RegisteredEvent(information), cancellationToken);
@@ -72,7 +73,7 @@ public class RegistryTutorHandler : IRequestHandler<RegistryTutorCommand, Result
         return resultCreate
             .MapDataTo(x => 
                 UserRegistryResponse
-                    .VerifiedByAnotherScheme(x, _options.SchemeReqistry));
+                    .VerifiedByAnotherScheme(x, _options.SchemeRegistry));
     }
     
     private async Task<Result<Guid>> RegistryLogic(TutorProfileRegistrDto profile,
