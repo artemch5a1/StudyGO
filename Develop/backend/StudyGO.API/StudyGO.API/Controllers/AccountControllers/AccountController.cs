@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using StudyGO.API.CustomAttributes;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
@@ -15,7 +14,6 @@ using StudyGO.Application.UseCases.UserUseCases.Queries.GetAll.GetAllAccount;
 using StudyGO.Application.UseCases.UserUseCases.Queries.GetById.GetAccountById;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.Users;
-using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Extensions;
 
 namespace StudyGO.API.Controllers.AccountControllers

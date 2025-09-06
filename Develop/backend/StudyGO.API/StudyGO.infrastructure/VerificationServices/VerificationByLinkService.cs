@@ -10,7 +10,7 @@ using StudyGO.Core.Extensions;
 
 namespace StudyGO.infrastructure.Extensions;
 
-public class VerificationService : IVerificationService
+public class VerificationByLinkService : IVerificationByLinkService
 {
     private readonly IEmailService _emailService;
     
@@ -18,15 +18,15 @@ public class VerificationService : IVerificationService
 
     private readonly IUserRepository _userRepository;
 
-    private readonly ILogger<VerificationService> _logger;
+    private readonly ILogger<VerificationByLinkService> _logger;
     
     private readonly IWebHostEnvironment _env;
     
-    public VerificationService(
+    public VerificationByLinkService(
         IEmailService emailService,
         IEmailVerifyTokenProvider emailTokenProvider,
         IUserRepository userRepository, 
-        ILogger<VerificationService> logger, 
+        ILogger<VerificationByLinkService> logger, 
         IWebHostEnvironment env)
     {
         _emailService = emailService;

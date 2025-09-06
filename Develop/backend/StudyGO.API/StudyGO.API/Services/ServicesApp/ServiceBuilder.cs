@@ -1,9 +1,10 @@
 ﻿using StudyGO.Application.Extensions;
 using StudyGO.Application.Options;
-using StudyGO.Application.Services;
 using StudyGO.Application.Services.Account;
-using StudyGO.Core.Abstractions.Services;
 using StudyGO.Core.Abstractions.Services.Account;
+using StudyGO.Core.Abstractions.VerificationStrategy;
+using StudyGO.infrastructure.VerificationStrategy;
+using StudyGO.infrastructure.VerificationStrategy.Resolver;
 
 namespace StudyGO.API.Services
 {
@@ -15,14 +16,24 @@ namespace StudyGO.API.Services
             _services.Configure<TutorProfileServiceOptions>(_configuration.GetSection("TutorAccount"));
             
             _services.AddScoped<IUserProfileService, UserProfileService>();
-            _services.AddScoped<ITutorProfileService, TutorProfileService>();
 
+            ConfigureVerification();
+            
             ConfigureMediatr();
         }
 
         private void ConfigureMediatr()
         {
             _services.AddApplication();
+        }
+
+        private void ConfigureVerification()
+        {
+            _services.AddScoped<IVerificationStrategyResolver, VerificationStrategyResolver>();
+
+            _services.AddScoped<IVerificationStrategy, EmailVerificationStrategy>();
+
+            _services.AddScoped<IVerificationStrategy, DefaultVerificationStrategy>();
         }
     }
 }

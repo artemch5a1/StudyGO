@@ -24,7 +24,7 @@ public class EmailVerificationWorker : BackgroundService
         await foreach (var job in _queue.DequeueAllAsync(stoppingToken))
         {
             using var scope = _serviceProvider.CreateScope();
-            var service = scope.ServiceProvider.GetRequiredService<IVerificationService>();
+            var service = scope.ServiceProvider.GetRequiredService<IVerificationByLinkService>();
             try
             {
                 var result = await 
@@ -33,13 +33,13 @@ public class EmailVerificationWorker : BackgroundService
                 if (!result.IsSuccess)
                 {
                     await service.RollBackUser(job.UserId, stoppingToken);
-                    _logger.LogWarning("Не удалось отправить письмо для UserId={UserId}", job.UserId);
+                    _logger.LogWarning("РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РїСЂР°РІРёС‚СЊ РїРёСЃСЊРјРѕ РґР»СЏ UserId={UserId}", job.UserId);
                 }
             }
             catch (Exception ex)
             {
                 await service.RollBackUser(job.UserId, stoppingToken);
-                _logger.LogError(ex, "Ошибка при обработке задания на отправку письма");
+                _logger.LogError(ex, "РћС€РёР±РєР° РїСЂРё РѕР±СЂР°Р±РѕС‚РєРµ Р·Р°РґР°РЅРёСЏ РЅР° РѕС‚РїСЂР°РІРєСѓ РїРёСЃСЊРјР°");
             }
         }
     }

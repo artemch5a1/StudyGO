@@ -158,7 +158,6 @@ namespace StudyGO.infrastructure.Repositories
                     .OrderBy(x => x.UserId)
                     .Skip(skip)
                     .Take(take)
-                    .Where(x => x.User != null && x.User.Verified)
                     .ToListAsync(cancellationToken);
 
                 return Result<List<TutorProfile>>.Success(_mapper.Map<List<TutorProfile>>(user));
@@ -184,6 +183,7 @@ namespace StudyGO.infrastructure.Repositories
                     .OrderBy(x => x.UserId)
                     .Skip(skip)
                     .Take(take)
+                    .Where(x => x.User != null && x.User.Verified)
                     .ToListAsync(cancellationToken);
 
                 return Result<List<TutorProfile>>.Success(_mapper.Map<List<TutorProfile>>(user));
@@ -290,42 +290,6 @@ namespace StudyGO.infrastructure.Repositories
                 return affectedRows > 0
                     ? Result<Guid>.Success(model.UserId)
                     : Result<Guid>.Failure("Не удалось обновить данные", ErrorTypeEnum.NotFound);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Произошла ошибка при попытке обновить БД: {ex.Message}");
-
-                return ex.HandleException<Guid>();
-            }
-        }
-        
-        public async Task<Result<Guid>> DefaultVerification(
-            Guid userId, 
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var user = await _context.TutorProfilesEntity
-                    .Select(x => x.User)
-                    .FirstOrDefaultAsync(x => x != null && x.UserId == userId, cancellationToken);
-
-                if(user == null)
-                {
-                    _logger.LogError($"Произошла ошибка при попытке подтверждения пользователя: пользователь не найден");
-                    return Result<Guid>.Failure("Ошибка сервера", ErrorTypeEnum.DbError);
-                }
-
-                user.Verified = true;
-                user.VerifiedToken = null;
-                user.VerifiedDate = DateTime.UtcNow;
-
-                int affectedRows = await _context.SaveChangesAsync(cancellationToken);
-
-                if(affectedRows > 0)
-                    return Result<Guid>.Success(userId);
-                
-                return Result<Guid>.Failure("Ошибка сервера", ErrorTypeEnum.DbError);
             }
             catch (Exception ex)
             {

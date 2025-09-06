@@ -28,4 +28,9 @@ public class UserRegistryResponse
     {
         return new UserRegistryResponse(userId, true, RegistryScheme.VerifiedByLink);
     }
+
+    public static UserRegistryResponse VerifiedByAnotherScheme(Guid userId, RegistryScheme scheme)
+    {
+        return new UserRegistryResponse(userId, true, scheme);
+    }
 }

@@ -2,7 +2,7 @@ using StudyGO.Contracts.Result;
 
 namespace StudyGO.Core.Abstractions.Verification;
 
-public interface IVerificationService
+public interface IVerificationByLinkService
 {
     Task<Result<string>> CreateTokenAndSendMessage(Guid userId, string email, string endPoint, CancellationToken cancellationToken);
 

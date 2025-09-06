@@ -24,5 +24,10 @@ namespace StudyGO.Core.Abstractions.Repositories
             TimeSpan timeout,
             CancellationToken cancellationToken = default
         );
+
+        public Task<Result<Guid>> DefaultVerification(
+            Guid userId,
+            CancellationToken cancellationToken = default
+        );
     }
 }
