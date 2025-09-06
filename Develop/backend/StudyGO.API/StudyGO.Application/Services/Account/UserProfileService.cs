@@ -5,9 +5,7 @@ using StudyGO.Contracts.PaginationContract;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
-using StudyGO.Core.Abstractions.ValidationService;
 using StudyGO.Core.Extensions;
-using StudyGO.Core.Models;
 
 namespace StudyGO.Application.Services.Account
 {
@@ -18,19 +16,15 @@ namespace StudyGO.Application.Services.Account
         private readonly IMapper _mapper;
 
         private readonly ILogger<UserProfileService> _logger;
-
-        private readonly IValidationService _validationService;
         
         public UserProfileService(
             IUserProfileRepository userRepository,
             IMapper mapper,
-            ILogger<UserProfileService> logger,
-            IValidationService validationService)
+            ILogger<UserProfileService> logger)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
-            _validationService = validationService;
         }
 
         public async Task<Result<List<UserProfileDto>>> GetAllUserProfiles(
@@ -96,34 +90,6 @@ namespace StudyGO.Application.Services.Account
                 new { UserId = userId });
             
             return result.MapDataTo(_mapper.Map<UserProfileDto?>);
-        }
-
-        public async Task<Result<Guid>> TryUpdateUserProfile(
-            UserProfileUpdateDto newProfile,
-            CancellationToken cancellationToken = default
-        )
-        {
-            _logger.LogInformation("Обновление профиля пользователя: {UserId}", newProfile.UserId);
-            
-            var validatorResult = await _validationService.ValidateAsync(
-                newProfile,
-                cancellationToken
-            );
-
-            if (!validatorResult.IsSuccess)
-            {
-                _logger.LogWarning("Ошибка валидации при обновлении профиля пользователя: {Error}", validatorResult.ErrorMessage);
-                return Result<Guid>.Failure(
-                    validatorResult.ErrorMessage ?? string.Empty,
-                    validatorResult.ErrorType
-                );
-            }
-
-            UserProfile user = _mapper.Map<UserProfile>(newProfile);
-            
-            _logger.LogDebug("Отправлен запрос в репозиторий");
-            
-            return await _userRepository.Update(user, cancellationToken);
         }
     }
 }

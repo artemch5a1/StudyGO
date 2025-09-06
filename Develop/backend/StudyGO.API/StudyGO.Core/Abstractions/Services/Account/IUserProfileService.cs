@@ -7,8 +7,6 @@ namespace StudyGO.Core.Abstractions.Services.Account
 {
     public interface IUserProfileService
     {
-        public Task<Result<Guid>> TryUpdateUserProfile(UserProfileUpdateDto newProfile, CancellationToken cancellationToken = default);
-
         public Task<Result<UserProfileDto?>> TryGetUserProfileById(Guid userId, CancellationToken cancellationToken = default);
 
         public Task<Result<List<UserProfileDto>>> GetAllUserProfiles(CancellationToken cancellationToken = default, 
