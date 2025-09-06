@@ -10,7 +10,6 @@ using StudyGO.Contracts.Dtos.TutorProfiles;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Utils;
-using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
 
@@ -60,8 +59,9 @@ public class RegistryTutorHandler : IRequestHandler<RegistryTutorCommand, Result
         var information = new RegisteredInformation(
             id, 
             request.ConfirmEmailEndpoint, 
-            profile.User.Email, 
-            _options.SchemeReqistry
+            profile.User.Email,
+            _options.RequireEmailVerification,
+            _options.SchemeRegistry
             );
         
         await _mediator.Publish(new RegisteredEvent(information), cancellationToken);
@@ -72,7 +72,7 @@ public class RegistryTutorHandler : IRequestHandler<RegistryTutorCommand, Result
         return resultCreate
             .MapDataTo(x => 
                 UserRegistryResponse
-                    .VerifiedByAnotherScheme(x, _options.SchemeReqistry));
+                    .VerifiedByAnotherScheme(x, _options.SchemeRegistry));
     }
     
     private async Task<Result<Guid>> RegistryLogic(TutorProfileRegistrDto profile,

@@ -1,14 +1,19 @@
-using System.Diagnostics;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
+using StudyGO.Application.UseCases.UserProfileUseCases.Commands.RegistryUser;
+using StudyGO.Application.UseCases.UserProfileUseCases.Commands.UpdateUser;
+using StudyGO.Application.UseCases.UserProfileUseCases.Queries.GetAll.GetAllUserProfiles;
+using StudyGO.Application.UseCases.UserProfileUseCases.Queries.GetAll.GetAllVerifiedUserProfiles;
+using StudyGO.Application.UseCases.UserProfileUseCases.Queries.GetById.GetUserProfileById;
+using StudyGO.Application.UseCases.UserProfileUseCases.Queries.GetById.GetVerifiedUserProfileById;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.PaginationContract;
-using StudyGO.Core.Abstractions.Services.Account;
 using StudyGO.Core.Extensions;
 
 namespace StudyGO.API.Controllers.UsersControllers
@@ -19,18 +24,17 @@ namespace StudyGO.API.Controllers.UsersControllers
     {
         private readonly ILogger<UserProfileController> _logger;
         
-        private readonly IUserProfileService _userAccountService;
-        
         private readonly EmailConfirmationOptions _emailOptions;
+
+        private readonly IMediator _mediator;
         
         public UserProfileController(
             ILogger<UserProfileController> logger,
-            IUserProfileService userAccountService,
-            IOptions<EmailConfirmationOptions> emailOptions
-        )
+            IOptions<EmailConfirmationOptions> emailOptions, 
+            IMediator mediator)
         {
             _logger = logger;
-            _userAccountService = userAccountService;
+            _mediator = mediator;
             _emailOptions = emailOptions.Value;
         }
 
@@ -57,7 +61,10 @@ namespace StudyGO.API.Controllers.UsersControllers
                 return new ObjectResult(null) {StatusCode = StatusCodes.Status500InternalServerError};
             }
             
-            var result = await _userAccountService.TryRegistry(registryRequest, confirmEmailEndpoint, cancellationToken);
+            var result = 
+                await _mediator.Send(
+                new RegistryUserCommand(registryRequest, confirmEmailEndpoint), 
+                cancellationToken);
             
             _logger.LogResult(result, 
                 "Успешная регистрация пользователя", 
@@ -76,7 +83,8 @@ namespace StudyGO.API.Controllers.UsersControllers
         {
             _logger.LogInformation("Запрос всех подтвержденных профилей пользователей");
             
-            var result = await _userAccountService.GetAllUserVerifiedProfiles(cancellationToken, paginationParams);
+            var result = 
+                await _mediator.Send(new GetAllVerifiedUserProfileQuery(paginationParams), cancellationToken);
             
             _logger.LogResult(
                 result,
@@ -97,7 +105,8 @@ namespace StudyGO.API.Controllers.UsersControllers
         {
             _logger.LogInformation("Запрос всех профилей пользователей");
             
-            var result = await _userAccountService.GetAllUserProfiles(cancellationToken, paginationParams);
+            var result = 
+                    await _mediator.Send(new GetAllUserProfileQuery(paginationParams), cancellationToken);
             
             _logger.LogResult(
                 result,
@@ -118,7 +127,8 @@ namespace StudyGO.API.Controllers.UsersControllers
         {
             _logger.LogInformation("Запрос профиля пользователя по ID: {userId}", userId);
             
-            var result = await _userAccountService.TryGetUserProfileById(userId, cancellationToken);
+            var result = 
+                await _mediator.Send(new GetUserProfileByIdQuery(userId), cancellationToken);
             
             _logger.LogResult(
                 result,
@@ -139,7 +149,8 @@ namespace StudyGO.API.Controllers.UsersControllers
         {
             _logger.LogInformation("Запрос профиля пользователя по ID: {userId}", userId);
             
-            var result = await _userAccountService.TryGetVerifiedUserProfileById(userId, cancellationToken);
+            var result = 
+                await _mediator.Send(new GetVerifiedUserProfileByIdQuery(userId), cancellationToken);
             
             _logger.LogResult(
                 result,
@@ -166,11 +177,9 @@ namespace StudyGO.API.Controllers.UsersControllers
             }
             
             _logger.LogDebug("Запрос данных текущего профиля пользователя {UserId}", userId.Value);
-            
-            var result = await _userAccountService.TryGetUserProfileById(
-                userId.Value,
-                cancellationToken
-            );
+
+            var result =
+                await _mediator.Send(new GetUserProfileByIdQuery(userId.Value), cancellationToken);
             
             _logger.LogResult(
                 result,
@@ -195,10 +204,8 @@ namespace StudyGO.API.Controllers.UsersControllers
                 return Forbid();
             }
 
-            var result = await _userAccountService.TryUpdateUserProfile(
-                userProfile,
-                cancellationToken
-            );
+            var result = 
+                await _mediator.Send(new UpdateUserProfileCommand(userProfile), cancellationToken);
             
             _logger.LogResult(
                 result,

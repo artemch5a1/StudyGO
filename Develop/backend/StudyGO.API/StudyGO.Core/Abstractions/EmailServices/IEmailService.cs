@@ -1,6 +1,3 @@
-using StudyGO.Contracts.Result;
-using StudyGO.Core.Enums;
-
 namespace StudyGO.Core.Abstractions.EmailServices;
 
 public interface IEmailService

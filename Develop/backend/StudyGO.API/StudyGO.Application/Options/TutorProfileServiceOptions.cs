@@ -6,5 +6,5 @@ public class TutorProfileServiceOptions
 {
     public bool RequireEmailVerification { get; set; }
 
-    public RegistryScheme SchemeReqistry { get; set; } = RegistryScheme.VerifiedByLink;
+    public RegistryScheme SchemeRegistry { get; set; } = RegistryScheme.VerifiedByLink;
 }

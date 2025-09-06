@@ -1,5 +1,6 @@
+using Microsoft.Extensions.Options;
+using StudyGO.API.Options;
 using StudyGO.Core.Abstractions.CleanupServices;
-using StudyGO.Core.Abstractions.Repositories;
 
 namespace StudyGO.API.BackgroundServices;
 
@@ -7,11 +8,16 @@ public class DatabaseCleaner : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<DatabaseCleaner> _logger;
+    private readonly DatabaseCleanerOptions _options;
 
-    public DatabaseCleaner(IServiceProvider serviceProvider, ILogger<DatabaseCleaner> logger)
+    public DatabaseCleaner(
+        IServiceProvider serviceProvider, 
+        ILogger<DatabaseCleaner> logger,
+        IOptions<DatabaseCleanerOptions> options)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
+        _options = options.Value;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -36,7 +42,7 @@ public class DatabaseCleaner : BackgroundService
                 
                 _logger.LogInformation("Было удалено {count} записей из БД", totalClean);
                 
-                await Task.Delay(TimeSpan.FromMinutes(15), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(_options.DelayCleanUp), stoppingToken);
             }
             catch (OperationCanceledException)
             {
