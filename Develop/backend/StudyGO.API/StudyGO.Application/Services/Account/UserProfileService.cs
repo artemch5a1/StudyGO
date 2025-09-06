@@ -1,17 +1,10 @@
-using System.Threading.Channels;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using StudyGO.Application.Extensions;
-using StudyGO.Application.Options;
-using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.PaginationContract;
 using StudyGO.Contracts.Result;
-using StudyGO.Core.Abstractions.Contracts;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Services.Account;
-using StudyGO.Core.Abstractions.Utils;
 using StudyGO.Core.Abstractions.ValidationService;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
@@ -26,30 +19,18 @@ namespace StudyGO.Application.Services.Account
 
         private readonly ILogger<UserProfileService> _logger;
 
-        private readonly IPasswordHasher _passwordHasher;
-
         private readonly IValidationService _validationService;
-
-        private readonly UserProfileServiceOptions _options;
-        
-        private readonly IVerificationJobQueue _verificationQueue;
         
         public UserProfileService(
             IUserProfileRepository userRepository,
             IMapper mapper,
             ILogger<UserProfileService> logger,
-            IPasswordHasher passwordHasher,
-            IValidationService validationService, 
-            IOptionsSnapshot<UserProfileServiceOptions> options, 
-            IVerificationJobQueue verificationQueue)
+            IValidationService validationService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _logger = logger;
-            _passwordHasher = passwordHasher;
             _validationService = validationService;
-            _verificationQueue = verificationQueue;
-            _options = options.Value;
         }
 
         public async Task<Result<List<UserProfileDto>>> GetAllUserProfiles(
@@ -116,29 +97,6 @@ namespace StudyGO.Application.Services.Account
             
             return result.MapDataTo(_mapper.Map<UserProfileDto?>);
         }
-        
-        public async Task<Result<UserRegistryResponse>> TryRegistry(
-            UserProfileRegistrDto profile,
-            string confirmEmailEndpoint,
-            CancellationToken cancellationToken = default
-        )
-        {
-            var resultCreate = await RegistryLogic(profile, cancellationToken);
-
-            if (!resultCreate.IsSuccess)
-                return resultCreate.MapDataTo(UserRegistryResponse.WithoutVerified);
-
-            if (_options.RequireEmailVerification)
-            {
-                var job = new VerificationJob(resultCreate.Value, profile.User.Email, confirmEmailEndpoint);
-                await _verificationQueue.EnqueueAsync(job, cancellationToken);
-                return resultCreate.MapDataTo(UserRegistryResponse.VerifiedByLink);
-            }
-
-            var defaultConfirm = await DefaultConfirm(resultCreate.Value, cancellationToken);
-
-            return defaultConfirm.MapDataTo(UserRegistryResponse.WithoutVerified);
-        }
 
         public async Task<Result<Guid>> TryUpdateUserProfile(
             UserProfileUpdateDto newProfile,
@@ -166,43 +124,6 @@ namespace StudyGO.Application.Services.Account
             _logger.LogDebug("Отправлен запрос в репозиторий");
             
             return await _userRepository.Update(user, cancellationToken);
-        }
-
-        private async Task<Result<Guid>> RegistryLogic(UserProfileRegistrDto profile,
-            CancellationToken cancellationToken = default)
-        {
-            _logger.LogInformation("Попытка регистрации пользователя с email: {Email}", 
-                LoggingExtensions.MaskEmail(profile.User.Email));
-            
-            var validatorResult = await _validationService.ValidateAsync(
-                profile,
-                cancellationToken
-            );
-
-            if (!validatorResult.IsSuccess)
-            {
-                _logger.LogWarning("Ошибка валидации при регистрации учителя: {Error}", validatorResult.ErrorMessage);
-                return Result<Guid>.Failure(
-                    validatorResult.ErrorMessage ?? string.Empty,
-                    validatorResult.ErrorType
-                );
-            }
-
-            _logger.LogDebug("Валидация прошла успешно. Хеширование пароля...");
-            profile.User.Password = profile.User.Password.HashedPassword(_passwordHasher);
-            
-            _logger.LogDebug("Маппинг...");
-            
-            UserProfile profileModel = _mapper.Map<UserProfile>(profile);
-            
-            _logger.LogDebug("Отправлен запрос в репозиторий");
-            
-            return await _userRepository.Create(profileModel, cancellationToken);
-        }
-
-        private async Task<Result<Guid>> DefaultConfirm(Guid userId, CancellationToken cancellationToken = default)
-        {
-            return await _userRepository.DefaultVerification(userId, cancellationToken);
         }
     }
 }
