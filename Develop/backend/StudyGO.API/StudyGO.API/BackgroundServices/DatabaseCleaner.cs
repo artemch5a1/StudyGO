@@ -1,5 +1,4 @@
 using StudyGO.Core.Abstractions.CleanupServices;
-using StudyGO.Core.Abstractions.Repositories;
 
 namespace StudyGO.API.BackgroundServices;
 

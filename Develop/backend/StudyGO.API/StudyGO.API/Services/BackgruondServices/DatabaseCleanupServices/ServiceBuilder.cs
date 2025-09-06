@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using StudyGO.Application.Services.Account;
 using StudyGO.Core.Abstractions.CleanupServices;
+using StudyGO.infrastructure.Data.CleanUpServices;
 
 namespace StudyGO.API.Services;
 

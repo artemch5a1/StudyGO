@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using AutoMapper;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using StudyGO.Contracts.Result;

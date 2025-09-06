@@ -2,7 +2,6 @@ using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using StudyGO.Application.Extensions;
-using StudyGO.Contracts.Dtos.Users;
 using StudyGO.Contracts.Result;
 using StudyGO.Contracts.Result.ErrorTypes;
 using StudyGO.Core.Abstractions.Repositories;

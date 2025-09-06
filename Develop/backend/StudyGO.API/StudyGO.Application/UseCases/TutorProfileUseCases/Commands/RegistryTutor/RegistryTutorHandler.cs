@@ -10,7 +10,6 @@ using StudyGO.Contracts.Dtos.TutorProfiles;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
 using StudyGO.Core.Abstractions.Utils;
-using StudyGO.Core.Enums;
 using StudyGO.Core.Extensions;
 using StudyGO.Core.Models;
 

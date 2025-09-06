@@ -1,7 +1,6 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using StudyGO.Application.UseCases.UserProfileUseCases.Queries.GetById.GetVerifiedUserProfileById;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.Result;
 using StudyGO.Core.Abstractions.Repositories;
