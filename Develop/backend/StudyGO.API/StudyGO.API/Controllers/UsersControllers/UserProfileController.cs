@@ -6,6 +6,7 @@ using StudyGO.API.Enums;
 using StudyGO.API.Extensions;
 using StudyGO.API.Options;
 using StudyGO.Application.UseCases.UserProfileUseCases.Commands.RegistryUser;
+using StudyGO.Application.UseCases.UserProfileUseCases.Commands.UpdateUser;
 using StudyGO.Contracts.Contracts;
 using StudyGO.Contracts.Dtos.UserProfiles;
 using StudyGO.Contracts.PaginationContract;
@@ -202,10 +203,8 @@ namespace StudyGO.API.Controllers.UsersControllers
                 return Forbid();
             }
 
-            var result = await _userAccountService.TryUpdateUserProfile(
-                userProfile,
-                cancellationToken
-            );
+            var result = 
+                await _mediator.Send(new UpdateUserProfileCommand(userProfile), cancellationToken);
             
             _logger.LogResult(
                 result,
