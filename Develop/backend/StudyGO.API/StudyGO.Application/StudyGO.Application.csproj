@@ -13,7 +13,6 @@
     <ProjectReference Include="..\StudyGO.Core\StudyGO.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Services\Account\" />
     <Folder Include="UseCases\UserUseCases\" />
   </ItemGroup>
 </Project>
