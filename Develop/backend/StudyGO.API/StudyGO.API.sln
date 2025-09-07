@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyGO.infrastructure", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyGO.Contracts", "StudyGO.Contracts\StudyGO.Contracts.csproj", "{BF516A76-52B1-4091-9355-023C22205A84}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8B80FFCA-DB8F-4147-B334-E9CABF6FD420}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudyGO.Application.Tests", "StudyGO.Application.Tests\StudyGO.Application.Tests.csproj", "{5A26F435-9BE2-49D8-ADE4-140551C8AAD4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,11 +43,18 @@ Global
 		{BF516A76-52B1-4091-9355-023C22205A84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF516A76-52B1-4091-9355-023C22205A84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF516A76-52B1-4091-9355-023C22205A84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A26F435-9BE2-49D8-ADE4-140551C8AAD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A26F435-9BE2-49D8-ADE4-140551C8AAD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A26F435-9BE2-49D8-ADE4-140551C8AAD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A26F435-9BE2-49D8-ADE4-140551C8AAD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {47379B25-9C33-43E8-BFFF-000CD4CCDF9B}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5A26F435-9BE2-49D8-ADE4-140551C8AAD4} = {8B80FFCA-DB8F-4147-B334-E9CABF6FD420}
 	EndGlobalSection
 EndGlobal
