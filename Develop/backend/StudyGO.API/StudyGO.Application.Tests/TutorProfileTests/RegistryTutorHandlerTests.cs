@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using StudyGO.Application.Options;
+using StudyGO.Application.UseCases.Subscribers.RegisteredEvent;
 using StudyGO.Application.UseCases.TutorProfileUseCases.Commands.RegistryTutor;
 using StudyGO.Contracts;
 using StudyGO.Contracts.Dtos.TutorProfiles;
@@ -25,12 +26,14 @@ public class RegistryTutorHandlerTests
     
     private Mock<IOptionsSnapshot<TutorProfileServiceOptions>> _mockOptions = new Mock<IOptionsSnapshot<TutorProfileServiceOptions>>();
     
-    private RegistryTutorHandler CreateHandler()
+    private RegistryTutorHandler CreateHandler(
+        RegistryScheme sh = RegistryScheme.DefaultVerified,
+        bool require = true)
     {
         _mockOptions.Setup(x => x.Value).Returns(new TutorProfileServiceOptions
         {
-            SchemeRegistry = RegistryScheme.DefaultVerified,
-            RequireEmailVerification = true
+            SchemeRegistry = sh,
+            RequireEmailVerification = require
         });
         
         return new RegistryTutorHandler(
@@ -74,6 +77,66 @@ public class RegistryTutorHandlerTests
         // Assert
         Assert.False(result.IsSuccess);
         _mediatorMock.Verify(m => m.Publish(It.IsAny<INotification>(), default), Times.Never);
+    }
+    
+    [Fact]
+    public async Task Handle_ShouldReturnWithoutVerified_WhenSuccess_AndVerificationDisabled()
+    {
+        // Arrange
+        var handler = CreateHandler(require: false, sh: RegistryScheme.VerifiedByLink);
+        var command = CreateCommand();
+
+        _passwordHasherMock.Setup(h => h.GeneratePasswordHash(It.IsAny<string>()))
+            .Returns("hashed");
+
+        _mapperMock.Setup(m => m.Map<TutorProfile>(It.IsAny<TutorProfileRegistrDto>()))
+            .Returns(
+                It.IsAny<TutorProfile>()
+                );
+
+        _repoMock.Setup(r => r.Create(It.IsAny<TutorProfile>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<Guid>.Success(Guid.NewGuid()));
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(RegistryScheme.DefaultVerified, result.Value?.SchemeRegistry);
+        Assert.Equal(false, result.Value?.RequireEmailVerification);
+        _mediatorMock.Verify(m => m.Publish(It.IsAny<RegisteredEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+    }
+    
+    [Fact]
+    public async Task Handle_ShouldReturnVerifiedByAnotherScheme_WhenSuccess_AndVerificationEnabled()
+    {
+        // Arrange
+        var handler = CreateHandler(require: true, sh: RegistryScheme.VerifiedByLink);
+        var command = CreateCommand();
+
+        _passwordHasherMock.Setup(h => h.GeneratePasswordHash(It.IsAny<string>()))
+            .Returns("hashed");
+
+        _mapperMock.Setup(m => m.Map<TutorProfile>(It.IsAny<TutorProfileRegistrDto>()))
+            .Returns(
+                It.IsAny<TutorProfile>()
+                );
+
+        var userId = Guid.NewGuid();
+        _repoMock.Setup(r => r.Create(It.IsAny<TutorProfile>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result<Guid>.Success(userId));
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(
+            RegistryScheme.VerifiedByLink,
+            result.Value?.SchemeRegistry
+        );
+        Assert.Equal(true, result.Value?.RequireEmailVerification);
+        _mediatorMock.Verify(m => m.Publish(It.IsAny<RegisteredEvent>(), It.IsAny<CancellationToken>()), Times.Once);
     }
     
     [Fact]
