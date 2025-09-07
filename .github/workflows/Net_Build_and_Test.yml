@@ -1,0 +1,29 @@
+name: .NET Build & Test
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore Develop/backend/StudyGO.API/StudyGO.API.sln
+
+      - name: Build
+        run: dotnet build Develop/backend/StudyGO.API/StudyGO.API.sln --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test Develop/backend/StudyGO.API/StudyGO.API.sln --no-build --configuration Release --logger "trx;LogFileName=test_results.trx" --results-directory TestResults
